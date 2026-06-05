@@ -1,0 +1,653 @@
+\documentclass[12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+
+\geometry{a4paper, margin=2.5cm}
+
+% --- Configuracion para codigo ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{orange},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    captionpos=b,
+    numbers=left,
+}
+
+\begin{document}
+% --- PORTADA ---
+\begin{titlepage}
+\begin{center}
+    \includegraphics[width=0.25\textwidth]{logo-uteq.png} \\[1cm]
+    {\large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}} \\[0.5cm]
+    {\large \textbf{FACULTAD DE CIENCIAS DE LA INGENIERÍA}} \\[0.5cm]
+    {\large \textbf{CARRERA INGENIERÍA DE SOFTWARE (REDISEÑO)}} \\[0.5cm]
+    
+    \textbf{TEMA:}\\[0.5cm]
+    {\Large \textbf{Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)}} \\[0.5cm]
+    {\large Entrega 1A - Planificación y Diseño} \\[0.5cm]
+    
+    \textbf{GRUPO:}\\[0.5cm]
+    \textbf{CRUZ PEREZ JUSTYN KEITH}\\
+    \textbf{UMAGINGA AREVALO JEFFERSON MANUEL}\\
+    \textbf{ZAMORA BUMBILA DIEGO ALEXANDER} \\[1cm]
+    
+    \textbf{DOCENTE:}\\[0.5cm]
+    ING. GLEISTON CICERON GUERRERO ULLOA\\[1cm]
+    
+    \textbf{MATERIA:}\\[0.5cm]
+    Aplicaciones Web - A - [5to Nivel] \\[1cm]
+    
+    \textbf{URL DEL REPOSITORIO:}\\[0.5cm]
+    \url{https://github.com/keithdrox/SBVIA-AppWeb} \\[1cm]
+
+    \vfill
+    Quevedo - Ecuador \\
+    2026
+\end{center}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Descripción del sistema web propuesto}
+El comportamiento vial de los conductores en formación presenta errores recurrentes que los sistemas de enseñanza tradicionales no logran prevenir de forma sistemática. Acciones como el exceso de velocidad, el incumplimiento de señales de tránsito y la conducción distraída concentran una proporción significativa de los incidentes en entornos urbanos del Ecuador. 
+
+El sistema \textbf{Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)} aborda este problema proporcionando un entorno de entrenamiento y evaluación. Los usuarios principales del sistema son: \textbf{Conductores en formación} (que interactúan con el simulador), \textbf{Instructores de conducción} (que supervisan el desempeño), \textbf{Administradores} (que configuran escenarios) y \textbf{Autoridades de tránsito}.
+
+Se ha optado por implementar SBVIA como una \textbf{aplicación web} porque facilita el acceso ubicuo desde cualquier dispositivo con navegador, eliminando la necesidad de instalaciones complejas de software de simulación en los equipos de los sindicatos de choferes. Además, permite la centralización de las métricas de evaluación en la nube. 
+
+En esta entrega, el alcance contempla el núcleo funcional desplegable: registro y autenticación de usuarios, selección y configuración de escenarios de conducción, registro de decisiones y generación de retroalimentación automatizada y métricas de desempeño.
+
+\section{Revisión y actualización de requisitos del semestre anterior}
+\subsection{Resumen del trabajo previo}
+En el semestre anterior (Ingeniería de Requerimientos), el equipo aplicó el marco de trabajo ágil Scrum y el enfoque GORE (Goal-Oriented Requirements Engineering). Se emplearon técnicas de elicitación como entrevistas estructuradas, análisis documental y observación del dominio en el Sindicato de Choferes del Cantón Valencia. Se documentaron 11 Requisitos Funcionales (RF) y 6 Requisitos No Funcionales (RNF), priorizados mediante la técnica MoSCoW, junto con el modelado UML completo y validación con los stakeholders.
+
+\subsection{Tabla de adaptación de requisitos}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|p{1.5cm}|p{6cm}|p{2cm}|p{6cm}|}
+\hline
+\textbf{Cód.} & \textbf{Requisito original (semestre ant.)} & \textbf{Estado} & \textbf{Adaptación para la aplicación web} \\ \hline
+RF-01 & Autenticación de usuarios mediante credenciales válidas. & Mantiene & Se implementa tal cual como endpoint REST y formulario web. \\ \hline
+RF-02 & Seleccionar escenarios de simulación con niveles de dificultad. & Adapta & Interfaz web para elegir escenarios; carga dinámica de recursos. \\ \hline
+RF-03 & Simular señales, peatones y vehículos en entornos urbanos. & Adapta & Renderizado web (WebGL/Canvas) del entorno de simulación. \\ \hline
+RF-04 & Registrar decisiones en tiempo real. & Adapta & Comunicación asíncrona (WebSockets o Fetch) con el backend. \\ \hline
+RF-05 & Analizar comportamiento usando IA. & Mantiene & Procesamiento en servidor (backend) y respuesta vía API. \\ \hline
+RF-06 & Generar métricas cuantificables. & Mantiene & Visualización en dashboards web interactivos (ej. Chart.js). \\ \hline
+RF-07 & Proporcionar retroalimentación educativa al finalizar. & Adapta & Generación de reporte web dinámico e interactivo. \\ \hline
+RF-08 & Almacenar historial de prácticas. & Mantiene & Almacenamiento en base de datos centralizada. \\ \hline
+\end{tabular}}
+\end{table}
+
+\subsection{Nuevos requisitos específicos del contexto web}
+\begin{itemize}
+    \item \textbf{RNF-WEB-01:} La aplicación debe ser accesible desde navegadores modernos (Chrome 120+, Firefox 120+, Edge 120+).
+    \item \textbf{RNF-WEB-02:} El tiempo de respuesta inicial del dashboard no debe superar los 3 segundos.
+    \item \textbf{RNF-WEB-03:} La interfaz de reportes debe ser responsiva en pantallas de 320px a 1440px.
+    \item \textbf{RNF-WEB-04:} Todas las comunicaciones con la API de IA deben realizarse sobre HTTPS.
+    \item \textbf{RF-WEB-01:} El sistema debe gestionar sesiones de usuario de forma segura utilizando JWT o sesiones tradicionales de backend.
+\end{itemize}
+
+\section{Lista consolidada de requisitos funcionales}
+\begin{longtable}{|p{1.5cm}|p{5cm}|p{2cm}|p{6cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción} & \textbf{Prioridad} & \textbf{Criterio de aceptación} \\ \hline
+\endfirsthead
+\hline
+\textbf{ID} & \textbf{Descripción} & \textbf{Prioridad} & \textbf{Criterio de aceptación} \\ \hline
+\endhead
+RF-01 & Autenticación de usuarios con credenciales. & Alta & El usuario ingresa credenciales válidas y es redirigido al dashboard. \\ \hline
+RF-02 & Selección de escenarios de simulación (básico, intermedio, avanzado). & Alta & El usuario puede iniciar un escenario y los parámetros se cargan en < 2s. \\ \hline
+RF-03 & Simulación de elementos viales (señales, peatones). & Alta & La interfaz web renderiza correctamente los obstáculos y señales. \\ \hline
+RF-04 & Registro en tiempo real de decisiones del conductor. & Alta & Las acciones (frenado, giro) se envían al backend con latencia < 100ms. \\ \hline
+RF-05 & Análisis del comportamiento mediante IA. & Alta & El sistema evalúa las acciones registradas y retorna un veredicto. \\ \hline
+RF-06 & Generación de métricas de desempeño. & Media & Se calculan puntaje, infracciones y tiempo de reacción tras la sesión. \\ \hline
+RF-07 & Retroalimentación educativa al finalizar. & Alta & Se muestra un reporte detallado explicativo de los errores cometidos. \\ \hline
+RF-08 & Almacenamiento del historial de prácticas. & Media & El usuario puede ver al menos 5 sesiones pasadas en su perfil. \\ \hline
+RF-09 & Gestión de reportes para instructores. & Media & El instructor visualiza métricas agregadas de todos sus alumnos. \\ \hline
+RF-10 & Configuración de reglas de tránsito. & Baja & El admin puede crear/editar reglas desde un panel de administración. \\ \hline
+\end{longtable}
+
+\section{Lista consolidada de requisitos no funcionales}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{2cm}|p{2.5cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{ID} & \textbf{Categoría} & \textbf{Descripción} & \textbf{Métrica de verificación} \\ \hline
+RNF-01 & Rendimiento & Latencia de registro de decisiones inferior a 100ms. & Medición en Network Tab (Chrome DevTools) P95 < 100ms. \\ \hline
+RNF-02 & Seguridad & Datos de usuarios protegidos y contraseñas hasheadas. & Revisión en BD de la columna contrasena\_hash en Argon2id. \\ \hline
+RNF-03 & Usabilidad & Interfaz responsiva y amigable. & 100\% de visibilidad en resoluciones de 320px a 1440px. \\ \hline
+RNF-04 & Disponibilidad & El sistema debe estar disponible para demostraciones. & Uptime del 99\% durante las semanas 16 y 17 de clases. \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Arquitectura de la aplicación web}
+\subsection{Diagramas de arquitectura}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{C4 Nivel 1.jpg}
+    \caption{Diagrama C4 Nivel 1 (Contexto) - Sistema SBVIA interactuando con actores y sistemas externos.}
+\end{figure}
+
+El diagrama muestra cómo los usuarios y administradores interactúan con el Simulador de Comportamiento Vial con Inteligencia Artificial. El sistema se integra con una API de IA para evaluar el comportamiento de conducción y con un servicio de correo electrónico para enviar notificaciones y recuperación de contraseñas.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{C4 Nivel 2.jpg}
+    \caption{Diagrama C4 Nivel 2 (Contenedores) - Aplicación Web, API Backend y Base de Datos.}
+\end{figure}
+Describe la estructura interna del sistema compuesta por un Frontend desarrollado con HTML5, CSS3, JavaScript y Bootstrap 5; un Backend implementado con PHP 8.2 y Laravel 11; y una base de datos PostgreSQL 17. También se muestran las integraciones externas con la API de Inteligencia Artificial y el servicio de correo electrónico.
+
+\subsection{Descripción de capas y tecnologías}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{4cm}|p{7cm}|}
+\hline
+\textbf{Capa} & \textbf{Tecnología elegida} & \textbf{Justificación} \\ \hline
+Frontend & HTML5 + CSS3 + JS ES6+ & Permite crear interfaces dinámicas e interactivas. \\ \hline
+Framework CSS & Bootstrap 5 & Facilita el desarrollo responsivo y mejora la experiencia de usuario. \\ \hline
+Backend & PHP 8.2 & Amplio soporte y compatibilidad con aplicaciones web modernas. \\ \hline
+Framework Backend & Laravel 11 & Implementa MVC, ORM Eloquent, autenticación y seguridad integrada. \\ \hline
+Base de Datos & PostgreSQL 17 & Motor robusto, seguro, escalable y con excelente manejo de consultas. \\ \hline
+Servidor Web & Apache & Fácil configuración e integración con PHP. \\ \hline
+Control de Versiones & Git + GitHub & Gestión colaborativa del proyecto. \\ \hline
+Despliegue & XAMPP / Docker & Facilita el desarrollo y pruebas del sistema. \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{ADR-001: Decisión de tecnología principal}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{11cm}|}
+\hline
+\textbf{Título} & \textbf{ADR-001: Selección del Lenguaje de Programación del Servidor} \\ \hline
+\textbf{Estado} & Aceptado \\ \hline
+\textbf{Contexto} & El equipo necesita seleccionar la tecnología del lado del servidor para desarrollar el sistema "Simulador de Comportamiento Vial con Inteligencia Artificial". La decisión debe considerar el tiempo disponible para el desarrollo, el conocimiento previo de los integrantes, la integración con PostgreSQL, la compatibilidad con APIs de Inteligencia Artificial y la facilidad de despliegue en servidores web. \\ \hline
+\textbf{Opciones consideradas} & Opción A: PHP 8.2 con Laravel 11. Opción B: ASP .NET Core 8. Opción C: PHP 8.2 sin framework. \\ \hline
+\textbf{Decisión} & Se selecciona \textbf{PHP 8.2 con Laravel 11} debido a que proporciona una arquitectura MVC robusta, integración sencilla con PostgreSQL, herramientas de autenticación y seguridad integradas, facilidad para consumir APIs externas y una curva de aprendizaje adecuada para el equipo. \\ \hline
+\textbf{Consecuencias positivas} & \begin{itemize}[leftmargin=*,nosep]
+    \item Desarrollo más rápido mediante componentes predefinidos.
+    \item Arquitectura MVC organizada.
+    \item Fácil integración con PostgreSQL.
+    \item Mayor seguridad frente a ataques comunes.
+    \item Amplia documentación y comunidad de soporte.
+    \item Facilidad de integración con servicios de Inteligencia Artificial.
+\end{itemize} \\ \hline
+\textbf{Consecuencias negativas} & \begin{itemize}[leftmargin=*,nosep]
+    \item Dependencia del framework Laravel.
+    \item Necesidad de capacitación inicial para algunos integrantes.
+    \item Mayor consumo de recursos que PHP puro.
+    \item Posibles cambios de compatibilidad en futuras versiones del framework.
+\end{itemize} \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Modelo de base de datos}
+\subsection{Modelo Entidad-Relación (MER)}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{waos.jpg}
+    \caption{Diagrama Entidad-Relación del Sistema SBVIA.}
+\end{figure}
+
+\subsection{Diccionario de datos}
+
+\textbf{Tabla: Rol}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Rol & INTEGER & No & PK, AUTO & Identificador único del rol \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre del rol \\ \hline
+descripcion & VARCHAR & No & NOT NULL & Descripción del rol \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Usuario}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Usuario & INTEGER & No & PK, AUTO & Identificador único del usuario \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre del usuario \\ \hline
+apellido & VARCHAR & No & NOT NULL & Apellido del usuario \\ \hline
+fecha\_registro & DATE & No & NOT NULL & Fecha de registro \\ \hline
+estado & VARCHAR & No & NOT NULL & Estado (Activo/Inactivo) \\ \hline
+id\_Rol & INTEGER & No & FK & Rol asignado \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Escenario}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Escenario & INTEGER & No & PK, AUTO & Identificador único del escenario \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre del escenario vial \\ \hline
+descripcion & VARCHAR & Sí & - & Descripción del escenario \\ \hline
+tipo\_via & VARCHAR & No & NOT NULL & Tipo de vía (urbana, rural, etc.) \\ \hline
+nivel\_dificultad & INTEGER & No & NOT NULL & Nivel de dificultad \\ \hline
+clima & VARCHAR & No & NOT NULL & Condición climática \\ \hline
+densidad\_trafico & VARCHAR & No & NOT NULL & Nivel de tráfico \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Simulacion}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Simulacion & INTEGER & No & PK, AUTO & Identificador de la simulación \\ \hline
+fecha\_inicio & DATE & No & NOT NULL & Fecha de inicio \\ \hline
+fecha\_fin & DATE & No & NOT NULL & Fecha de finalización \\ \hline
+estado & VARCHAR & No & NOT NULL & Estado de la simulación \\ \hline
+puntaje\_final & DECIMAL & No & NOT NULL & Puntaje obtenido \\ \hline
+id\_Usuario & INTEGER & No & FK & Usuario que realiza la simulación \\ \hline
+id\_Escenario & INTEGER & No & FK & Escenario utilizado \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: EventoVial}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_EventoVial & INTEGER & No & PK, AUTO & Identificador del evento \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre del evento \\ \hline
+descripcion & VARCHAR & Sí & - & Descripción del evento \\ \hline
+tipo\_evento & VARCHAR & No & NOT NULL & Tipo de evento vial \\ \hline
+nivel\_riesgo & INTEGER & No & NOT NULL & Nivel de riesgo \\ \hline
+id\_Simulacion & INTEGER & No & FK & Simulación asociada \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Decision}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Decision & INTEGER & No & PK, AUTO & Identificador de la decisión \\ \hline
+accion\_realizada & VARCHAR & No & NOT NULL & Acción tomada por el usuario \\ \hline
+resultado & VARCHAR & No & NOT NULL & Resultado obtenido \\ \hline
+momento & TIMESTAMP & No & NOT NULL & Momento de la acción \\ \hline
+id\_Simulacion & INTEGER & No & FK & Simulación relacionada \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: ReglaTransito}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_ReglaTransito & INTEGER & No & PK, AUTO & Identificador de la regla \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre de la norma \\ \hline
+descripcion & VARCHAR & Sí & - & Descripción de la regla \\ \hline
+categoria & VARCHAR & No & NOT NULL & Categoría de la norma \\ \hline
+id\_Escenario & INTEGER & No & FK & Escenario donde aplica \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Infraccion}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Infraccion & INTEGER & No & PK, AUTO & Identificador de la infracción \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre de la infracción \\ \hline
+descripcion & VARCHAR & Sí & - & Descripción de la infracción \\ \hline
+gravedad & VARCHAR & No & NOT NULL & Nivel de gravedad \\ \hline
+penalizacion & DECIMAL & No & NOT NULL & Penalización aplicada \\ \hline
+id\_Simulacion & INTEGER & No & FK & Simulación asociada \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: ComportamientoVial}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_ComportamientoVial & INTEGER & No & PK, AUTO & Identificador del comportamiento \\ \hline
+clasificacion & VARCHAR & No & NOT NULL & Clasificación \\ \hline
+nivel\_riesgo & INTEGER & No & NOT NULL & Nivel de riesgo detectado \\ \hline
+observaciones & VARCHAR & Sí & - & Observaciones de la IA \\ \hline
+id\_Decision & INTEGER & No & FK & Decisión evaluada \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Retroalimentacion}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Retroalimentacion & INTEGER & No & PK, AUTO & Identificador \\ \hline
+comentario & VARCHAR & No & NOT NULL & Comentario generado por IA \\ \hline
+recomendacion & VARCHAR & Sí & - & Recomendación \\ \hline
+fecha\_generacion & DATE & No & NOT NULL & Fecha de generación \\ \hline
+id\_Simulacion & INTEGER & No & FK & Simulación relacionada \\ \hline
+id\_ComportamientoVial & INTEGER & No & FK & Comportamiento evaluado \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: MetricaDesempeno}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_MetricaDesempeno & INTEGER & No & PK, AUTO & Identificador de métrica \\ \hline
+puntaje & DECIMAL & No & NOT NULL & Puntaje obtenido \\ \hline
+tiempo\_reaccion & DECIMAL & No & NOT NULL & Tiempo promedio de reacción \\ \hline
+errores & INTEGER & No & NOT NULL & Errores cometidos \\ \hline
+aciertos & INTEGER & No & NOT NULL & Aciertos \\ \hline
+nivel\_desempeno & VARCHAR & No & NOT NULL & Nivel de desempeño \\ \hline
+id\_Simulacion & INTEGER & No & FK & Simulación evaluada \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Reporte}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Reporte & INTEGER & No & PK, AUTO & Identificador del reporte \\ \hline
+tipo\_reporte & VARCHAR & No & NOT NULL & Tipo de reporte \\ \hline
+fecha\_generacion & DATE & No & NOT NULL & Fecha de generación \\ \hline
+observaciones & VARCHAR & No & NOT NULL & Observaciones generales \\ \hline
+id\_Simulacion & INTEGER & No & FK & Simulación asociada \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Tabla: Recompensa}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{1cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Nulo} & \textbf{Restricción} & \textbf{Descripción} \\ \hline
+id\_Recompensa & INTEGER & No & PK, AUTO & Identificador de la recompensa \\ \hline
+nombre & VARCHAR & No & NOT NULL & Nombre \\ \hline
+descripcion & VARCHAR & No & NOT NULL & Descripción \\ \hline
+nivel & INTEGER & No & NOT NULL & Nivel requerido \\ \hline
+puntos\_requeridos & INTEGER & No & NOT NULL & Puntos necesarios \\ \hline
+id\_Usuario & INTEGER & No & FK & Usuario que recibe recompensa \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Script DDL de creación}
+\begin{lstlisting}[language=SQL]
+CREATE TABLE "Rol" ( 
+  "id_Rol" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "descripcion" varchar NOT NULL 
+); 
+
+CREATE TABLE "Usuario" ( 
+  "id_Usuario" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "apellido" varchar NOT NULL, 
+  "fecha_registro" date NOT NULL, 
+  "estado" varchar NOT NULL, 
+  "id_Rol" integer NOT NULL 
+); 
+
+CREATE TABLE "Escenario" ( 
+  "id_Escenario" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "descripcion" varchar, 
+  "tipo_via" varchar NOT NULL, 
+  "nivel_dificultad" integer NOT NULL, 
+  "clima" varchar NOT NULL, 
+  "densidad_trafico" varchar NOT NULL 
+); 
+
+CREATE TABLE "Simulacion" ( 
+  "id_Simulacion" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "fecha_inicio" date NOT NULL, 
+  "fecha_fin" date NOT NULL, 
+  "estado" varchar NOT NULL, 
+  "puntaje_final" decimal NOT NULL, 
+  "id_Usuario" integer NOT NULL, 
+  "id_Escenario" integer NOT NULL 
+); 
+
+CREATE TABLE "EventoVial" ( 
+  "id_EventoVial" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "descripcion" varchar, 
+  "tipo_evento" varchar NOT NULL, 
+  "nivel_riesgo" integer NOT NULL, 
+  "id_Simulacion" integer NOT NULL 
+); 
+
+CREATE TABLE "Decision" ( 
+  "id_Decision" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "accion_realizada" varchar NOT NULL, 
+  "resultado" varchar NOT NULL, 
+  "momento" date NOT NULL, 
+  "id_Simulacion" integer NOT NULL 
+); 
+
+CREATE TABLE "ReglaTransito" ( 
+  "id_ReglaTransito" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "descripcion" varchar, 
+  "categoria" varchar NOT NULL, 
+  "id_Escenario" integer NOT NULL 
+); 
+
+CREATE TABLE "Infraccion" ( 
+  "id_Infraccion" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "descripcion" varchar, 
+  "gravedad" varchar NOT NULL, 
+  "penalizacion" decimal NOT NULL, 
+  "id_Simulacion" integer NOT NULL 
+); 
+
+CREATE TABLE "ComportamientoVial" ( 
+  "id_ComportamientoVial" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "clasificacion" varchar NOT NULL, 
+  "nivel_riesgo" integer NOT NULL, 
+  "observaciones" varchar, 
+  "id_Decision" integer NOT NULL 
+); 
+
+CREATE TABLE "Retroalimentacion" ( 
+  "id_Retroalimentacion" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "comentario" varchar NOT NULL, 
+  "recomendacion" varchar, 
+  "fecha_generacion" date NOT NULL, 
+  "id_Simulacion" integer NOT NULL, 
+  "id_ComportamientoVial" integer NOT NULL 
+); 
+
+CREATE TABLE "MetricaDesempeno" ( 
+  "id_MetricaDesempeno" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "puntaje" decimal NOT NULL, 
+  "tiempo_reaccion" decimal NOT NULL, 
+  "errores" integer NOT NULL, 
+  "aciertos" integer NOT NULL, 
+  "nivel_desempeno" varchar NOT NULL, 
+  "id_Simulacion" integer NOT NULL 
+); 
+
+CREATE TABLE "Reporte" ( 
+  "id_Reporte" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "tipo_reporte" varchar NOT NULL, 
+  "fecha_generacion" date NOT NULL, 
+  "observaciones" varchar NOT NULL, 
+  "id_Simulacion" integer NOT NULL 
+); 
+
+CREATE TABLE "Recompensa" ( 
+  "id_Recompensa" INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY NOT NULL, 
+  "nombre" varchar NOT NULL, 
+  "descripcion" varchar NOT NULL, 
+  "nivel" integer NOT NULL, 
+  "puntos_requeridos" integer NOT NULL, 
+  "id_Usuario" integer NOT NULL 
+); 
+
+ALTER TABLE "Simulacion" ADD CONSTRAINT "fk_Simulacion_id_Escenario_Escenario" FOREIGN KEY ("id_Escenario") REFERENCES "Escenario" ("id_Escenario") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Usuario" ADD CONSTRAINT "fk_Usuario_id_Rol_Rol" FOREIGN KEY ("id_Rol") REFERENCES "Rol" ("id_Rol") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Simulacion" ADD CONSTRAINT "fk_Simulacion_id_Usuario_Usuario" FOREIGN KEY ("id_Usuario") REFERENCES "Usuario" ("id_Usuario") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Decision" ADD CONSTRAINT "fk_Decision_id_Simulacion_Simulacion" FOREIGN KEY ("id_Simulacion") REFERENCES "Simulacion" ("id_Simulacion") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "ComportamientoVial" ADD CONSTRAINT "fk_ComportamientoVial_id_Decision_Decision" FOREIGN KEY ("id_Decision") REFERENCES "Decision" ("id_Decision") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Retroalimentacion" ADD CONSTRAINT "fk_Retroalimentacion_id_Simulacion_Simulacion" FOREIGN KEY ("id_Simulacion") REFERENCES "Simulacion" ("id_Simulacion") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Retroalimentacion" ADD CONSTRAINT "fk_Retroalimentacion_id_ComportamientoVial_ComportamientoVial" FOREIGN KEY ("id_ComportamientoVial") REFERENCES "ComportamientoVial" ("id_ComportamientoVial") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "MetricaDesempeno" ADD CONSTRAINT "fk_MetricaDesempeno_id_Simulacion_Simulacion" FOREIGN KEY ("id_Simulacion") REFERENCES "Simulacion" ("id_Simulacion") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Reporte" ADD CONSTRAINT "fk_Reporte_id_Simulacion_Simulacion" FOREIGN KEY ("id_Simulacion") REFERENCES "Simulacion" ("id_Simulacion") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Recompensa" ADD CONSTRAINT "fk_Recompensa_id_Usuario_Usuario" FOREIGN KEY ("id_Usuario") REFERENCES "Usuario" ("id_Usuario") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "ReglaTransito" ADD CONSTRAINT "fk_ReglaTransito_id_Escenario_Escenario" FOREIGN KEY ("id_Escenario") REFERENCES "Escenario" ("id_Escenario") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "EventoVial" ADD CONSTRAINT "fk_EventoVial_id_Simulacion_Simulacion" FOREIGN KEY ("id_Simulacion") REFERENCES "Simulacion" ("id_Simulacion") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+ALTER TABLE "Infraccion" ADD CONSTRAINT "fk_Infraccion_id_Simulacion_Simulacion" FOREIGN KEY ("id_Simulacion") REFERENCES "Simulacion" ("id_Simulacion") ON DELETE NO ACTION ON UPDATE NO ACTION DEFERRABLE INITIALLY IMMEDIATE; 
+\end{lstlisting}
+
+\section{Diseño de interfaz: wireframes}
+Se han diseñado las maquetas de baja fidelidad para las vistas principales del sistema.
+
+\begin{itemize}
+    \item \textbf{Pantalla 1 - Inicio de Sesión / Registro:} Formulario de acceso. Muestra campos para correo, contraseña y enlace de recuperación.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Pantalla 1 - Inicio de Sesión Registro.png}
+    \caption{Pantalla 1 - Inicio de Sesión / Registro}
+\end{figure}
+
+\item \textbf{Pantalla 2 - Dashboard Principal:} Vista post-login donde el usuario (conductor o instructor) ve el resumen de sus estadísticas y un botón destacado para iniciar nueva práctica.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Pantalla 2 - Dashboard Principal.png}
+    \caption{Pantalla 2 - Dashboard Principal}
+\end{figure}
+
+\item \textbf{Pantalla 3 - Selección de Escenario (Core):} Interfaz donde el usuario configura la simulación, eligiendo dificultad y clima antes de cargar el entorno virtual.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Pantalla 3 - Selección de Escenario (Core).png}
+    \caption{Pantalla 3 - Selección de Escenario (Core)}
+\end{figure}
+
+\item \textbf{Pantalla 4 - Reporte de Retroalimentación:} Visualización de puntajes, listado de errores específicos cometidos en la sesión y sugerencias de mejora pedagógicas generadas por la IA.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Pantalla 4 - Reporte de Retroalimentación.png}
+    \caption{Pantalla 4 - Reporte de Retroalimentación}
+\end{figure}
+
+\end{itemize}
+
+\section{Plan de trabajo: cronograma e hitos}
+\subsection{Cronograma semanal}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|p{1.5cm}|p{6cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+\textbf{Semana} & \textbf{Tarea principal} & \textbf{Responsable} & \textbf{Entregable} \\ \hline
+5 & Entrega 1A: requerimientos, arquitectura C4, MER, diccionario de datos, DDL y wireframes & Todo el equipo & PDF Entrega 1A en LMS \\ \hline
+6 & Configuración del entorno, repositorio GitHub, estructura del proyecto y conexión PostgreSQL & Zamora D. & Repositorio inicial \\ \hline
+7 & Desarrollo de la base de datos PostgreSQL y script DDL completo & Umaginga J. & PE Unidad II \\ \hline
+8 & Tutoría, revisión de avances y corrección de observaciones & Todo el equipo & Avance validado \\ \hline
+9 & Evaluación Parcial 1 Individual & Todo el equipo & EP Primer Corte \\ \hline
+10 & Implementación del módulo de autenticación, usuarios y roles & Todo el equipo & Avance PFC Módulo Datos \\ \hline
+11 & Desarrollo CRUD de Escenarios, Simulaciones y Reglas de Tránsito & Cruz Perez J. & PE Unidad III \\ \hline
+12 & Integración Backend–Base de Datos y pruebas funcionales & Umaginga J. & Módulos integrados \\ \hline
+13 & Desarrollo del Frontend responsivo e interfaces principales & Zamora D. & Exposición Back-End \\ \hline
+14 & Implementación de API REST y módulo de análisis con IA & Todo el equipo & Sistema integrado \\ \hline
+15 & Entrega 1B: implementación completa y documentación & Todo el equipo & Entrega 1B \\ \hline
+16 & Pruebas de aceptación, corrección de errores y optimización & Todo el equipo & PE Unidad IV \\ \hline
+17 & Defensa oral del Proyecto Final de Curso & Todo el equipo & EP Segundo Corte + Defensa \\ \hline
+\end{tabular}}
+\end{table}
+
+\subsection{Asignación de roles del equipo}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Integrante} & \textbf{Rol} & \textbf{Responsabilidades} \\ \hline
+Zamora Bumbila Diego A. & Líder Técnico & Coordinación del proyecto, arquitectura C4, integración de módulos, revisión de código, control de versiones y documentación técnica. \\ \hline
+Umaginga Arevalo Jefferson M. & Dev Backend y Base de Datos & PostgreSQL, script DDL, modelos, controladores, autenticación, API REST y lógica de negocio. \\ \hline
+Cruz Perez Justyn K. & Dev Frontend & Diseño de interfaces, wireframes, HTML5, CSS3, JavaScript, Bootstrap, formularios y experiencia de usuario. \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Estructura del repositorio Git}
+El proyecto contará con un repositorio alojado en GitHub. La URL se encuentra en la portada de este documento.
+
+Estructura requerida al momento de la entrega:
+\begin{lstlisting}[language=bash]
+README.md                      # Descripcion del proyecto e instrucciones
+docs/entrega-1a.pdf            # PDF de este informe
+docs/diagramas/                # PNG de diagramas C4, MER, Wireframes
+docs/adr/ADR-001-tecnologia.md # ADR de la decision del backend
+database/schema.sql            # Script DDL de la base de datos PostgreSQL
+.gitignore                     # Archivos ignorados (vendor/, node_modules/)
+.env.example                   # Nombres de variables de entorno (sin valores)
+\end{lstlisting}
+\newpage
+\section{Referencias bibliográficas}
+\begin{thebibliography}{99}
+
+\bibitem{sommerville}
+Sommerville, I. (2015). \textit{Ingeniería del software} (10ma ed.). Pearson Education.
+
+\bibitem{brown}
+Brown, S. (2023). \textit{The C4 model for visualising software architecture}. Leanpub. https://c4model.com/
+
+\bibitem{shirole2025}
+Shirole, V., Shahade, A. K., \& Deshmukh, P. V. (2025). A comprehensive review on data-driven driver behaviour scoring in vehicles: technologies, challenges and future directions. \textit{Discover Artificial Intelligence}, 5(1), 26. \url{https://doi.org/10.1007/S44163-025-00244-6}
+
+\bibitem{afridi2025}
+Afridi, A. S., Kafy, A., Moon, M. N. N., \& Shakil, M. S. (2025). A multi-class driver behavior dataset for real-time detection and road safety enhancement. \textit{Data Brief}, 60, 111529. \url{https://doi.org/10.1016/J.DIB.2025.111529}
+
+\bibitem{nixon2021}
+Nixon, R. (2021). \textit{Learning PHP, MySQL \& JavaScript} (6th ed.). O'Reilly Media.
+
+
+\end{thebibliography}
+
+
+\end{document}
+
