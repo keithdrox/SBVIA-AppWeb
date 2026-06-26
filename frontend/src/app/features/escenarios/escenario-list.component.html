@@ -1,0 +1,53 @@
+<div class="list-container">
+  <div class="header-actions">
+    <h2>Gestión de Escenarios</h2>
+    <div>
+      <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
+      <button *ngIf="isAdmin" class="btn-primary" (click)="null" disabled>+ Nuevo Escenario</button>
+      <!-- El formulario de creación se haría en otro componente, dejamos el botón ilustrativo para la entrega 1B CRUD base -->
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Tipo Vía</th>
+          <th>Dificultad</th>
+          <th>Clima</th>
+          <th>Tráfico</th>
+          <th *ngIf="isAdmin">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let esc of escenarios">
+          <td>{{ esc.id }}</td>
+          <td>{{ esc.nombre }}</td>
+          <td><span class="badge badge-info">{{ esc.tipoVia }}</span></td>
+          <td>
+            <span class="dificultad-stars">
+              {{ '★'.repeat(esc.nivelDificultad) }}{{ '☆'.repeat(5 - esc.nivelDificultad) }}
+            </span>
+          </td>
+          <td>{{ esc.clima }}</td>
+          <td>{{ esc.densidadTrafico }}</td>
+          <td *ngIf="isAdmin" class="actions-cell">
+            <button class="btn-icon btn-edit" title="Editar">✏️</button>
+            <button class="btn-icon btn-delete" title="Eliminar" (click)="eliminar(esc.id)">🗑️</button>
+          </td>
+        </tr>
+        <tr *ngIf="escenarios.length === 0">
+          <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center">No hay escenarios registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">&laquo; Anterior</button>
+    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
+    <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente &raquo;</button>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.dashboard-header {
+  background-color: #1a73e8;
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.btn-logout {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.dashboard-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.welcome-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.welcome-card h2 {
+  color: #202124;
+  margin-top: 0;
+}
+
+.welcome-card p {
+  color: #5f6368;
+  margin-bottom: 0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+  color: #1a73e8;
+}
+
+.dashboard-card p {
+  color: #5f6368;
+  flex-grow: 1;
+}
+
+.dashboard-card.disabled {
+  opacity: 0.7;
+}
+
+.dashboard-card.disabled h3 {
+  color: #5f6368;
+}
+
+.btn-primary-outline {
+  display: inline-block;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  color: #1a73e8;
+  border: 1px solid #1a73e8;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary-outline:hover {
+  background: #1a73e8;
+  color: white;
+}
+
+.btn-disabled {
+  padding: 0.5rem 1rem;
+  background: #dadce0;
+  color: #80868b;
+  border: none;
+  border-radius: 4px;
+  cursor: not-allowed;
+}
