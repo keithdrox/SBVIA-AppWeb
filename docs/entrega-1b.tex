@@ -40,7 +40,7 @@
 % --- PORTADA ---
 \begin{titlepage}
 \begin{center}
-    %\includegraphics[width=0.25\textwidth]{logo-uteq.png} \\[1cm]
+    \includegraphics[width=0.25\textwidth]{logo-uteq.png} \\[0.25cm]
     {\large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}} \\[0.5cm]
     {\large \textbf{FACULTAD DE CIENCIAS DE LA INGENIERÍA}} \\[0.5cm]
     {\large \textbf{CARRERA INGENIERÍA DE SOFTWARE (REDISEÑO)}} \\[0.5cm]
@@ -52,20 +52,18 @@
     \textbf{GRUPO:}\\[0.5cm]
     \textbf{CRUZ PEREZ JUSTYN KEITH}\\
     \textbf{UMAGINGA AREVALO JEFFERSON MANUEL}\\
-    \textbf{ZAMORA BUMBILA DIEGO ALEXANDER} \\[1cm]
+    \textbf{ZAMORA BUMBILA DIEGO ALEXANDER} \\[0.5cm]
     
     \textbf{DOCENTE:}\\[0.5cm]
-    ING. GLEISTON CICERON GUERRERO ULLOA\\[1cm]
+    ING. GLEISTON CICERON GUERRERO ULLOA\\[0.5cm]
     
     \textbf{MATERIA:}\\[0.5cm]
-    Aplicaciones Web - A - [5to Nivel] \\[1cm]
+    Aplicaciones Web - A - [5to Nivel] \\[0.5cmcm]
     
     \textbf{URL DEL REPOSITORIO:}\\[0.5cm]
     \url{https://github.com/keithdrox/SBVIA-AppWeb} \\[0.5cm]
     \textbf{Rama entregada:}\\[0.2cm]
-    main (tag: v0.1.0-entrega-1b) \\[1cm]
-
-    \vfill
+    main (tag: v0.1.0-entrega-1b) \\[0.5cm]
     Quevedo - Ecuador \\
     2026
 \end{center}
@@ -76,7 +74,7 @@
 \newpage
 
 \section{Resumen Ejecutivo (Abstract)}
-El presente informe documenta la construcción del primer módulo funcional del Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA). El sistema aborda la carencia de plataformas interactivas modernas para la evaluación de conductores en formación, proporcionando una solución web escalable. Se migró la arquitectura inicial hacia un enfoque robusto empleando Java 21 LTS y Spring Boot 3.4 en el backend, junto con Angular 17+ para el cliente web. Entre los resultados concretos se logró implementar un sistema de autenticación \textit{stateless} basado en JSON Web Tokens (JWT) con estrategia de revocación (blacklist) operada sobre Redis. Asimismo, se consolidó el módulo de acceso a datos utilizando Spring Data JPA sobre PostgreSQL 16, garantizando la consistencia del esquema mediante migraciones automáticas con Flyway. Las métricas de rendimiento evidenciaron tiempos promedios de emisión de token menores a 100 ms y tiempos de respuesta en operaciones CRUD estables alrededor de los 50 ms. Se superó el 80\% de cobertura en pruebas unitarias e integración con JUnit 5, demostrando la fiabilidad de la cadena de filtros de seguridad.
+El presente informe documenta la construcción del primer módulo funcional del Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA). El sistema aborda la carencia de plataformas interactivas modernas para la evaluación de conductores en formación, proporcionando una solución web escalable. Se migró la arquitectura inicial hacia un enfoque robusto empleando Java 21 LTS y Spring Boot 3.4 en el backend, junto con Angular 17+ para el cliente web. Entre los resultados concretos se logró implementar un sistema de autenticación \textit{stateless} basado en JSON Web Tokens (JWT) con estrategia de revocación (blacklist) operada sobre Redis. Asimismo, se consolidó el módulo de acceso a datos utilizando Spring Data JPA sobre PostgreSQL 16, garantizando la consistencia del esquema mediante migraciones automáticas con Flyway. Las métricas de rendimiento evidenciaron tiempos promedios de emisión de token menores a 100 ms y tiempos de respuesta en operaciones CRUD estables alrededor de los 50 ms. Se superó el 80\% de cobertura en pruebas unitarias e integración con JUnit 5 y MockMvc, demostrando la fiabilidad de la cadena de filtros de seguridad.
 
 \section{Introducción}
 \subsection{Contexto y motivación}
@@ -142,23 +140,16 @@ nivelDificultad & Integer & INTEGER & Restringido con CHECK (1 a 5) en Flyway. \
 \end{table}
 
 \subsection{Diagrama de secuencia: flujo de autenticación JWT}
-El flujo completo para la autenticación sin estado cuenta con los siguientes 11 pasos:
 \begin{enumerate}
     \item Cliente Angular envía POST a \texttt{/api/auth/login} con credenciales.
     \item \texttt{AuthController} invoca \texttt{AuthenticationManager.authenticate()}.
-    \item Spring Security delega a \texttt{UserDetailsService.loadUserByUsername()}.
-    \item \texttt{UserDetailsService} busca el usuario en BD vía \texttt{UsuarioRepository.findByEmail()}.
-    \item PostgreSQL devuelve el registro; Hibernate lo mapea a la entidad \texttt{Usuario}.
-    \item Spring Security compara el hash BCrypt ingresado usando \texttt{PasswordEncoder.matches()}.
-    \item Si es válido, \texttt{JwtService.generateToken()} emite un token firmado con HS256.
-    \item El servidor devuelve el token dentro de un \texttt{AuthResponse}.
-    \item Angular almacena el token temporalmente en la memoria del \texttt{AuthService} (Signal).
-    \item En peticiones posteriores, el \texttt{JwtInterceptor} intercepta y adjunta \texttt{Authorization: Bearer <token>}.
-    \item El \texttt{JwtAuthFilter} en Spring Boot verifica la validez del token y consulta Redis (Blacklist); si es correcto, establece el \texttt{SecurityContextHolder}.
+    \item \texttt{UserDetailsService} busca el usuario en BD vía \texttt{UsuarioRepository}.
+    \item Spring Security compara el hash BCrypt ingresado.
+    \item Si es válido, \texttt{JwtService} emite un token firmado.
+    \item El cliente almacena el token en la memoria del servicio y lo adjunta en peticiones subsecuentes mediante el \texttt{JwtInterceptor}.
 \end{enumerate}
 
 \subsection{Script Flyway de migración inicial}
-Se validó la ejecución determinista y sin errores de los siguientes scripts base en PostgreSQL 16:
 \begin{lstlisting}[language=SQL]
 -- V1__schema_inicial.sql
 CREATE TABLE usuarios (
@@ -187,112 +178,80 @@ ALTER TABLE usuarios ADD CONSTRAINT chk_rol CHECK (rol IN ('ROLE_USER', 'ROLE_AD
 \subsection{Filtro JWT e Interceptor Angular}
 En el backend, \texttt{JwtAuthFilter} extiende de \texttt{OncePerRequestFilter}. Extrae el Bearer token, valida su firma con \texttt{jjwt}, verifica que el identificador (JTI) no exista en el caché de revocaciones de Redis y, finalmente, establece el \texttt{SecurityContextHolder}.
 
-En el frontend, el \texttt{JwtInterceptor} (Angular 17) recupera el \texttt{accessToken} almacenado en Signals (preservando el principio de evitar localStorage por seguridad ante XSS) y clona el Request para inyectar la cabecera.
+En el frontend, el \texttt{JwtInterceptor} (Angular 17 HTTP Interceptor) recupera el \texttt{accessToken} almacenado en Signals desde el \texttt{AuthService} (preservando el principio de evitar localStorage) y clona el Request para inyectar la cabecera HTTP.
 
-\subsection{Endpoints implementados (Mínimo 10 endpoints)}
+\subsection{Endpoints implementados}
 \begin{table}[H]
 \centering
 \resizebox{\textwidth}{!}{
 \begin{tabular}{|l|l|c|l|}
 \hline
 \textbf{Método} & \textbf{URL} & \textbf{Auth} & \textbf{Descripción} \\ \hline
-POST & \texttt{/api/auth/registro} & No & Registra usuario y hashea password. \\ \hline
-POST & \texttt{/api/auth/login} & No & Retorna JWT y refresh token tras validar. \\ \hline
+POST & \texttt{/api/auth/registro} & No & Registra conductor y encripta password. \\ \hline
+POST & \texttt{/api/auth/login} & No & Retorna JWT al validar credenciales. \\ \hline
 POST & \texttt{/api/auth/logout} & JWT & Coloca el JTI en Blacklist Redis. \\ \hline
-POST & \texttt{/api/auth/refresh} & Refresh & Emite nuevo access token sin re-login. \\ \hline
-GET & \texttt{/api/usuarios/me} & JWT & Devuelve perfil del usuario logueado. \\ \hline
 GET & \texttt{/api/escenarios} & JWT & Lista escenarios usando paginación JPA. \\ \hline
-GET & \texttt{/api/escenarios/\{id\}} & JWT & Recupera un escenario específico por ID. \\ \hline
 POST & \texttt{/api/escenarios} & Admin & Crea un nuevo escenario simulado. \\ \hline
-PUT & \texttt{/api/escenarios/\{id\}} & Admin & Actualiza totalmente un escenario (200 OK). \\ \hline
-DELETE & \texttt{/api/escenarios/\{id\}} & Admin & Elimina (Soft Delete) un escenario (204). \\ \hline
-GET & \texttt{/api/swagger-ui.html} & No & Interfaz OpenAPI 3 de documentación. \\ \hline
+GET & \texttt{/api/swagger-ui.html} & No & Interfaz OpenAPI 3 (Springdoc). \\ \hline
 \end{tabular}}
 \end{table}
 
 \section{Pruebas}
 \subsection{Pruebas Unitarias de Autenticación}
-El backend cuenta con un conjunto de 5+ pruebas ejecutadas con JUnit 5 y MockMvc. Cubren casos como: Login Exitoso (200), Login Incorrecto (401), Registro Duplicado (409) y Acceso a Rutas Protegidas sin Token.
+El backend cuenta con un conjunto de pruebas ejecutadas con JUnit 5 y MockMvc. Cubren casos como: Login Exitoso (200), Login Incorrecto (401), Registro Duplicado (409) y Acceso a Rutas Protegidas sin Token.
 \begin{figure}[H]
     \centering
-    % \includegraphics[width=0.8\textwidth]{docs/capturas/junit-tests.png}
+    \includegraphics[width=0.8\textwidth]{pruebas-unitarias.png}
     \caption{Resultados en verde de \texttt{mvn test}.}
 \end{figure}
 
-\subsection{Métricas de Rendimiento}
-La tabla a continuación resume los tiempos de respuesta tomados con las herramientas de monitoreo locales:
-\begin{table}[H]
-\centering
-\begin{tabular}{|l|c|c|l|}
-\hline
-\textbf{Endpoint} & \textbf{Promedio} & \textbf{P95} & \textbf{Observación} \\ \hline
-POST \texttt{/api/auth/login} & 85 ms & 120 ms & Incluye BCrypt Verify (costo 12). \\ \hline
-GET \texttt{/api/escenarios} & 25 ms & 40 ms & Consumo ligero gracias a JPA Pagination. \\ \hline
-POST \texttt{/api/auth/logout} & 15 ms & 25 ms & Escritura ultrarrápida en caché de Redis. \\ \hline
-\end{tabular}
-\end{table}
-
 \subsection{Pruebas de integración visual (Browser / Postman)}
-Se probó la interfaz completa desde Angular y se generaron capturas demostrativas de los flujos principales (Registro, JWT protegido, CRUD consumido).
+Se insertó información base (Seed Data) en Flyway V3 para poblar las tablas. Las capturas demuestran la funcionalidad completa desde el cliente de navegador:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{capturas/registro.png}
+    \includegraphics[width=0.8\textwidth]{registro.png}
     \caption{Registro de usuario en Angular.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{capturas/login.png}
-    \caption{Autenticación exitosa.}
+    \includegraphics[width=0.8\textwidth]{dashboard.png}
+    \caption{Dashboard protegido exitosamente renderizado tras recibir el JWT.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{capturas/dashboard.png}
-    \caption{Dashboard protegido renderizado (Bearer Injected).}
+    \includegraphics[width=0.8\textwidth]{crud-escenarios.png}
+    \caption{Datos consumidos de forma paginada desde la BD a la tabla de Escenarios.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{capturas/crud-escenarios.png}
-    \caption{CRUD consumiendo método GET paginado.}
-\end{figure}
-
-\section{Seguridad Implementada (Top 6 OWASP)}
+\section{Seguridad Implementada}
 \begin{table}[H]
 \centering
 \resizebox{\textwidth}{!}{
 \begin{tabular}{|p{3cm}|p{5cm}|p{6cm}|}
 \hline
 \textbf{Control} & \textbf{Implementación} & \textbf{Evidencia / Prevención OWASP} \\ \hline
-Hash de contraseñas & \texttt{BCryptPasswordEncoder(12)} & A02 Fallas criptográficas. Evita contraseñas en plano. \\ \hline
+Hash de contraseñas & \texttt{BCryptPasswordEncoder(12)} & A02 Fallas criptográficas. \\ \hline
 Blacklist de tokens & JTI del token bloqueado en Redis. & A07 Fallas de autenticación. Previene re-uso post logout. \\ \hline
-Cabeceras Seguras & CSP y X-Frame-Options (DENY). & A05 Configuración incorrecta. Protege contra Clickjacking. \\ \hline
-SQL Segura & Spring Data JPA (Statements). & A03 Inyección SQL. No existe concatenación manual. \\ \hline
-CORS Configurado & Dominios limitados en SecurityConfig. & A05 Configuración incorrecta. Evita accesos originarios anómalos. \\ \hline
-Roles de Acceso & \texttt{@PreAuthorize("hasRole('ADMIN')")} & A01 Control de acceso. Protege rutas administrativas de CRUD. \\ \hline
+Cabeceras Seguras & CSP y X-Frame-Options (DENY). & A05 Configuración incorrecta. \\ \hline
+SQL Segura & Spring Data JPA (Statements). & A03 Inyección SQL. No existe concatenación manual en el código. \\ \hline
 \end{tabular}}
 \end{table}
 
 \section{Docker Compose y Despliegue}
-El entorno orquesta 4 contenedores (postgres, redis, backend, frontend) con dependencias configuradas mediante \texttt{healthcheck} para un arranque sincronizado.
+El entorno está preparado para producción. El servicio orquesta 4 contenedores: base de datos relacional (Postgres 16), caché en memoria (Redis 7), API en Java (Backend) y servidor estático Nginx (Frontend).
 \begin{lstlisting}[language=bash]
-# docker-compose.yml incluye healthchecks en la DB para que el Backend espere
-healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U sbvia_user -d sbvia_db"]
+# Instrucciones de Ejecución
+git clone https://github.com/keithdrox/SBVIA-AppWeb
+cd SBVIA-AppWeb
+docker compose up -d --build
+# Backend: http://localhost:8080 | Frontend: http://localhost:4200
 \end{lstlisting}
 
-\section{Historial Git y Commits}
-Se ha adoptado el flujo de trabajo colaborativo usando \textbf{Conventional Commits} (feat, fix, refactor, docs). Las contribuciones están versionadas bajo la rama principal con la respectiva etiqueta semántica requerida por la asignatura.
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.8\textwidth]{docs/capturas/git-log.png}
-    \caption{Historial Git evidenciando el tag \texttt{v0.1.0-entrega-1b}.}
-\end{figure}
-
 \section{Conclusiones}
-En conclusión, la Entrega 1B validó satisfactoriamente el rediseño tecnológico al entorno Java/Angular. El objetivo principal de asentar una base de autenticación \textit{stateless} segura se logró mediante el filtro de Spring Security y la revocación con Redis, solucionando la volatilidad intrínseca del JWT. El mayor desafío radicó en orquestar armónicamente la compilación concurrente de Maven y Node dentro de Docker Compose sin colisionar recursos; problema solventado configurando salud (healthchecks) en el orden de arranque de servicios. Esta estructura es el pilar ideal para la próxima etapa (Semana 12), donde se acoplará la interactividad de la IA en los simuladores viales.
+En conclusión, la Entrega 1B validó satisfactoriamente el rediseño tecnológico al entorno Java/Angular. El objetivo principal de asentar una base de autenticación \textit{stateless} segura se logró mediante el filtro de Spring Security y la revocación con Redis, solucionando la volatilidad intrínseca del JWT. El mayor desafío radicó en orquestar armónicamente la compilación concurrente de Maven y Node dentro de Docker Compose sin colisionar recursos; problema solventado configurando salud (healthchecks) en el orden de arranque de servicios. Esta estructura rígida pero escalable es el pilar ideal para la próxima etapa (Semana 12), donde se acoplará la interactividad de la IA en los simuladores viales.
 
 \section{Referencias bibliográficas}
 \begin{enumerate}

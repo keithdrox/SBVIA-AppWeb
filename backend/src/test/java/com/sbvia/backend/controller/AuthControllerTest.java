@@ -104,7 +104,7 @@ class AuthControllerTest {
     @Test
     void accesoSinToken() throws Exception {
         mockMvc.perform(get("/api/usuarios/me"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
