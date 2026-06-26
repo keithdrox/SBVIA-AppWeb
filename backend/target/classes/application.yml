@@ -1,47 +1,19 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/sbvia_db}
-    username: ${DB_USER:sbvia_user}
-    password: ${DB_PASSWORD:sbvia_pass}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: validate
-    show-sql: false
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-        default_schema: public
+      ddl-auto: create-drop
+    show-sql: true
   flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+    enabled: false # En pruebas usamos hibernate create-drop para H2
 
 security:
   jwt:
-    secret: ${JWT_SECRET:c4f5a8e1b2d3f6a7c8e9d0b1a2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1}
+    secret: c4f5a8e1b2d3f6a7c8e9d0b1a2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1
     expiration-ms: 3600000
     refresh-expiration-ms: 604800000
-
-springdoc:
-  api-docs:
-    path: /api/docs
-  swagger-ui:
-    path: /api/swagger-ui.html
-    operationsSorter: method
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-
-server:
-  port: 8080
-  servlet:
-    context-path: /
