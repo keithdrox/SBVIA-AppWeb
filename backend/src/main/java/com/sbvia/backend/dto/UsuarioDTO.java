@@ -9,7 +9,6 @@ import java.time.Instant;
 
 /**
  * DTO de respuesta para datos de usuario (sin hash de contraseña).
- * No tiene anotaciones @Entity.
  */
 @Data
 @Builder
@@ -17,7 +16,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class UsuarioDTO {
 
-    private Long id;
+    private Integer id;
     private String nombre;
     private String apellido;
     private String email;

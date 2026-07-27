@@ -44,7 +44,7 @@ public class EscenarioController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener escenario por ID", description = "Devuelve los detalles de un escenario específico")
-    public ResponseEntity<EscenarioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<EscenarioDTO> buscarPorId(@PathVariable Integer id) {
         EscenarioDTO dto = escenarioService.buscarPorId(id);
         return ResponseEntity.ok(dto);
     }
@@ -69,7 +69,7 @@ public class EscenarioController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Actualizar escenario", description = "Actualiza un escenario existente. Requiere ROLE_ADMIN")
     public ResponseEntity<EscenarioDTO> actualizar(
-            @PathVariable Long id,
+            @PathVariable Integer id,
             @Valid @RequestBody EscenarioDTO dto) {
         EscenarioDTO actualizado = escenarioService.actualizar(id, dto);
         return ResponseEntity.ok(actualizado);
@@ -82,7 +82,7 @@ public class EscenarioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Eliminar escenario", description = "Soft delete de un escenario. Requiere ROLE_ADMIN")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         escenarioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

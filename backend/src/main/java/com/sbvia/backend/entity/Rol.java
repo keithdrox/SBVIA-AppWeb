@@ -1,11 +1,27 @@
 package com.sbvia.backend.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 /**
- * Roles del sistema SBVIA.
- * Se almacenan como VARCHAR(20) en PostgreSQL con CHECK constraint.
+ * Entidad Rol mapeada a la tabla "Rol" de PostgreSQL.
  */
-public enum Rol {
-    ROLE_USER,
-    ROLE_ADMIN,
-    ROLE_INSTRUCTOR
+@Entity
+@Table(name = "\"Rol\"")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Rol {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "\"id_Rol\"")
+    private Integer idRol;
+
+    @Column(name = "nombre", nullable = false, length = 255)
+    private String nombre;
+
+    @Column(name = "descripcion", nullable = false, length = 255)
+    private String descripcion;
 }

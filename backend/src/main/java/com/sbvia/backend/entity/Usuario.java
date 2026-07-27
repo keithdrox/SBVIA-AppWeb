@@ -6,14 +6,14 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.Instant;
 
 /**
- * Entidad Usuario — mapeada a la tabla "usuarios" de PostgreSQL.
- * Gestiona credenciales de autenticación y roles del sistema SBVIA.
+ * Entidad Usuario mapeada a la tabla "Usuario" de PostgreSQL.
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "\"Usuario\"")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,12 +22,13 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "\"id_Usuario\"")
+    private Integer idUsuario;
 
-    @Column(name = "nombre", nullable = false, length = 100)
+    @Column(name = "nombre", nullable = false, length = 255)
     private String nombre;
 
-    @Column(name = "apellido", nullable = false, length = 100)
+    @Column(name = "apellido", nullable = false, length = 255)
     private String apellido;
 
     @Column(name = "email", nullable = false, unique = true, length = 255)
@@ -37,14 +38,21 @@ public class Usuario {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "rol", nullable = false, length = 20)
+    @Column(name = "fecha_registro", nullable = false)
     @Builder.Default
-    private Rol rol = Rol.ROLE_USER;
+    private LocalDate fechaRegistro = LocalDate.now();
+
+    @Column(name = "estado", nullable = false, length = 255)
+    @Builder.Default
+    private String estado = "Activo";
 
     @Column(name = "activo", nullable = false)
     @Builder.Default
     private boolean activo = true;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "\"id_Rol\"", nullable = false)
+    private Rol rol;
 
     @CreationTimestamp
     @Column(name = "creado_en", nullable = false, updatable = false)

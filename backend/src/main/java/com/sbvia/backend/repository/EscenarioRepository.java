@@ -8,15 +8,12 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Repositorio JPA para la entidad Escenario.
- * Extiende JpaRepository para CRUD genérico, paginación y ordenación.
- * Soporta: findAll(Pageable), findById(), save(), deleteById().
  */
 @Repository
-public interface EscenarioRepository extends JpaRepository<Escenario, Long> {
+public interface EscenarioRepository extends JpaRepository<Escenario, Integer> {
 
     /**
      * Lista escenarios activos con paginación.
-     * Genera: SELECT * FROM escenarios WHERE activo = ? ORDER BY ... LIMIT ... OFFSET ...
      */
     Page<Escenario> findByActivoTrue(Pageable pageable);
 

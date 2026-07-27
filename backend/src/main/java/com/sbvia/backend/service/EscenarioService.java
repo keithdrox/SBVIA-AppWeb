@@ -34,7 +34,7 @@ public class EscenarioService {
      * Busca un escenario por ID. Retorna 404 si no existe.
      */
     @Transactional(readOnly = true)
-    public EscenarioDTO buscarPorId(Long id) {
+    public EscenarioDTO buscarPorId(Integer id) {
         Escenario escenario = escenarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Escenario no encontrado con ID: " + id));
@@ -64,7 +64,7 @@ public class EscenarioService {
      * Actualiza un escenario existente. 200 OK si exitoso.
      */
     @Transactional
-    public EscenarioDTO actualizar(Long id, EscenarioDTO dto) {
+    public EscenarioDTO actualizar(Integer id, EscenarioDTO dto) {
         Escenario escenario = escenarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Escenario no encontrado con ID: " + id));
@@ -85,7 +85,7 @@ public class EscenarioService {
      * 204 No Content si exitoso.
      */
     @Transactional
-    public void eliminar(Long id) {
+    public void eliminar(Integer id) {
         Escenario escenario = escenarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Escenario no encontrado con ID: " + id));
@@ -95,7 +95,7 @@ public class EscenarioService {
 
     private EscenarioDTO mapToDTO(Escenario escenario) {
         return EscenarioDTO.builder()
-                .id(escenario.getId())
+                .id(escenario.getIdEscenario())
                 .nombre(escenario.getNombre())
                 .descripcion(escenario.getDescripcion())
                 .tipoVia(escenario.getTipoVia())

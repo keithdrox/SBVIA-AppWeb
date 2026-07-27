@@ -25,7 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * Carga un usuario por email (usado como username en el sistema).
-     * Consulta: UsuarioRepository.findByEmail() → PostgreSQL.
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -40,7 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new User(
                 usuario.getEmail(),
                 usuario.getPasswordHash(),
-                List.of(new SimpleGrantedAuthority(usuario.getRol().name()))
+                List.of(new SimpleGrantedAuthority(usuario.getRol().getNombre()))
         );
     }
 }

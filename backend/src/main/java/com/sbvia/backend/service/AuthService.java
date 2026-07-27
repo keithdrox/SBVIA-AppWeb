@@ -5,6 +5,7 @@ import com.sbvia.backend.entity.Rol;
 import com.sbvia.backend.entity.Usuario;
 import com.sbvia.backend.exception.DuplicateEmailException;
 import com.sbvia.backend.repository.UsuarioRepository;
+import com.sbvia.backend.repository.RolRepository;
 import com.sbvia.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -32,7 +34,7 @@ public class AuthService {
 
     /**
      * Registra un nuevo usuario en el sistema.
-     * Verifica que el email no exista, hashea la contraseña con BCrypt (costo 12)
+     * Verifica que el email no exista, hashea la contraseña con BCrypt
      * y persiste en PostgreSQL via JPA.
      */
     @Transactional
@@ -43,28 +45,29 @@ public class AuthService {
                     "Ya existe un usuario registrado con el email: " + request.getEmail());
         }
 
-        // Crear usuario con contraseña hasheada (BCrypt costo 12)
+        // Rol por defecto: Conductor (id=4) o crear uno básico
+        Rol rolPorDefecto = rolRepository.findByNombre("Conductor")
+                .orElseGet(() -> rolRepository.findByNombre("ROLE_USER")
+                        .orElseThrow(() -> new IllegalStateException("No se encontró el rol por defecto")));
+
+        // Crear usuario con contraseña hasheada (BCrypt)
         Usuario usuario = Usuario.builder()
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .rol(Rol.ROLE_USER)
+                .rol(rolPorDefecto)
+                .estado("Activo")
                 .activo(true)
                 .build();
 
         usuario = usuarioRepository.save(usuario);
 
         // Generar tokens
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                usuario.getEmail(),
-                usuario.getPasswordHash(),
-                java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(
-                        usuario.getRol().name()))
-        );
-
-        String accessToken = jwtService.generateAccessToken(userDetails, usuario.getId(), usuario.getRol().name());
-        String refreshToken = jwtService.generateRefreshToken(userDetails, usuario.getId());
+        UserDetails userDetails = buildUserDetails(usuario);
+        String rolNombre = usuario.getRol().getNombre();
+        String accessToken = jwtService.generateAccessToken(userDetails, usuario.getIdUsuario().longValue(), rolNombre);
+        String refreshToken = jwtService.generateRefreshToken(userDetails, usuario.getIdUsuario().longValue());
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -77,11 +80,8 @@ public class AuthService {
 
     /**
      * Autentica un usuario existente.
-     * Delega a AuthenticationManager.authenticate() que usa UserDetailsService
-     * y BCryptPasswordEncoder para verificar credenciales.
      */
     public AuthResponse login(LoginRequest request) {
-        // Spring Security verifica credenciales
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -93,8 +93,9 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
-        String accessToken = jwtService.generateAccessToken(userDetails, usuario.getId(), usuario.getRol().name());
-        String refreshToken = jwtService.generateRefreshToken(userDetails, usuario.getId());
+        String rolNombre = usuario.getRol().getNombre();
+        String accessToken = jwtService.generateAccessToken(userDetails, usuario.getIdUsuario().longValue(), rolNombre);
+        String refreshToken = jwtService.generateRefreshToken(userDetails, usuario.getIdUsuario().longValue());
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -107,7 +108,6 @@ public class AuthService {
 
     /**
      * Cierra sesión revocando el JTI del token en Redis.
-     * El JTI se agrega a la blacklist con TTL igual a la expiración restante del token.
      */
     public void logout(String token) {
         String jti = jwtService.extractJti(token);
@@ -118,8 +118,7 @@ public class AuthService {
     }
 
     /**
-     * Emite un nuevo accessToken usando el refreshToken válido,
-     * sin necesidad de re-autenticar con credenciales.
+     * Emite un nuevo accessToken usando el refreshToken válido.
      */
     public AuthResponse refresh(String refreshToken) {
         String tokenType = jwtService.extractTokenType(refreshToken);
@@ -133,17 +132,12 @@ public class AuthService {
         }
 
         String subject = jwtService.extractSubject(refreshToken);
-        Usuario usuario = usuarioRepository.findById(Long.parseLong(subject))
+        Usuario usuario = usuarioRepository.findById(Integer.parseInt(subject))
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                usuario.getEmail(),
-                usuario.getPasswordHash(),
-                java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(
-                        usuario.getRol().name()))
-        );
-
-        String newAccessToken = jwtService.generateAccessToken(userDetails, usuario.getId(), usuario.getRol().name());
+        UserDetails userDetails = buildUserDetails(usuario);
+        String rolNombre = usuario.getRol().getNombre();
+        String newAccessToken = jwtService.generateAccessToken(userDetails, usuario.getIdUsuario().longValue(), rolNombre);
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
@@ -155,7 +149,7 @@ public class AuthService {
     }
 
     /**
-     * Obtiene los datos del usuario autenticado (sin hash de contraseña).
+     * Obtiene los datos del usuario autenticado.
      */
     public UsuarioDTO getUsuarioActual(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
@@ -163,13 +157,22 @@ public class AuthService {
         return mapToDTO(usuario);
     }
 
+    private UserDetails buildUserDetails(Usuario usuario) {
+        return new org.springframework.security.core.userdetails.User(
+                usuario.getEmail(),
+                usuario.getPasswordHash(),
+                java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                        usuario.getRol().getNombre()))
+        );
+    }
+
     private UsuarioDTO mapToDTO(Usuario usuario) {
         return UsuarioDTO.builder()
-                .id(usuario.getId())
+                .id(usuario.getIdUsuario())
                 .nombre(usuario.getNombre())
                 .apellido(usuario.getApellido())
                 .email(usuario.getEmail())
-                .rol(usuario.getRol().name())
+                .rol(usuario.getRol().getNombre())
                 .activo(usuario.isActivo())
                 .creadoEn(usuario.getCreadoEn())
                 .build();

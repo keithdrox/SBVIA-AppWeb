@@ -9,20 +9,17 @@ import java.util.Optional;
 /**
  * Repositorio JPA para la entidad Usuario.
  * Extiende JpaRepository para CRUD genérico, paginación y ordenación.
- * Los métodos custom se derivan del nombre del método (Spring Data query derivation).
  */
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     /**
      * Busca un usuario por email (usado en autenticación).
-     * Genera: SELECT * FROM usuarios WHERE email = ?
      */
     Optional<Usuario> findByEmail(String email);
 
     /**
      * Verifica si existe un usuario con el email dado.
-     * Usado para validar registro duplicado.
      */
     boolean existsByEmail(String email);
 }

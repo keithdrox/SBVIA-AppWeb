@@ -4,6 +4,7 @@ import com.sbvia.backend.dto.LoginRequest;
 import com.sbvia.backend.dto.RegisterRequest;
 import com.sbvia.backend.entity.Rol;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.repository.RolRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,9 @@ class AuthControllerTest {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private RolRepository rolRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -50,12 +54,21 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         usuarioRepository.deleteAll();
+        rolRepository.deleteAll();
+        // Persistir el Rol antes que el Usuario (relación FK)
+        Rol rolTest = Rol.builder()
+                .nombre("Conductor")
+                .descripcion("Alumno o conductor en práctica")
+                .build();
+        rolTest = rolRepository.save(rolTest);
+
         testUser = Usuario.builder()
                 .nombre("Test")
                 .apellido("User")
                 .email("test@example.com")
                 .passwordHash(passwordEncoder.encode("password123"))
-                .rol(Rol.ROLE_USER)
+                .rol(rolTest)
+                .estado("Activo")
                 .activo(true)
                 .build();
         usuarioRepository.save(testUser);

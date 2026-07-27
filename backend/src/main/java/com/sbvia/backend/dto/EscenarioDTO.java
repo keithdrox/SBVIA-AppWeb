@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EscenarioDTO {
 
-    private Long id;
+    private Integer id;
 
     @NotBlank(message = "El nombre del escenario es obligatorio")
-    @Size(max = 150, message = "El nombre no puede exceder 150 caracteres")
+    @Size(max = 255, message = "El nombre no puede exceder 255 caracteres")
     private String nombre;
 
     private String descripcion;
