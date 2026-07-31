@@ -20,6 +20,12 @@ cp .env.example .env
 ```
 *(Editar `.env` con las credenciales si es necesario, los valores por defecto funcionan localmente)*
 
+### Credenciales de Administrador por Defecto
+El sistema arranca con un usuario administrador pre-configurado en `db/seed.sql`:
+- **Email:** admin@sbvia.com
+- **Contraseña:** admin123
+
+
 ### 3. Levantar todos los servicios
 ```bash
 docker compose up --build -d
