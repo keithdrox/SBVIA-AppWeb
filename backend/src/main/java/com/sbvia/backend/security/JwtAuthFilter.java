@@ -3,8 +3,10 @@ package com.sbvia.backend.security;
 import com.sbvia.backend.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.util.WebUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,15 +44,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. Extraer el token del encabezado Authorization: Bearer [token]
-        final String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+        
+        // 1. Intentar extraer el token de la Cookie (HttpOnly)
+        Cookie cookie = WebUtils.getCookie(request, "accessToken");
+        if (cookie != null) {
+            jwt = cookie.getValue();
+        } 
+        
+        // 2. Si no hay cookie, hacer fallback al header Authorization (Para Postman/Swagger)
+        if (jwt == null) {
+            final String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwt = authHeader.substring(7);
+            }
+        }
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        final String jwt = authHeader.substring(7);
 
         try {
             // 2. Extraer el email del token

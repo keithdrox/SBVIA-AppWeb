@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +40,15 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponse> registro(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.registro(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
+                .httpOnly(true)
+                .secure(false) // usar true en producción (HTTPS)
+                .path("/")
+                .maxAge(response.getExpiresIn() / 1000)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     /**
@@ -53,7 +63,15 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(response.getExpiresIn() / 1000)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     /**
@@ -66,10 +84,29 @@ public class AuthController {
         @ApiResponse(responseCode = "204", description = "Sesión cerrada correctamente"),
         @ApiResponse(responseCode = "401", description = "Token inválido o ausente")
     })
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        authService.logout(token);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @CookieValue(value = "accessToken", required = false) String cookieToken) {
+        
+        String token = cookieToken;
+        if (token == null && authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+        
+        if (token != null) {
+            authService.logout(token);
+        }
+
+        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0) // Eliminar cookie
+                .build();
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
     /**
@@ -84,6 +121,14 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         AuthResponse response = authService.refresh(request.getRefreshToken());
-        return ResponseEntity.ok(response);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(response.getExpiresIn() / 1000)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 }
