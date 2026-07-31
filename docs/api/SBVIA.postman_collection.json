@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "c33b9340-023a-4f40-8b01-094e1d6d4590",
+		"name": "SBVIA API Collection",
+		"description": "Colección de endpoints REST para el simulador SBVIA. Incluye flujos de Autenticación, Gestión de Escenarios y Simulaciones.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Registro",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"alumno@sbvia.com\",\n    \"password\": \"secreta123\",\n    \"nombre\": \"Juan\",\n    \"apellido\": \"Perez\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/registro",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"registro"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"alumno@sbvia.com\",\n    \"password\": \"secreta123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Escenarios",
+			"item": [
+				{
+					"name": "Listar Escenarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/escenarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"escenarios"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	]
+}
