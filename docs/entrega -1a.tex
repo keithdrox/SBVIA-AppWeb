@@ -121,16 +121,18 @@ RF-08 & Almacenar historial de prácticas. & Mantiene & Almacenamiento en base d
 \hline
 \textbf{ID} & \textbf{Descripción} & \textbf{Prioridad} & \textbf{Criterio de aceptación} \\ \hline
 \endhead
-RF-01 & Autenticación de usuarios con credenciales. & Alta & El usuario ingresa credenciales válidas y es redirigido al dashboard. \\ \hline
-RF-02 & Selección de escenarios de simulación (básico, intermedio, avanzado). & Alta & El usuario puede iniciar un escenario y los parámetros se cargan en < 2s. \\ \hline
-RF-03 & Simulación de elementos viales (señales, peatones). & Alta & La interfaz web renderiza correctamente los obstáculos y señales. \\ \hline
-RF-04 & Registro en tiempo real de decisiones del conductor. & Alta & Las acciones (frenado, giro) se envían al backend con latencia < 100ms. \\ \hline
-RF-05 & Análisis del comportamiento mediante IA. & Alta & El sistema evalúa las acciones registradas y retorna un veredicto. \\ \hline
-RF-06 & Generación de métricas de desempeño. & Media & Se calculan puntaje, infracciones y tiempo de reacción tras la sesión. \\ \hline
-RF-07 & Retroalimentación educativa al finalizar. & Alta & Se muestra un reporte detallado explicativo de los errores cometidos. \\ \hline
-RF-08 & Almacenamiento del historial de prácticas. & Media & El usuario puede ver al menos 5 sesiones pasadas en su perfil. \\ \hline
-RF-09 & Gestión de reportes para instructores. & Media & El instructor visualiza métricas agregadas de todos sus alumnos. \\ \hline
-RF-10 & Configuración de reglas de tránsito. & Baja & El admin puede crear/editar reglas desde un panel de administración. \\ \hline
+RF-01 & El sistema deberá autenticar a los usuarios mediante credenciales válidas. & Alta & El usuario ingresa credenciales válidas y es redirigido al dashboard. \\ \hline
+RF-02 & El sistema deberá permitir al usuario seleccionar escenarios de simulación (básico, intermedio, avanzado). & Alta & El usuario puede iniciar un escenario y los parámetros se cargan en < 2s. \\ \hline
+RF-03 & El sistema deberá simular señales, peatones y vehículos en el entorno virtual en un máximo de 500ms tras iniciar. & Alta & Los obstáculos y señales son visibles y ocupan sus coordenadas 3D en < 500ms. \\ \hline
+RF-04 & El sistema deberá registrar en tiempo real las decisiones del conductor. & Alta & Las acciones (frenado, giro) se envían al backend con latencia < 100ms. \\ \hline
+RF-05 & El sistema deberá analizar el comportamiento de conducción mediante IA, retornando una clasificación de riesgo (Bajo, Medio, Alto) en máximo 2s. & Alta & El sistema evalúa las acciones registradas y retorna la clasificación de riesgo en < 2s. \\ \hline
+RF-06 & El sistema deberá calcular el puntaje de la sesión. & Media & Se calcula el puntaje final tras concluir la sesión. \\ \hline
+RF-06b & El sistema deberá contabilizar las infracciones cometidas en la sesión. & Media & Se registran las infracciones individuales durante la sesión. \\ \hline
+RF-06c & El sistema deberá calcular el tiempo de reacción del conductor. & Media & Se calcula el tiempo de reacción promedio al finalizar la sesión. \\ \hline
+RF-07 & El sistema deberá generar un reporte educativo listando cada error y su respectiva regla de tránsito en menos de 3s. & Alta & Se muestra el reporte con cada error y regla infringida en < 3s. \\ \hline
+RF-08 & El sistema deberá almacenar el historial de prácticas de cada usuario. & Media & El usuario puede ver al menos 5 sesiones pasadas en su perfil. \\ \hline
+RF-09 & El sistema deberá proveer un resumen de métricas agregadas a los instructores. & Media & El instructor visualiza métricas de todos sus alumnos. \\ \hline
+RF-10 & El sistema deberá permitir a los administradores crear y editar reglas de tránsito. & Baja & El admin puede gestionar reglas desde un panel de administración. \\ \hline
 \end{longtable}
 
 \section{Lista consolidada de requisitos no funcionales}
@@ -140,9 +142,12 @@ RF-10 & Configuración de reglas de tránsito. & Baja & El admin puede crear/edi
 \hline
 \textbf{ID} & \textbf{Categoría} & \textbf{Descripción} & \textbf{Métrica de verificación} \\ \hline
 RNF-01 & Rendimiento & Latencia de registro de decisiones inferior a 100ms. & Medición en Network Tab (Chrome DevTools) P95 < 100ms. \\ \hline
-RNF-02 & Seguridad & Datos de usuarios protegidos y contraseñas hasheadas. & Revisión en BD de la columna contrasena\_hash en Argon2id. \\ \hline
-RNF-03 & Usabilidad & Interfaz responsiva y amigable. & 100\% de visibilidad en resoluciones de 320px a 1440px. \\ \hline
+RNF-02 & Seguridad & Datos de usuarios protegidos y contraseñas hasheadas. & Revisión en BD de la columna contrasena\_hash en Argon2id o BCrypt. \\ \hline
+RNF-03 & Usabilidad & Interfaz responsiva adaptable a múltiples pantallas. & 100\% de visibilidad sin scroll horizontal en resoluciones de 320px a 1440px. \\ \hline
 RNF-04 & Disponibilidad & El sistema debe estar disponible para demostraciones. & Uptime del 99\% durante las semanas 16 y 17 de clases. \\ \hline
+RNF-05 & Mantenibilidad & El código backend debe seguir principios de código limpio. & Análisis estático sin violaciones críticas. \\ \hline
+RNF-06 & Escalabilidad & El sistema debe soportar acceso concurrente de alumnos. & Pruebas k6 con 50 VUs manteniendo tiempos de respuesta < 200ms. \\ \hline
+RNF-07 & Portabilidad & El sistema debe ser desplegable en múltiples entornos. & Despliegue mediante Docker Compose en cualquier SO con Docker. \\ \hline
 \end{tabular}
 \end{table}
 
