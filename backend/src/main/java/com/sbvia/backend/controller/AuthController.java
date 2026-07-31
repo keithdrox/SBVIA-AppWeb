@@ -3,6 +3,8 @@ package com.sbvia.backend.controller;
 import com.sbvia.backend.dto.*;
 import com.sbvia.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,10 @@ public class AuthController {
      */
     @PostMapping("/registro")
     @Operation(summary = "Registrar nuevo usuario", description = "Crea una cuenta y devuelve tokens JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos o email ya registrado")
+    })
     public ResponseEntity<AuthResponse> registro(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.registro(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -41,6 +47,10 @@ public class AuthController {
      */
     @PostMapping("/login")
     @Operation(summary = "Iniciar sesión", description = "Autentica y devuelve accessToken + refreshToken")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Autenticación exitosa"),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+    })
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
@@ -52,6 +62,10 @@ public class AuthController {
      */
     @PostMapping("/logout")
     @Operation(summary = "Cerrar sesión", description = "Revoca el token JWT agregando su JTI a Redis")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Sesión cerrada correctamente"),
+        @ApiResponse(responseCode = "401", description = "Token inválido o ausente")
+    })
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
         authService.logout(token);
@@ -64,6 +78,10 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     @Operation(summary = "Refresh token", description = "Emite un nuevo accessToken usando el refreshToken")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Token refrescado"),
+        @ApiResponse(responseCode = "403", description = "Refresh token inválido o expirado")
+    })
     public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         AuthResponse response = authService.refresh(request.getRefreshToken());
         return ResponseEntity.ok(response);

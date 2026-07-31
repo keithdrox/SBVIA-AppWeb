@@ -3,6 +3,8 @@ package com.sbvia.backend.controller;
 import com.sbvia.backend.dto.EscenarioDTO;
 import com.sbvia.backend.service.EscenarioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,6 +35,10 @@ public class EscenarioController {
      */
     @GetMapping
     @Operation(summary = "Listar escenarios", description = "Lista todos los escenarios activos con paginación")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista devuelta exitosamente"),
+        @ApiResponse(responseCode = "401", description = "No autorizado")
+    })
     public ResponseEntity<Page<EscenarioDTO>> listar(Pageable pageable) {
         Page<EscenarioDTO> page = escenarioService.listarActivos(pageable);
         return ResponseEntity.ok(page);
@@ -44,6 +50,11 @@ public class EscenarioController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener escenario por ID", description = "Devuelve los detalles de un escenario específico")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Escenario devuelto exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Escenario no encontrado"),
+        @ApiResponse(responseCode = "401", description = "No autorizado")
+    })
     public ResponseEntity<EscenarioDTO> buscarPorId(@PathVariable Integer id) {
         EscenarioDTO dto = escenarioService.buscarPorId(id);
         return ResponseEntity.ok(dto);
@@ -56,6 +67,11 @@ public class EscenarioController {
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Crear escenario", description = "Crea un nuevo escenario. Requiere ROLE_ADMIN")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Escenario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+        @ApiResponse(responseCode = "403", description = "Acceso denegado (requiere ROLE_ADMIN)")
+    })
     public ResponseEntity<EscenarioDTO> crear(@Valid @RequestBody EscenarioDTO dto) {
         EscenarioDTO creado = escenarioService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
@@ -68,6 +84,11 @@ public class EscenarioController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Actualizar escenario", description = "Actualiza un escenario existente. Requiere ROLE_ADMIN")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Escenario actualizado"),
+        @ApiResponse(responseCode = "404", description = "Escenario no encontrado"),
+        @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     public ResponseEntity<EscenarioDTO> actualizar(
             @PathVariable Integer id,
             @Valid @RequestBody EscenarioDTO dto) {
@@ -82,6 +103,11 @@ public class EscenarioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Eliminar escenario", description = "Soft delete de un escenario. Requiere ROLE_ADMIN")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Escenario eliminado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Escenario no encontrado"),
+        @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         escenarioService.eliminar(id);
         return ResponseEntity.noContent().build();

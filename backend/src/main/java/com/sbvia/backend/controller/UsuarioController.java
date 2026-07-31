@@ -3,6 +3,8 @@ package com.sbvia.backend.controller;
 import com.sbvia.backend.dto.UsuarioDTO;
 import com.sbvia.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,10 @@ public class UsuarioController {
      */
     @GetMapping("/me")
     @Operation(summary = "Perfil del usuario", description = "Devuelve los datos del usuario autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Datos devueltos exitosamente"),
+        @ApiResponse(responseCode = "401", description = "No autorizado o token expirado")
+    })
     public ResponseEntity<UsuarioDTO> getPerfilActual(Authentication authentication) {
         String email = authentication.getName();
         UsuarioDTO usuario = authService.getUsuarioActual(email);
