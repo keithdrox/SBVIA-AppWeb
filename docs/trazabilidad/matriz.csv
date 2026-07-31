@@ -1,0 +1,11 @@
+ReqID,Type,Description,Module,TestFile,Status
+RF-01,FUNC,Autenticación JWT,Backend,AuthServiceTest.java,IMPLEMENTED
+RF-02,FUNC,Gestión de Escenarios,Backend,EscenarioControllerTest.java,IMPLEMENTED
+RF-03,FUNC,Inicio Simulación,Backend,SimulacionServiceTest.java,IN_PROGRESS
+RF-04,FUNC,Métricas de Desempeño,Backend,MetricaRepositoryTest.java,PENDING
+RNF-01,PERF,Tiempo de respuesta < 2s,API,k6/opts.js,IMPLEMENTED
+RNF-02,SEC,Contraseñas en BCrypt,Database,schema.sql,IMPLEMENTED
+US-01,USER,Registro Conductor,Frontend,registro.component.spec.ts,IMPLEMENTED
+US-02,USER,Inicio de Sesión,Frontend,login.component.spec.ts,IMPLEMENTED
+US-03,USER,Listar Escenarios,Frontend,escenario-list.component.spec.ts,IMPLEMENTED
+US-04,USER,Iniciar Simulación,Frontend,simulador.component.spec.ts,IN_PROGRESS
