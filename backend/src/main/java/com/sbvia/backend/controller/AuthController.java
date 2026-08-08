@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -28,6 +29,10 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /** Controla el flag Secure de la cookie. false en dev (HTTP), true en prod (HTTPS). */
+    @Value("${security.cookie.secure:false}")
+    private boolean cookieSecure;
+
     /**
      * POST /api/auth/registro — Registrar nuevo usuario.
      * Devuelve el usuario creado (sin hash) y tokens JWT.
@@ -42,7 +47,8 @@ public class AuthController {
         AuthResponse response = authService.registro(request);
         ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
                 .httpOnly(true)
-                .secure(false) // usar true en producción (HTTPS)
+                .secure(cookieSecure)        // true en producción (HTTPS), false en desarrollo
+                .sameSite("Strict")          // CSRF mitigation: cookie no se envía en peticiones cross-site
                 .path("/")
                 .maxAge(response.getExpiresIn() / 1000)
                 .build();
@@ -65,7 +71,8 @@ public class AuthController {
         AuthResponse response = authService.login(request);
         ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)        // true en producción (HTTPS), false en desarrollo
+                .sameSite("Strict")          // CSRF mitigation
                 .path("/")
                 .maxAge(response.getExpiresIn() / 1000)
                 .build();
@@ -99,7 +106,8 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(0) // Eliminar cookie
                 .build();
@@ -123,7 +131,8 @@ public class AuthController {
         AuthResponse response = authService.refresh(request.getRefreshToken());
         ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)        // true en producción (HTTPS), false en desarrollo
+                .sameSite("Strict")          // CSRF mitigation
                 .path("/")
                 .maxAge(response.getExpiresIn() / 1000)
                 .build();

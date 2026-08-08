@@ -1,7 +1,7 @@
 # ADR-003: Revocación de Tokens JWT utilizando Redis (Blacklist)
 
 ## Estado
-Aceptado
+Aceptado — Actualizado 2026-08-08
 
 ## Contexto
 El sistema SBVIA utiliza JWT (JSON Web Tokens) para implementar autenticación stateless. Por naturaleza, una vez que un JWT es emitido, el servidor no mantiene un registro de estado, lo que significa que un token es válido hasta su fecha de expiración, incluso si el usuario cierra sesión explícitamente o su cuenta es comprometida. Se necesita un mecanismo para invalidar estos tokens (Logout) para cumplir con el control de seguridad (OWASP A07: Fallas de autenticación).
@@ -22,3 +22,33 @@ Se implementa una **Blacklist (lista negra) en memoria usando Redis** para gesti
 - Introduce una dependencia de infraestructura adicional (servicio Redis).
 - Si el servicio Redis falla, el proceso de autenticación podría degradarse si no se implementan políticas de fallo seguro o alta disponibilidad.
 - Paradójicamente, hace que el mecanismo deje de ser 100% "stateless", ya que requiere estado (para tokens revocados) en el lado del servidor, aunque de manera optimizada y centralizada.
+
+---
+
+## Enmienda 2026-08-08 — Corrección de Seguridad de Cookie
+
+### Problema identificado
+En la Entrega 3, las cookies del accessToken solo tenían `HttpOnly`. Faltaban `Secure` y `SameSite`, lo que dejaba la cookie vulnerable a:
+- **Ataques CSRF cross-site**: sin `SameSite`, la cookie se enviaría en peticiones desde otros orígenes.
+- **Interceptación en HTTP**: sin `Secure`, la cookie viajaría sin cifrar en redes inseguras.
+
+### Corrección aplicada
+`AuthController.java` fue actualizado para agregar en **todos** los endpoints que emiten cookie (`/registro`, `/login`, `/refresh`, `/logout`):
+
+```java
+ResponseCookie.from("accessToken", token)
+    .httpOnly(true)
+    .secure(cookieSecure)    // true en producción (COOKIE_SECURE=true), false en dev HTTP
+    .sameSite("Strict")      // CSRF mitigation — cookie no se envía cross-site
+    .path("/")
+    .maxAge(expiresIn)
+    .build();
+```
+
+La propiedad `security.cookie.secure` en `application.yml` permite alternar `Secure` por entorno sin cambiar código:
+
+```yaml
+security:
+  cookie:
+    secure: ${COOKIE_SECURE:false}  # false en dev, true en producción
+```

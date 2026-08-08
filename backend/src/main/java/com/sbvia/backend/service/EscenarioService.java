@@ -5,6 +5,8 @@ import com.sbvia.backend.entity.Escenario;
 import com.sbvia.backend.exception.ResourceNotFoundException;
 import com.sbvia.backend.repository.EscenarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,12 @@ public class EscenarioService {
     /**
      * Lista escenarios activos con paginación y ordenación.
      * Soporta: ?page=0&size=10&sort=id,asc
+     *
+     * La respuesta se almacena en Redis (cache "escenarios") con TTL=5min (CacheConfig).
+     * En el primer hit va a PostgreSQL; los siguientes son servidos desde Redis,
+     * lo que elimina el round-trip a la BD y reduce la latencia de forma medible.
      */
+    @Cacheable(value = "escenarios", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     @Transactional(readOnly = true)
     public Page<EscenarioDTO> listarActivos(Pageable pageable) {
         return escenarioRepository.findByActivoTrue(pageable)
@@ -43,7 +50,9 @@ public class EscenarioService {
 
     /**
      * Crea un nuevo escenario. Valida con @Valid en el controlador.
+     * Invalida la caché "escenarios" para que el próximo listado refleje el nuevo registro.
      */
+    @CacheEvict(value = "escenarios", allEntries = true)
     @Transactional
     public EscenarioDTO crear(EscenarioDTO dto) {
         Escenario escenario = Escenario.builder()
@@ -62,7 +71,9 @@ public class EscenarioService {
 
     /**
      * Actualiza un escenario existente. 200 OK si exitoso.
+     * Invalida la caché "escenarios" para que el listado refleje los datos actualizados.
      */
+    @CacheEvict(value = "escenarios", allEntries = true)
     @Transactional
     public EscenarioDTO actualizar(Integer id, EscenarioDTO dto) {
         Escenario escenario = escenarioRepository.findById(id)
@@ -83,7 +94,9 @@ public class EscenarioService {
     /**
      * Soft delete: establece activo=false en lugar de eliminar el registro.
      * 204 No Content si exitoso.
+     * Invalida la caché "escenarios" para que el registro desaparezca del listado.
      */
+    @CacheEvict(value = "escenarios", allEntries = true)
     @Transactional
     public void eliminar(Integer id) {
         Escenario escenario = escenarioRepository.findById(id)
