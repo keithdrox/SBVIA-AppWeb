@@ -10,6 +10,8 @@ CREATE TABLE "Usuario" (
   "apellido" varchar NOT NULL, 
   "email" varchar UNIQUE NOT NULL, 
   "password_hash" varchar NOT NULL, 
+  "telefono" varchar, 
+  "tipo_licencia" varchar, 
   "fecha_registro" date NOT NULL DEFAULT CURRENT_DATE, 
   "estado" varchar NOT NULL DEFAULT 'Activo', 
   "activo" boolean NOT NULL DEFAULT true, 

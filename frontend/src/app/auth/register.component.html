@@ -38,6 +38,38 @@
       </div>
       
       <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input 
+          type="tel" 
+          id="telefono" 
+          name="telefono" 
+          [(ngModel)]="data.telefono" 
+          required 
+          placeholder="Ej: +51 987654321">
+      </div>
+
+      <div class="form-group">
+        <label for="tipoLicencia">Tipo de Licencia</label>
+        <select 
+          id="tipoLicencia" 
+          name="tipoLicencia" 
+          [(ngModel)]="data.tipoLicencia" 
+          required>
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="A-I">Clase A - Categoría I (Particular)</option>
+          <option value="A-IIa">Clase A - Categoría II-A (Taxis, etc.)</option>
+          <option value="A-IIb">Clase A - Categoría II-B (Microbuses)</option>
+          <option value="A-IIIa">Clase A - Categoría III-A (Buses)</option>
+          <option value="A-IIIb">Clase A - Categoría III-B (Carga)</option>
+          <option value="A-IIIc">Clase A - Categoría III-C (Carga y Pasajeros)</option>
+          <option value="B-I">Clase B - Categoría I (Triciclos motorizados)</option>
+          <option value="B-IIa">Clase B - Categoría II-A (Bimotor, etc.)</option>
+          <option value="B-IIb">Clase B - Categoría II-B (Motos)</option>
+          <option value="B-IIc">Clase B - Categoría II-C (Mototaxis)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label for="password">Contraseña</label>
         <input 
           type="password" 

@@ -1,0 +1,36 @@
+<div class="practicas-container">
+  <header class="practicas-header">
+    <h2>Mis Prácticas</h2>
+    <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
+  </header>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="table-responsive">
+    <table class="practicas-table" *ngIf="practicas.length > 0; else noPracticas">
+      <thead>
+        <tr>
+          <th>Fecha de Inicio</th>
+          <th>Escenario</th>
+          <th>Estado</th>
+          <th>Puntaje</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let practica of practicas">
+          <td>{{ practica.fechaInicio }}</td>
+          <td>{{ practica.nombreEscenario }}</td>
+          <td>{{ practica.estado }}</td>
+          <td>{{ practica.puntajeFinal }}</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <ng-template #noPracticas>
+      <div class="no-data">
+        <p>No tienes prácticas registradas todavía.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -12,7 +12,14 @@ import { AuthService } from './auth.service';
   styleUrl: './login.component.css' // Reutilizamos estilos del login
 })
 export class RegisterComponent {
-  data = { nombre: '', apellido: '', email: '', password: '' };
+  data = {
+    nombre: '',
+    apellido: '',
+    email: '',
+    password: '',
+    telefono: '',
+    tipoLicencia: ''
+  };
   errorMessage = '';
   loading = false;
 

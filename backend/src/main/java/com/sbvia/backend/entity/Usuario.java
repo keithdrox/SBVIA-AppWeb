@@ -38,6 +38,12 @@ public class Usuario {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
+    @Column(name = "telefono", length = 255)
+    private String telefono;
+
+    @Column(name = "tipo_licencia", length = 255)
+    private String tipoLicencia;
+
     @Column(name = "fecha_registro", nullable = false)
     @Builder.Default
     private LocalDate fechaRegistro = LocalDate.now();

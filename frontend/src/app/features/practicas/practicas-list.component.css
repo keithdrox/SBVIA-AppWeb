@@ -1,0 +1,75 @@
+/* practicas-list.component.css */
+.practicas-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.practicas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.practicas-header h2 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.btn-secondary {
+  padding: 0.6rem 1.2rem;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.practicas-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.practicas-table th,
+.practicas-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.practicas-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.practicas-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.loading,
+.error-msg,
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.error-msg {
+  color: #dc3545;
+}

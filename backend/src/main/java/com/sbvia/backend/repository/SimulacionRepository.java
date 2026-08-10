@@ -15,4 +15,5 @@ public interface SimulacionRepository extends CrudRepository<Simulacion, Integer
     @Procedure(procedureName = "sp_calcular_puntaje_simulacion")
     void calcularPuntaje(Integer p_id_simulacion);
 
+    java.util.List<Simulacion> findByUsuario_IdUsuario(Integer idUsuario);
 }

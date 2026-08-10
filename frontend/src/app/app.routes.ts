@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'registro', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'escenarios', component: EscenarioListComponent, canActivate: [authGuard] },
+  { path: 'practicas', loadComponent: () => import('./features/practicas/practicas-list.component').then(m => m.PracticasListComponent), canActivate: [authGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];

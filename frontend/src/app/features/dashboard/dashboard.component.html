@@ -16,17 +16,16 @@
     </div>
 
     <div class="cards-grid">
-      <div class="dashboard-card">
+      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN' || usuario?.rol === 'Admin'">
         <h3>Escenarios de Simulación</h3>
         <p>Configura y gestiona los escenarios viales (requiere rol admin).</p>
         <a routerLink="/escenarios" class="btn-primary-outline">Gestionar Escenarios</a>
       </div>
       
-      <!-- Más tarjetas para futuros módulos -->
-      <div class="dashboard-card disabled">
+      <div class="dashboard-card">
         <h3>Mis Prácticas</h3>
-        <p>Próximamente en la Entrega 2.</p>
-        <button disabled class="btn-disabled">Ver Prácticas</button>
+        <p>Revisa tu historial de simulaciones.</p>
+        <a routerLink="/practicas" class="btn-primary">Ver Prácticas</a>
       </div>
     </div>
   </main>
