@@ -5,7 +5,7 @@ COPY pom.xml .
 # Descargar dependencias (mejora el caché de Docker)
 RUN mvn dependency:go-offline -B
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Dmaven.test.skip=true
 
 # Etapa 2: Ejecución
 FROM eclipse-temurin:21-jre-alpine

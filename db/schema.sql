@@ -14,6 +14,7 @@ CREATE TABLE "Usuario" (
   "estado" varchar NOT NULL DEFAULT 'Activo', 
   "activo" boolean NOT NULL DEFAULT true, 
   "creado_en" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  "actualizado_en" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "id_Rol" integer NOT NULL 
 ); 
 
@@ -25,7 +26,9 @@ CREATE TABLE "Escenario" (
   "nivel_dificultad" integer NOT NULL, 
   "clima" varchar NOT NULL, 
   "densidad_trafico" varchar NOT NULL, 
-  "activo" boolean NOT NULL DEFAULT true 
+  "activo" boolean NOT NULL DEFAULT true,
+  "creado_en" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "actualizado_en" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ); 
 
 CREATE TABLE "Simulacion" ( 
