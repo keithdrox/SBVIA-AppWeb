@@ -48,3 +48,24 @@ cd backend
 ./mvnw test
 ```
 *(En Windows puedes usar `mvnw.cmd test`)*
+
+---
+## Flujo MVC de Petición Autenticada en Spring Boot
+**Actividad preparatoria para la Práctica Experimental de la Unidad IV.**
+
+![Flujo MVC Spring Boot](docs/diagramas/flujo-mvc-springboot.png)
+
+### Descripción de cada paso del flujo:
+1. **Cliente Angular -> JwtAuthFilter**: El cliente envía una petición `GET /api/escenarios/1` con el token JWT en el Header `Authorization`.
+2. **JwtAuthFilter (Validación)**: El filtro intercepta la petición y valida la integridad y firma del Token JWT.
+3. **JwtAuthFilter -> SecurityContext**: Al ser válido, extrae la identidad del usuario y establece la `Authentication` en el `SecurityContext` de Spring.
+4. **JwtAuthFilter -> EscenarioController**: La petición pasa al `DispatcherServlet` que la enruta al `@RestController` `EscenarioController`, método `buscarPorId(id)`.
+5. **EscenarioController -> EscenarioService**: El controlador delega la lógica de negocio al `@Service` `EscenarioService` llamando a su método homónimo.
+6. **EscenarioService (@Transactional)**: Se inicia una transacción de base de datos, en este caso optimizada para lectura (`readOnly = true`).
+7. **EscenarioService -> EscenarioRepository**: El servicio invoca a la interfaz `JpaRepository` (`EscenarioRepository`) usando el método `findById(id)`.
+8. **EscenarioRepository -> PostgreSQL**: Hibernate/Spring Data traduce el llamado a una query SQL `SELECT` y la ejecuta en la BD.
+9. **PostgreSQL -> EscenarioRepository**: La BD devuelve el `ResultSet` que JPA mapea a la entidad relacional `Escenario`.
+10. **EscenarioRepository -> EscenarioService**: El repositorio retorna un `Optional<Escenario>` a la capa de servicio.
+11. **Mapeo a DTO**: El servicio mapea la entidad `Escenario` recuperada a un objeto `EscenarioDTO` (Data Transfer Object).
+12. **EscenarioService -> EscenarioController**: El servicio finaliza la transacción y retorna el `EscenarioDTO` al controlador.
+13. **EscenarioController -> Cliente Angular**: Spring serializa el DTO a JSON dentro de un `ResponseEntity` (HTTP 200 OK) y lo responde al cliente.
