@@ -1,0 +1,94 @@
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Editar Escenario' : 'Nuevo Escenario' }}</h2>
+      <a routerLink="/escenarios" class="btn-close">&times;</a>
+    </div>
+
+    <form [formGroup]="escenarioForm" (ngSubmit)="onSubmit()">
+      
+      <div class="form-group">
+        <label for="nombre">Nombre del Escenario</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          formControlName="nombre" 
+          placeholder="Ej: Curva Peligrosa en Lluvia"
+          [class.invalid]="escenarioForm.get('nombre')?.invalid && escenarioForm.get('nombre')?.touched">
+        <div class="error-msg" *ngIf="escenarioForm.get('nombre')?.invalid && escenarioForm.get('nombre')?.touched">
+          El nombre es requerido y debe ser menor a 100 caracteres.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea 
+          id="descripcion" 
+          formControlName="descripcion" 
+          rows="3"
+          placeholder="Detalles sobre el escenario y sus desafíos..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="tipoVia">Tipo de Vía</label>
+          <select id="tipoVia" formControlName="tipoVia" [class.invalid]="escenarioForm.get('tipoVia')?.invalid && escenarioForm.get('tipoVia')?.touched">
+            <option value="" disabled selected>Seleccione...</option>
+            <option value="Urbana">Urbana</option>
+            <option value="Carretera">Carretera</option>
+            <option value="Autopista">Autopista</option>
+            <option value="Rural">Rural</option>
+          </select>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="nivelDificultad">Nivel de Dificultad (1-5)</label>
+          <select id="nivelDificultad" formControlName="nivelDificultad">
+            <option [ngValue]="1">1 - Muy Fácil</option>
+            <option [ngValue]="2">2 - Fácil</option>
+            <option [ngValue]="3">3 - Intermedio</option>
+            <option [ngValue]="4">4 - Difícil</option>
+            <option [ngValue]="5">5 - Muy Difícil / Extremo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="clima">Condición Climática</label>
+          <select id="clima" formControlName="clima" [class.invalid]="escenarioForm.get('clima')?.invalid && escenarioForm.get('clima')?.touched">
+            <option value="" disabled selected>Seleccione...</option>
+            <option value="Soleado">Soleado</option>
+            <option value="Lluvia">Lluvia</option>
+            <option value="Niebla">Niebla</option>
+            <option value="Nieve">Nieve</option>
+            <option value="Tormenta">Tormenta</option>
+          </select>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="densidadTrafico">Densidad de Tráfico</label>
+          <select id="densidadTrafico" formControlName="densidadTrafico" [class.invalid]="escenarioForm.get('densidadTrafico')?.invalid && escenarioForm.get('densidadTrafico')?.touched">
+            <option value="" disabled selected>Seleccione...</option>
+            <option value="Baja">Baja</option>
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+            <option value="Congestionado">Congestionado</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-banner">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" routerLink="/escenarios">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="loading || escenarioForm.invalid">
+          {{ loading ? 'Guardando...' : 'Guardar Escenario' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

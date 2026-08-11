@@ -159,6 +159,41 @@ public class AuthService {
         return mapToDTO(usuario);
     }
 
+    /**
+     * Lista todos los usuarios con paginación.
+     */
+    public org.springframework.data.domain.Page<UsuarioDTO> listarUsuarios(org.springframework.data.domain.Pageable pageable) {
+        return usuarioRepository.findAll(pageable).map(this::mapToDTO);
+    }
+
+    /**
+     * Cambia el rol de un usuario existente.
+     */
+    @Transactional
+    public UsuarioDTO cambiarRol(Integer id, String nombreRol) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
+
+        Rol nuevoRol = rolRepository.findByNombre(nombreRol)
+                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + nombreRol));
+
+        usuario.setRol(nuevoRol);
+        usuario = usuarioRepository.save(usuario);
+        return mapToDTO(usuario);
+    }
+
+    /**
+     * Elimina un usuario (soft delete).
+     */
+    @Transactional
+    public void eliminarUsuario(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
+        usuario.setActivo(false);
+        usuario.setEstado("Inactivo");
+        usuarioRepository.save(usuario);
+    }
+
     private UserDetails buildUserDetails(Usuario usuario) {
         return new org.springframework.security.core.userdetails.User(
                 usuario.getEmail(),

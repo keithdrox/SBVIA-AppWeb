@@ -1,0 +1,62 @@
+<div class="list-container">
+  <div class="header-actions">
+    <h2>Administración de Usuarios</h2>
+    <div>
+      <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre Completo</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Licencia</th>
+          <th>Rol Actual</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuarios">
+          <td>{{ u.id }}</td>
+          <td>{{ u.nombre }} {{ u.apellido }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.telefono || 'N/A' }}</td>
+          <td><span class="badge" [ngClass]="{'badge-info': u.tipoLicencia}">{{ u.tipoLicencia || 'N/A' }}</span></td>
+          
+          <!-- Selector de Rol Inline -->
+          <td>
+            <select [ngModel]="u.rol" (ngModelChange)="cambiarRol(u, $event)" class="role-select" [disabled]="!u.activo">
+              <option *ngFor="let rol of rolesDisponibles" [value]="rol">{{ rol }}</option>
+            </select>
+          </td>
+
+          <td>
+            <span class="badge" [ngClass]="u.activo ? 'badge-success' : 'badge-danger'">
+              {{ u.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          
+          <td class="actions-cell">
+            <button class="btn-icon btn-delete" title="Desactivar" (click)="desactivarUsuario(u.id, u.nombre)" [disabled]="!u.activo">
+              🚫
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="usuarios.length === 0">
+          <td colspan="8" class="text-center">No hay usuarios registrados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">&laquo; Anterior</button>
+    <span>Página {{ page + 1 }} de {{ totalPages }}</span>
+    <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente &raquo;</button>
+  </div>
+</div>

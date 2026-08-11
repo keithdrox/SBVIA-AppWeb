@@ -46,10 +46,15 @@ export class EscenarioListComponent implements OnInit {
   }
 
   eliminar(id: number | undefined): void {
-    if (id && confirm('¿Estás seguro de eliminar este escenario?')) {
+    if (id !== undefined && confirm('¿Está seguro de que desea eliminar este escenario?')) {
       this.escenarioService.eliminar(id).subscribe({
-        next: () => this.cargarEscenarios(),
-        error: (err) => alert('Error eliminando: No tiene permisos')
+        next: () => {
+          this.cargarEscenarios();
+        },
+        error: (err) => {
+          console.error('Error al eliminar escenario', err);
+          alert('Hubo un error al eliminar el escenario.');
+        }
       });
     }
   }

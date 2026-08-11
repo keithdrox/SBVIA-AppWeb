@@ -3,8 +3,7 @@
     <h2>Gestión de Escenarios</h2>
     <div>
       <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
-      <button *ngIf="isAdmin" class="btn-primary" (click)="null" disabled>+ Nuevo Escenario</button>
-      <!-- El formulario de creación se haría en otro componente, dejamos el botón ilustrativo para la entrega 1B CRUD base -->
+      <a *ngIf="isAdmin" routerLink="/escenarios/nuevo" class="btn-primary" style="text-decoration:none; display:inline-block; margin-left: 10px;">+ Nuevo Escenario</a>
     </div>
   </div>
 
@@ -34,7 +33,7 @@
           <td>{{ esc.clima }}</td>
           <td>{{ esc.densidadTrafico }}</td>
           <td *ngIf="isAdmin" class="actions-cell">
-            <button class="btn-icon btn-edit" title="Editar">✏️</button>
+            <a class="btn-icon btn-edit" title="Editar" [routerLink]="['/escenarios/editar', esc.id]" style="text-decoration:none; cursor:pointer;">✏️</a>
             <button class="btn-icon btn-delete" title="Eliminar" (click)="eliminar(esc.id)">🗑️</button>
           </td>
         </tr>
