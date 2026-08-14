@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = '/api/auth';
   
   // El token de acceso se almacena en memoria, no en localStorage (Regla de seguridad Entrega 1B)
   private accessToken = signal<string | null>(null);

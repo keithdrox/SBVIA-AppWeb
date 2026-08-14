@@ -18,7 +18,7 @@ export interface Usuario {
   providedIn: 'root'
 })
 export class UsuarioService {
-  private readonly API_URL = 'http://localhost:8080/api/usuarios';
+  private readonly API_URL = '/api/usuarios';
 
   constructor(private http: HttpClient) { }
 

@@ -16,7 +16,7 @@ export interface Escenario {
   providedIn: 'root'
 })
 export class EscenarioService {
-  private readonly API_URL = 'http://localhost:8080/api/escenarios';
+  private readonly API_URL = '/api/escenarios';
 
   constructor(private http: HttpClient) { }
 
