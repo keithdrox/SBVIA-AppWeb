@@ -2,10 +2,8 @@
 FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 WORKDIR /app
 COPY pom.xml .
-# Descargar dependencias (mejora el caché de Docker)
-RUN mvn dependency:go-offline -B
 COPY src ./src
-RUN mvn clean package -Dmaven.test.skip=true
+RUN mvn --batch-mode clean package -DskipTests
 
 # Etapa 2: Ejecución
 FROM eclipse-temurin:21-jre-alpine
