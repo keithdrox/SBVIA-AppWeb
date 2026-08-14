@@ -232,4 +232,26 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@example.com"));
     }
+
+    @Test
+    @DisplayName("Usuario autenticado sin rol administrativo recibe Problem Details 403")
+    void accesoSinRolAdministrativo() throws Exception {
+        LoginRequest loginReq = new LoginRequest();
+        loginReq.setEmail("test@example.com");
+        loginReq.setPassword("password123");
+
+        MvcResult login = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginReq)))
+                .andReturn();
+        String token = objectMapper.readTree(login.getResponse().getContentAsString())
+                .get("accessToken").asText();
+
+        mockMvc.perform(get("/api/usuarios")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.title").value("Forbidden"))
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.instance").value("/api/usuarios"));
+    }
 }
