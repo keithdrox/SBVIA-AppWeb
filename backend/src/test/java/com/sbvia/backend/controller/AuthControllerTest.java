@@ -124,17 +124,23 @@ class AuthControllerTest {
                 .andReturn();
 
         MockHttpServletResponse response = result.getResponse();
-        String setCookieHeader = response.getHeader("Set-Cookie");
+        java.util.List<String> setCookieHeaders = response.getHeaders("Set-Cookie");
+        String accessCookie = setCookieHeaders.stream()
+                .filter(cookie -> cookie.startsWith("accessToken="))
+                .findFirst()
+                .orElseThrow();
 
-        assertThat(setCookieHeader)
+        assertThat(accessCookie)
                 .as("La cabecera Set-Cookie debe existir en la respuesta de login")
                 .isNotNull();
-        assertThat(setCookieHeader)
+        assertThat(accessCookie)
                 .as("La cookie debe tener HttpOnly para prevenir acceso desde JavaScript (mitigación XSS)")
                 .containsIgnoringCase("HttpOnly");
-        assertThat(setCookieHeader)
+        assertThat(accessCookie)
                 .as("La cookie debe tener SameSite=Strict para prevenir CSRF en peticiones cross-site")
                 .containsIgnoringCase("SameSite=Strict");
+        assertThat(setCookieHeaders).anySatisfy(cookie ->
+                assertThat(cookie).startsWith("XSRF-TOKEN=").doesNotContainIgnoringCase("HttpOnly"));
     }
 
     @Test
@@ -160,12 +166,16 @@ class AuthControllerTest {
         java.util.List<String> setCookieHeaders = result.getResponse().getHeaders("Set-Cookie");
 
         assertThat(setCookieHeaders)
-                .as("Registro debe emitir cookies separadas de acceso y renovación")
-                .hasSize(2)
+                .as("Registro debe emitir cookies de CSRF, acceso y renovación")
+                .hasSize(3);
+        assertThat(setCookieHeaders.stream()
+                .filter(cookie -> !cookie.startsWith("XSRF-TOKEN=")))
                 .allSatisfy(cookie -> {
                     assertThat(cookie).containsIgnoringCase("HttpOnly");
                     assertThat(cookie).containsIgnoringCase("SameSite=Strict");
                 });
+        assertThat(setCookieHeaders).anySatisfy(cookie ->
+                assertThat(cookie).startsWith("XSRF-TOKEN=").doesNotContainIgnoringCase("HttpOnly"));
         assertThat(setCookieHeaders).anySatisfy(cookie -> assertThat(cookie).startsWith("refreshToken="));
     }
 

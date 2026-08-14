@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
 /**
@@ -42,8 +43,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desactivar CSRF (stateless con JWT, no se necesita)
-                .csrf(csrf -> csrf.disable())
+                // La autenticación viaja en cookies, por lo que las operaciones mutables
+                // requieren el patrón double-submit cookie compatible con Angular.
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/api/auth/login", "/api/auth/registro"))
 
                 // Cabeceras HTTP de seguridad (OWASP)
                 .headers(headers -> headers
@@ -87,7 +91,8 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
 
                 // Agregar filtro JWT antes del filtro de autenticación estándar
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CsrfCookieFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
