@@ -18,7 +18,7 @@ const BASE_URL = 'http://localhost:8080/api';
 export default function () {
     // 1. Login para obtener token (simulado)
     const loginPayload = JSON.stringify({
-        email: 'instructor@sbvia.com',
+        email: 'conductor@sbvia.com',
         password: 'password123'
     });
 
