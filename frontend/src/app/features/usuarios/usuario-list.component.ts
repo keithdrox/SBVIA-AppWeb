@@ -16,7 +16,7 @@ export class UsuarioListComponent implements OnInit {
   page = 0;
   size = 10;
   totalPages = 0;
-  rolesDisponibles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_INSTRUCTOR', 'Conductor'];
+  rolesDisponibles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_INSTRUCTOR', 'ROLE_AUDITOR'];
 
   constructor(private usuarioService: UsuarioService) { }
 

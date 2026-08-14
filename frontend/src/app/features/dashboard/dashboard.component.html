@@ -18,13 +18,13 @@
     <div class="cards-grid">
       
       <!-- Admin Only -->
-      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN' || usuario?.rol === 'Admin'">
+      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN'">
         <h3>Escenarios de Simulación</h3>
         <p>Configura y gestiona los escenarios viales.</p>
         <a routerLink="/escenarios" class="btn-primary-outline">Gestionar Escenarios</a>
       </div>
       
-      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN' || usuario?.rol === 'Admin'">
+      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN'">
         <h3>Administración de Usuarios</h3>
         <p>Administra registros, roles y accesos.</p>
         <a routerLink="/usuarios" class="btn-primary-outline">Gestionar Usuarios</a>
