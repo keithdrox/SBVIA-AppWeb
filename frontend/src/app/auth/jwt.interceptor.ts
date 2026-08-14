@@ -9,7 +9,10 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // No interceptar peticiones a /api/auth
+  // Las cookies HttpOnly solo viajan cuando Angular habilita credenciales.
+  req = req.clone({ withCredentials: true });
+
+  // No adjuntar Authorization a los endpoints que crean o renuevan credenciales.
   if (req.url.includes('/api/auth/login') || req.url.includes('/api/auth/registro') || req.url.includes('/api/auth/refresh')) {
     return next(req);
   }

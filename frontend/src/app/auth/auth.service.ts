@@ -18,24 +18,19 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.API_URL}/login`, credentials).pipe(
+    return this.http.post(`${this.API_URL}/login`, credentials, { withCredentials: true }).pipe(
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
-        // Refresh token idealmente debería venir y guardarse en cookie HttpOnly.
-        // Como este es un entorno local básico, lo guardamos en session/local para la prueba,
-        // pero el accessToken se mantiene estrictamente en memoria.
-        localStorage.setItem('refreshToken', response.refreshToken);
       })
     );
   }
 
   registro(data: any): Observable<any> {
-    return this.http.post(`${this.API_URL}/registro`, data).pipe(
+    return this.http.post(`${this.API_URL}/registro`, data, { withCredentials: true }).pipe(
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
-        localStorage.setItem('refreshToken', response.refreshToken);
       })
     );
   }
@@ -44,7 +39,8 @@ export class AuthService {
     if (callApi && this.accessToken()) {
       // Hacemos el llamado a la API para enviar el token a la blacklist de Redis
       this.http.post(`${this.API_URL}/logout`, {}, {
-        headers: { Authorization: `Bearer ${this.accessToken()}` }
+        headers: { Authorization: `Bearer ${this.accessToken()}` },
+        withCredentials: true
       }).subscribe({
         next: () => this.clearSession(),
         error: () => this.clearSession()
@@ -57,7 +53,6 @@ export class AuthService {
   private clearSession(): void {
     this.accessToken.set(null);
     this.currentUser.set(null);
-    localStorage.removeItem('refreshToken');
     this.router.navigate(['/login']);
   }
 
