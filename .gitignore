@@ -18,3 +18,16 @@ yarn-error.log
 *.njsproj
 *.sln
 *.sw?
+
+# Artefactos generados por Java/Maven
+backend/target/
+*.class
+
+# Dependencias y compilados de Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Herramientas y resultados temporales locales
+.tmp-tools/
+zap-results/
