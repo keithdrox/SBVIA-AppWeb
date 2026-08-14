@@ -2,28 +2,60 @@ name: OWASP ZAP Security Scan
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
-    name: Scan the web application
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      # Aquí iría el paso para levantar tu backend localmente antes de probar.
-      # Por simplicidad, se asume un despliegue de staging o se arranca con Docker.
-      # - name: Start Backend
-      #   run: docker-compose up -d
+    name: Escaneo de seguridad de la API
+    timeout-minutes: 20
 
-      - name: ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Levantar la API y sus dependencias
+        run: docker compose up -d --build postgres redis backend
+
+      - name: Esperar hasta que la API responda
+        shell: bash
+        run: |
+          for intento in {1..30}; do
+            if curl --fail --silent http://localhost:8080/actuator/health > /dev/null; then
+              exit 0
+            fi
+            sleep 5
+          done
+          docker compose logs backend
+          exit 1
+
+      - name: Ejecutar OWASP ZAP contra OpenAPI
+        run: |
+          docker run --rm --network host \
+            --volume "${{ github.workspace }}:/zap/wrk/:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-api-scan.py \
+            -t http://localhost:8080/api/docs \
+            -f openapi \
+            -I \
+            -r zap-report.html \
+            -J zap-report.json
+
+      - name: Guardar el informe de seguridad
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          target: 'http://localhost:8080/v3/api-docs' # API Specs target
-          rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a'
-          
-      # Las reglas personalizadas o de exclusión se almacenarían en .zap/rules.tsv
+          name: informe-owasp-zap
+          path: |
+            zap-report.html
+            zap-report.json
+          if-no-files-found: warn
+
+      - name: Apagar los servicios
+        if: always()
+        run: docker compose down --volumes
