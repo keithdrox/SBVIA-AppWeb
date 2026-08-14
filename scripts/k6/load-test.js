@@ -34,14 +34,17 @@ export default function () {
         'login exitoso (200)': (r) => r.status === 200,
     });
 
-    // En un escenario real con HttpOnly cookie, k6 maneja las cookies automáticamente.
-    // Si fuera Bearer token:
-    // let token = loginRes.json('accessToken');
+    const token = loginRes.json('accessToken');
+    const authParams = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    };
     
     sleep(1);
 
     // 2. Obtener lista de escenarios
-    let escenariosRes = http.get(`${BASE_URL}/escenarios`);
+    let escenariosRes = http.get(`${BASE_URL}/escenarios`, authParams);
     
     check(escenariosRes, {
         'escenarios cargados (200)': (r) => r.status === 200,
