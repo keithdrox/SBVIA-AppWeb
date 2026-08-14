@@ -10,11 +10,13 @@ CREATE TABLE "Usuario" (
   "apellido" varchar NOT NULL, 
   "email" varchar NOT NULL UNIQUE,
   "password_hash" varchar NOT NULL,
+  "telefono" varchar,
+  "tipo_licencia" varchar,
   "fecha_registro" date NOT NULL DEFAULT CURRENT_DATE, 
   "estado" varchar NOT NULL, 
   "activo" boolean NOT NULL DEFAULT true,
-  "creado_en" timestamp NOT NULL DEFAULT NOW(),
-  "actualizado_en" timestamp NOT NULL DEFAULT NOW(),
+  "creado_en" timestamptz NOT NULL DEFAULT NOW(),
+  "actualizado_en" timestamptz NOT NULL DEFAULT NOW(),
   "id_Rol" integer NOT NULL 
 ); 
 
@@ -27,8 +29,8 @@ CREATE TABLE "Escenario" (
   "clima" varchar NOT NULL, 
   "densidad_trafico" varchar NOT NULL,
   "activo" boolean NOT NULL DEFAULT true,
-  "creado_en" timestamp NOT NULL DEFAULT NOW(),
-  "actualizado_en" timestamp NOT NULL DEFAULT NOW()
+  "creado_en" timestamptz NOT NULL DEFAULT NOW(),
+  "actualizado_en" timestamptz NOT NULL DEFAULT NOW()
 ); 
 
 CREATE TABLE "Simulacion" ( 
