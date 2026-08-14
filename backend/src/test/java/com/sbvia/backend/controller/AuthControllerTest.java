@@ -49,6 +49,9 @@ class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private com.sbvia.backend.security.JwtService jwtService;
+
     @MockitoBean
     private com.sbvia.backend.service.TokenBlacklistService tokenBlacklistService;
 
@@ -84,12 +87,19 @@ class AuthControllerTest {
         request.setEmail("test@example.com");
         request.setPassword("password123");
 
-        mockMvc.perform(post("/api/auth/login")
+        MvcResult result = mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.refreshToken").doesNotExist());
+                .andExpect(jsonPath("$.refreshToken").doesNotExist())
+                .andReturn();
+
+        String token = objectMapper.readTree(result.getResponse().getContentAsString())
+                .get("accessToken").asText();
+        assertThat(jwtService.extractIssuer(token)).isEqualTo("sbvia-api");
+        assertThat(jwtService.extractAudience(token)).containsExactly("sbvia-web");
+        assertThat(jwtService.extractNotBefore(token)).isNotNull();
     }
 
     /**

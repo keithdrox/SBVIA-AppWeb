@@ -30,6 +30,12 @@ public class JwtService {
     @Value("${security.jwt.refresh-expiration-ms}")
     private long refreshExpirationMs;
 
+    @Value("${security.jwt.issuer}")
+    private String jwtIssuer;
+
+    @Value("${security.jwt.audience}")
+    private String jwtAudience;
+
     /**
      * Genera un access token JWT con claims personalizados.
      */
@@ -65,8 +71,11 @@ public class JwtService {
 
         return Jwts.builder()
                 .claims(extraClaims)
+                .issuer(jwtIssuer)
                 .subject(subject)
+                .audience().add(jwtAudience).and()
                 .id(UUID.randomUUID().toString())
+                .notBefore(now)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
@@ -99,6 +108,18 @@ public class JwtService {
      */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractIssuer(String token) {
+        return extractClaim(token, Claims::getIssuer);
+    }
+
+    public java.util.Set<String> extractAudience(String token) {
+        return extractClaim(token, Claims::getAudience);
+    }
+
+    public Date extractNotBefore(String token) {
+        return extractClaim(token, Claims::getNotBefore);
     }
 
     /**
@@ -149,6 +170,8 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
+                .requireIssuer(jwtIssuer)
+                .requireAudience(jwtAudience)
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
