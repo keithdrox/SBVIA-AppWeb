@@ -36,6 +36,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -55,6 +56,9 @@ public class SecurityConfig {
 
                 // CORS — delegado a CorsConfig
                 .cors(cors -> {})
+
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(authenticationEntryPoint))
 
                 // Sesiones stateless (JWT)
                 .sessionManagement(session ->

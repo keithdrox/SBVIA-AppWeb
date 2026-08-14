@@ -200,10 +200,14 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Acceso sin token retorna 403 Forbidden")
+    @DisplayName("Acceso sin token retorna Problem Details 401")
     void accesoSinToken() throws Exception {
         mockMvc.perform(get("/api/usuarios/me"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("No autenticado"))
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.detail").exists())
+                .andExpect(jsonPath("$.instance").value("/api/usuarios/me"));
     }
 
     @Test
