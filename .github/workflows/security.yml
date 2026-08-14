@@ -36,8 +36,10 @@ jobs:
 
       - name: Ejecutar OWASP ZAP contra OpenAPI
         run: |
+          mkdir -p zap-results
+          chmod 777 zap-results
           docker run --rm --network host \
-            --volume "${{ github.workspace }}:/zap/wrk/:rw" \
+            --volume "${{ github.workspace }}/zap-results:/zap/wrk/:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-api-scan.py \
             -t http://localhost:8080/api/docs \
@@ -52,8 +54,8 @@ jobs:
         with:
           name: informe-owasp-zap
           path: |
-            zap-report.html
-            zap-report.json
+            zap-results/zap-report.html
+            zap-results/zap-report.json
           if-no-files-found: warn
 
       - name: Apagar los servicios
