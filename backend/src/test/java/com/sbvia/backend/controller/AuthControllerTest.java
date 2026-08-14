@@ -78,7 +78,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Login exitoso retorna 200 con tokens")
+    @DisplayName("Login exitoso retorna access token y oculta refresh token")
     void loginExitoso() throws Exception {
         LoginRequest request = new LoginRequest();
         request.setEmail("test@example.com");
@@ -89,7 +89,7 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.refreshToken").exists());
+                .andExpect(jsonPath("$.refreshToken").doesNotExist());
     }
 
     /**
@@ -138,6 +138,8 @@ class AuthControllerTest {
         request.setApellido("Conductor");
         request.setEmail("nuevo@sbvia.com");
         request.setPassword("password123");
+        request.setTelefono("0999999999");
+        request.setTipoLicencia("B");
 
         MvcResult result = mockMvc.perform(post("/api/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -145,13 +147,16 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        String setCookieHeader = result.getResponse().getHeader("Set-Cookie");
+        java.util.List<String> setCookieHeaders = result.getResponse().getHeaders("Set-Cookie");
 
-        assertThat(setCookieHeader)
-                .as("La cabecera Set-Cookie debe existir en la respuesta de registro")
-                .isNotNull();
-        assertThat(setCookieHeader).containsIgnoringCase("HttpOnly");
-        assertThat(setCookieHeader).containsIgnoringCase("SameSite=Strict");
+        assertThat(setCookieHeaders)
+                .as("Registro debe emitir cookies separadas de acceso y renovación")
+                .hasSize(2)
+                .allSatisfy(cookie -> {
+                    assertThat(cookie).containsIgnoringCase("HttpOnly");
+                    assertThat(cookie).containsIgnoringCase("SameSite=Strict");
+                });
+        assertThat(setCookieHeaders).anySatisfy(cookie -> assertThat(cookie).startsWith("refreshToken="));
     }
 
     @Test
@@ -175,6 +180,8 @@ class AuthControllerTest {
         request.setApellido("User");
         request.setEmail("test@example.com"); // Email ya existe
         request.setPassword("password123");
+        request.setTelefono("0999999999");
+        request.setTipoLicencia("B");
 
         mockMvc.perform(post("/api/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Autenticación", description = "Endpoints de registro, login, logout y refresh token JWT")
 public class AuthController {
 
+    private static final String ACCESS_COOKIE = "accessToken";
+    private static final String REFRESH_COOKIE = "refreshToken";
+
     private final AuthService authService;
 
     /** Controla el flag Secure de la cookie. false en dev (HTTP), true en prod (HTTPS). */
@@ -35,7 +38,8 @@ public class AuthController {
 
     /**
      * POST /api/auth/registro — Registrar nuevo usuario.
-     * Devuelve el usuario creado (sin hash) y tokens JWT.
+     * Devuelve el usuario creado (sin hash) y el access token.
+     * El refresh token se entrega exclusivamente en una cookie HttpOnly.
      */
     @PostMapping("/registro")
     @Operation(summary = "Registrar nuevo usuario", description = "Crea una cuenta y devuelve tokens JWT")
@@ -45,39 +49,35 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponse> registro(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.registro(request);
-        ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
-                .httpOnly(true)
-                .secure(cookieSecure)        // true en producción (HTTPS), false en desarrollo
-                .sameSite("Strict")          // CSRF mitigation: cookie no se envía en peticiones cross-site
-                .path("/")
-                .maxAge(response.getExpiresIn() / 1000)
-                .build();
+        ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
+                response.getExpiresIn() / 1000, "/");
+        ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
+                authService.getRefreshExpirationSeconds(), "/api/auth");
+        response.setRefreshToken(null);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString(), refreshCookie.toString())
                 .body(response);
     }
 
     /**
      * POST /api/auth/login — Autenticar usuario.
-     * Devuelve accessToken y refreshToken.
+     * Devuelve el access token; el refresh token permanece en cookie HttpOnly.
      */
     @PostMapping("/login")
-    @Operation(summary = "Iniciar sesión", description = "Autentica y devuelve accessToken + refreshToken")
+    @Operation(summary = "Iniciar sesión", description = "Autentica, devuelve el access token y establece el refresh token en cookie HttpOnly")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Autenticación exitosa"),
         @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
     })
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
-                .httpOnly(true)
-                .secure(cookieSecure)        // true en producción (HTTPS), false en desarrollo
-                .sameSite("Strict")          // CSRF mitigation
-                .path("/")
-                .maxAge(response.getExpiresIn() / 1000)
-                .build();
+        ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
+                response.getExpiresIn() / 1000, "/");
+        ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
+                authService.getRefreshExpirationSeconds(), "/api/auth");
+        response.setRefreshToken(null);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString(), refreshCookie.toString())
                 .body(response);
     }
 
@@ -104,16 +104,11 @@ public class AuthController {
             authService.logout(token);
         }
 
-        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
-                .httpOnly(true)
-                .secure(cookieSecure)
-                .sameSite("Strict")
-                .path("/")
-                .maxAge(0) // Eliminar cookie
-                .build();
+        ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, "", 0, "/");
+        ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, "", 0, "/api/auth");
 
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString(), refreshCookie.toString())
                 .build();
     }
 
@@ -127,17 +122,34 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "Token refrescado"),
         @ApiResponse(responseCode = "403", description = "Refresh token inválido o expirado")
     })
-    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
-        AuthResponse response = authService.refresh(request.getRefreshToken());
-        ResponseCookie cookie = ResponseCookie.from("accessToken", response.getAccessToken())
-                .httpOnly(true)
-                .secure(cookieSecure)        // true en producción (HTTPS), false en desarrollo
-                .sameSite("Strict")          // CSRF mitigation
-                .path("/")
-                .maxAge(response.getExpiresIn() / 1000)
-                .build();
+    public ResponseEntity<AuthResponse> refresh(
+            @CookieValue(value = REFRESH_COOKIE, required = false) String cookieRefreshToken,
+            @Valid @RequestBody(required = false) RefreshTokenRequest request) {
+        String refreshToken = cookieRefreshToken != null
+                ? cookieRefreshToken
+                : request != null ? request.getRefreshToken() : null;
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new IllegalArgumentException("Refresh token ausente");
+        }
+
+        AuthResponse response = authService.refresh(refreshToken);
+        ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
+                response.getExpiresIn() / 1000, "/");
+        ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
+                authService.getRefreshExpirationSeconds(), "/api/auth");
+        response.setRefreshToken(null);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString(), refreshCookie.toString())
                 .body(response);
+    }
+
+    private ResponseCookie tokenCookie(String name, String value, long maxAgeSeconds, String path) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .sameSite("Strict")
+                .path(path)
+                .maxAge(maxAgeSeconds)
+                .build();
     }
 }

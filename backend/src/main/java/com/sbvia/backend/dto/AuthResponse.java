@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO de respuesta de autenticación.
- * Contiene el accessToken, refreshToken y tiempo de expiración.
+ * El campo refreshToken se usa internamente entre servicio y controlador, pero el
+ * controlador lo elimina antes de serializar la respuesta HTTP.
  * No tiene anotaciones @Entity.
  */
 @Data

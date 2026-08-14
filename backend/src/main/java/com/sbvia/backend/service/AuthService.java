@@ -194,6 +194,10 @@ public class AuthService {
         usuarioRepository.save(usuario);
     }
 
+    public long getRefreshExpirationSeconds() {
+        return jwtService.getRefreshExpirationMs() / 1000;
+    }
+
     private UserDetails buildUserDetails(Usuario usuario) {
         return new org.springframework.security.core.userdetails.User(
                 usuario.getEmail(),

@@ -134,6 +134,10 @@ public class JwtService {
         return accessExpirationMs;
     }
 
+    public long getRefreshExpirationMs() {
+        return refreshExpirationMs;
+    }
+
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
