@@ -17,7 +17,7 @@ cd SBVIA-AppWeb
 ```bash
 cp .env.example .env
 ```
-Edita `.env` y reemplaza la contraseña de base de datos y el secreto JWT antes de desplegar. El proyecto no publica cuentas ni contraseñas de usuarios.
+Edita `.env` y reemplaza la contraseña de base de datos y el secreto JWT antes de desplegar.
 
 
 ### 3. Verificar, construir y levantar todo
@@ -36,6 +36,14 @@ docker compose ps
 - **Frontend Angular:** [http://localhost:4200](http://localhost:4200)
 - **Swagger UI (Backend API):** [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
 - **Actuator Health:** [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+
+Cuenta de demostración para la evaluación:
+
+- **Correo:** `conductor@sbvia.com`
+- **Contraseña:** `password123`
+- **Rol:** Conductor (`ROLE_USER`)
+
+Esta cuenta permite recorrer las funciones de conductor. Las credenciales administrativas no se publican en el repositorio.
 
 ---
 ### Ejecutar solo las verificaciones
