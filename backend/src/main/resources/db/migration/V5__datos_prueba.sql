@@ -5,11 +5,11 @@
 
 -- 1. Insertar Roles del Sistema (Diferentes a los roles de base de datos)
 INSERT INTO "Rol" ("nombre", "descripcion") VALUES
-('DBA', 'Administrador de Base de Datos'),
-('Administrador', 'Administrador del Sistema'),
-('Instructor', 'Instructor de conducción'),
-('Conductor', 'Alumno o conductor en práctica'),
-('Auditor', 'Auditor de reportes');
+('ROLE_DBA', 'Administrador de Base de Datos'),
+('ROLE_ADMIN', 'Administrador del Sistema'),
+('ROLE_INSTRUCTOR', 'Instructor de conducción'),
+('ROLE_USER', 'Alumno o conductor en práctica'),
+('ROLE_AUDITOR', 'Auditor de reportes');
 
 -- 2. Insertar Usuarios
 INSERT INTO "Usuario" ("nombre", "apellido", "email", "password_hash", "fecha_registro", "estado", "activo", "id_Rol") VALUES

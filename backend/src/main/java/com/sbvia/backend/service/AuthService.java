@@ -45,10 +45,9 @@ public class AuthService {
                     "Ya existe un usuario registrado con el email: " + request.getEmail());
         }
 
-        // Rol por defecto: Conductor (id=4) o crear uno básico
-        Rol rolPorDefecto = rolRepository.findByNombre("Conductor")
-                .orElseGet(() -> rolRepository.findByNombre("ROLE_USER")
-                        .orElseThrow(() -> new IllegalStateException("No se encontró el rol por defecto")));
+        // Usar el nombre canónico reconocido por las reglas de Spring Security.
+        Rol rolPorDefecto = rolRepository.findByNombre("ROLE_USER")
+                .orElseThrow(() -> new IllegalStateException("No se encontró el rol ROLE_USER"));
 
         // Crear usuario con contraseña hasheada (BCrypt)
         Usuario usuario = Usuario.builder()

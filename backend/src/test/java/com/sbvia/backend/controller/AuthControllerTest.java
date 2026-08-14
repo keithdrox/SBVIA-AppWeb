@@ -60,7 +60,7 @@ class AuthControllerTest {
         rolRepository.deleteAll();
         // Persistir el Rol antes que el Usuario (relación FK)
         Rol rolTest = Rol.builder()
-                .nombre("Conductor")
+                .nombre("ROLE_USER")
                 .descripcion("Alumno o conductor en práctica")
                 .build();
         rolTest = rolRepository.save(rolTest);
