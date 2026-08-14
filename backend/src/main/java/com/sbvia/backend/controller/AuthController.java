@@ -50,7 +50,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> registro(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.registro(request);
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
-                response.getExpiresIn() / 1000, "/");
+                response.getExpiresIn(), "/");
         ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
                 authService.getRefreshExpirationSeconds(), "/api/auth");
         response.setRefreshToken(null);
@@ -72,7 +72,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
-                response.getExpiresIn() / 1000, "/");
+                response.getExpiresIn(), "/");
         ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
                 authService.getRefreshExpirationSeconds(), "/api/auth");
         response.setRefreshToken(null);
@@ -134,7 +134,7 @@ public class AuthController {
 
         AuthResponse response = authService.refresh(refreshToken);
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
-                response.getExpiresIn() / 1000, "/");
+                response.getExpiresIn(), "/");
         ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
                 authService.getRefreshExpirationSeconds(), "/api/auth");
         response.setRefreshToken(null);

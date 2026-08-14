@@ -76,6 +76,17 @@ class AuthControllerUnitTest {
     }
 
     @Test
+    void conservaLaVigenciaEnSegundosDeLaCookieDeAcceso() {
+        when(authService.refresh("refresh-cookie")).thenReturn(respuesta());
+        when(authService.getRefreshExpirationSeconds()).thenReturn(604_800L);
+
+        ResponseEntity<AuthResponse> respuesta = authController.refresh("refresh-cookie", null);
+
+        assertThat(respuesta.getHeaders().get("Set-Cookie"))
+                .anySatisfy(cookie -> assertThat(cookie).contains("accessToken=access-nuevo", "Max-Age=3600"));
+    }
+
+    @Test
     void refreshRechazaLaAusenciaDeToken() {
         assertThatThrownBy(() -> authController.refresh(null, null))
                 .isInstanceOf(IllegalArgumentException.class)
