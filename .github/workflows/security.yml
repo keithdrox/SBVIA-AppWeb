@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Escaneo de seguridad de la API
     timeout-minutes: 20
+    env:
+      DB_USER: sbvia_ci
+      DB_PASSWORD: sbvia_ci_password
+      JWT_SECRET: ci_only_jwt_secret_with_more_than_sixty_four_characters_1234567890
 
     steps:
       - name: Descargar el repositorio

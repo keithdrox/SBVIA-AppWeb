@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/sbvia_db}
-    username: ${DB_USER:sbvia_user}
-    password: ${DB_PASSWORD:sbvia_pass}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -26,7 +26,7 @@ spring:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:c4f5a8e1b2d3f6a7c8e9d0b1a2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1}
+    secret: ${JWT_SECRET}
     issuer: ${JWT_ISSUER:sbvia-api}
     audience: ${JWT_AUDIENCE:sbvia-web}
     expiration-ms: 3600000
