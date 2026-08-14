@@ -1,6 +1,7 @@
 package com.sbvia.backend.service;
 
 import com.sbvia.backend.dto.EscenarioDTO;
+import com.sbvia.backend.dto.CacheablePage;
 import com.sbvia.backend.entity.Escenario;
 import com.sbvia.backend.exception.ResourceNotFoundException;
 import com.sbvia.backend.repository.EscenarioRepository;
@@ -33,8 +34,9 @@ public class EscenarioService {
     @Cacheable(value = "escenarios", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     @Transactional(readOnly = true)
     public Page<EscenarioDTO> listarActivos(Pageable pageable) {
-        return escenarioRepository.findByActivoTrue(pageable)
+        Page<EscenarioDTO> page = escenarioRepository.findByActivoTrue(pageable)
                 .map(this::mapToDTO);
+        return new CacheablePage<>(page);
     }
 
     /**
