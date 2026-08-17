@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { UsuarioService, Usuario } from './usuario.service';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../shared/components/toast/toast.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-usuario-list',
