@@ -22,4 +22,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      * Verifica si existe un usuario con el email dado.
      */
     boolean existsByEmail(String email);
+
+    @org.springframework.data.jpa.repository.query.Procedure(name = "Usuario.actualizarInactivos")
+    Integer actualizarUsuariosInactivos(@org.springframework.data.repository.query.Param("p_fecha_limite") java.time.LocalDate pFechaLimite);
 }

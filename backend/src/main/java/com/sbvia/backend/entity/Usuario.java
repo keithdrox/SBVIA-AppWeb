@@ -14,6 +14,16 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "\"Usuario\"")
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+        name = "Usuario.actualizarInactivos",
+        procedureName = "sp_actualizar_usuarios_inactivos",
+        parameters = {
+            @StoredProcedureParameter(mode = ParameterMode.IN, name = "p_fecha_limite", type = LocalDate.class),
+            @StoredProcedureParameter(mode = ParameterMode.OUT, name = "actualizados", type = Integer.class)
+        }
+    )
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

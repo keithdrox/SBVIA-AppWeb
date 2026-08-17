@@ -10,6 +10,24 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "\"Simulacion\"")
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+        name = "Simulacion.calcularPromedio",
+        procedureName = "sp_calcular_promedio_usuario",
+        parameters = {
+            @StoredProcedureParameter(mode = ParameterMode.IN, name = "p_id_usuario", type = Integer.class),
+            @StoredProcedureParameter(mode = ParameterMode.OUT, name = "promedio", type = BigDecimal.class)
+        }
+    ),
+    @NamedStoredProcedureQuery(
+        name = "Simulacion.generarCodigo",
+        procedureName = "sp_generar_codigo_certificado",
+        parameters = {
+            @StoredProcedureParameter(mode = ParameterMode.IN, name = "p_id_simulacion", type = Integer.class),
+            @StoredProcedureParameter(mode = ParameterMode.OUT, name = "codigo_certificado", type = String.class)
+        }
+    )
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
