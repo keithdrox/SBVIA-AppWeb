@@ -1,11 +1,21 @@
 ReqID,Type,Description,Module,TestFile,Status,tipo_acceso,sql_file
-RF-01,FUNC,Autenticación JWT,Backend,AuthServiceTest.java,IMPLEMENTED,CRUD-ORM,
-RF-02,FUNC,Gestión de Escenarios,Backend,EscenarioControllerTest.java,IMPLEMENTED,CRUD-ORM,
-RF-03,FUNC,Inicio Simulación,Backend,SimulacionServiceTest.java,IN_PROGRESS,SP,db/procs/sp_validar_simulacion.sql
-RF-04,FUNC,Métricas de Desempeño,Backend,MetricaRepositoryTest.java,PENDING,SP,db/procs/sp_calcular_puntaje.sql
-RNF-01,PERF,Tiempo de respuesta < 2s,API,k6/opts.js,IMPLEMENTED,,
-RNF-02,SEC,Contraseñas en BCrypt,Database,schema.sql,IMPLEMENTED,,
-US-01,USER,Registro Conductor,Frontend,registro.component.spec.ts,IMPLEMENTED,CRUD-ORM,
-US-02,USER,Inicio de Sesión,Frontend,login.component.spec.ts,IMPLEMENTED,CRUD-ORM,
-US-03,USER,Listar Escenarios,Frontend,escenario-list.component.spec.ts,IMPLEMENTED,CRUD-ORM,
-US-04,USER,Iniciar Simulación,Frontend,simulador.component.spec.ts,IN_PROGRESS,SP,db/procs/sp_validar_simulacion.sql
+RF-01,FUNC,Autenticación stateless con JWT,Backend,AuthServiceTest.java,VERIFIED,CRUD-ORM,
+RF-02,FUNC,Gestión de Escenarios viales (CRUD),Backend,EscenarioServiceTest.java,VERIFIED,CRUD-ORM,
+RF-03,FUNC,Consulta multi-tabla de resultados de simulación,Backend,SimulacionServiceTest.java,VERIFIED,SP,db/procs/sp_reporte_simulacion.sql
+RF-04,FUNC,Cálculo agregado de promedio de desempeño de conductor,Backend,SimulacionServiceTest.java,VERIFIED,SP,db/procs/sp_calcular_promedio_usuario.sql
+RF-05,FUNC,Generación de reporte consolidado diario de actividad,Backend,SimulacionServiceTest.java,VERIFIED,SP,db/procs/sp_reporte_actividad_diaria.sql
+RF-06,FUNC,Actualización masiva de conductores inactivos,Backend,UsuarioControllerTest.java,VERIFIED,SP,db/procs/sp_actualizar_usuarios_inactivos.sql
+RF-07,FUNC,Validación cruzada de consistencia de reglas de escenario,Backend,EscenarioControllerTest.java,VERIFIED,SP,db/procs/sp_validar_escenario.sql
+RF-08,FUNC,Generación de código secuencial único para certificado,Backend,SimulacionServiceTest.java,VERIFIED,SP,db/procs/sp_generar_codigo_certificado.sql
+RNF-01,PERF,Latencia de lectura en caché caliente p95 <= 200ms,API,scripts/k6/load-test.js,VERIFIED,,
+RNF-02,PERF,Latencia de lectura en frío p95 <= 500ms,API,scripts/k6/load-test.js,VERIFIED,,
+RNF-03,SEC,Contraseñas hasheadas con BCrypt y factor de costo >= 10,Backend,AuthServiceTest.java,VERIFIED,,
+RNF-04,SEC,Cookie de token con HttpOnly + Secure + SameSite=Strict,Backend,AuthControllerTest.java,VERIFIED,,
+RNF-05,SEC,Ausencia total de SQL dinámico en procedimientos,Database,scripts/audit-sql-dynamic.sh,VERIFIED,,
+RNF-06,USAB,Escala de Usabilidad del Sistema SUS >= 80 puntos,Frontend,docs/mediciones/sus/sus-analysis.md,VERIFIED,,
+US-01,USER,Registro autónomo de conductor,Frontend,registro.component.spec.ts,VERIFIED,CRUD-ORM,
+US-02,USER,Inicio de sesión seguro y obtención de cookie,Frontend,login.component.spec.ts,VERIFIED,CRUD-ORM,
+US-03,USER,Exploración interactiva de escenarios viales,Frontend,escenario-list.component.spec.ts,VERIFIED,CRUD-ORM,
+US-04,USER,Ejecución de simulación y captura de decisiones,Frontend,simulador.component.spec.ts,VERIFIED,SP,db/procs/sp_reporte_simulacion.sql
+US-05,USER,Visualización de métricas y feedback en dashboard,Frontend,dashboard.component.spec.ts,VERIFIED,SP,db/procs/sp_calcular_promedio_usuario.sql
+US-06,USER,Descarga de certificado con código secuencial,Frontend,certificado.component.spec.ts,VERIFIED,SP,db/procs/sp_generar_codigo_certificado.sql

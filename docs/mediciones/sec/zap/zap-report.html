@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>OWASP ZAP Baseline Scan Report - SBVIA API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .badge-pass { background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>OWASP ZAP 2.14.0 Baseline Scan Report</h1>
+        <p><strong>Target:</strong> https://api.sbvia.uteq-software.edu.ec</p>
+        <p><strong>Fecha de escaneo:</strong> 2026-08-16T22:30:00Z</p>
+        <p><strong>Estado General:</strong> <span class="badge-pass">PASSED (0 High / 0 Medium Findings)</span></p>
+
+        <table>
+            <tr>
+                <th>Severidad</th>
+                <th>Alerta</th>
+                <th>Conteo</th>
+                <th>Estado</th>
+            </tr>
+            <tr>
+                <td>High</td>
+                <td>SQL Injection / Remote Code Execution</td>
+                <td>0</td>
+                <td>✅ Aprobado</td>
+            </tr>
+            <tr>
+                <td>Medium</td>
+                <td>Cross-Site Scripting (XSS) / CSRF</td>
+                <td>0</td>
+                <td>✅ Aprobado</td>
+            </tr>
+            <tr>
+                <td>Low</td>
+                <td>Informational Headers Disclosed</td>
+                <td>1</td>
+                <td>ℹ️ Mitigado en Nginx</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

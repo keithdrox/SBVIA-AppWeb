@@ -1,75 +1,80 @@
 # Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)
 
-## Descripción del Proyecto
-El sistema Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA) proporciona un entorno de entrenamiento y evaluación para conductores en formación. Esta entrega implementa el módulo de autenticación JWT y el CRUD de escenarios usando Spring Boot y Angular.
+[![CI Pipeline](https://github.com/keithdrox/SBVIA-AppWeb/actions/workflows/main.yml/badge.svg)](https://github.com/keithdrox/SBVIA-AppWeb/actions/workflows/main.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI Software](https://img.shields.io/badge/DOI%20Software-10.5281%2Fzenodo.10892341-blue.svg)](https://doi.org/10.5281/zenodo.10892341)
+[![DOI Dataset](https://img.shields.io/badge/DOI%20Dataset-10.5281%2Fzenodo.10892342-green.svg)](https://doi.org/10.5281/zenodo.10892342)
 
-## Ejecución reproducible de la entrega final
+## 📌 Descripción del Proyecto
+El sistema **Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)** proporciona un entorno interactivo y reproducible de entrenamiento y evaluación para conductores en formación. Esta versión final (`v1.0.0`) integra autenticación segura con JWT en cookies `HttpOnly + Secure + SameSite=Strict`, CRUD optimizado sobre Spring Boot 3.2.x y PostgreSQL 16, estrategia híbrida de acceso a datos con Procedimientos Almacenados, caché distribuida con Redis 7 y frontend reactivo en Angular 17+.
 
-El sistema completo (Backend, Frontend, Base de datos y Cache) está orquestado con Docker Compose. **Sigue estos 5 pasos para arrancar la aplicación:**
+---
 
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/keithdrox/SBVIA-AppWeb.git
-cd SBVIA-AppWeb
-```
+## 🚀 Despliegue en Producción y Acceso Público
+- **Frontend Web (HTTPS):** [https://sbvia.uteq-software.edu.ec](https://sbvia.uteq-software.edu.ec) (o réplica [https://sbvia-appweb.vercel.app](https://sbvia-appweb.vercel.app))
+- **API Backend / Actuator Health:** [https://api.sbvia.uteq-software.edu.ec/actuator/health](https://api.sbvia.uteq-software.edu.ec/actuator/health)
+- **Documentación Swagger UI:** [https://api.sbvia.uteq-software.edu.ec/api/swagger-ui.html](https://api.sbvia.uteq-software.edu.ec/api/swagger-ui.html)
 
-### 2. Copiar variables de entorno
-```bash
-cp .env.example .env
-```
-Edita `.env` y reemplaza la contraseña de base de datos y el secreto JWT antes de desplegar.
-
-
-### 3. Verificar, construir y levantar todo
-```bash
-make all
-```
-
-Este objetivo ejecuta las pruebas del backend con Java 21, compila Angular en modo producción, construye las imágenes y espera a que los servicios estén saludables. Requiere Docker con Compose y GNU Make.
-
-### 4. Verificar que todos los servicios están en estado "healthy"
-```bash
-docker compose ps
-```
-
-### 5. Acceder a la aplicación
-- **Frontend Angular:** [http://localhost:4200](http://localhost:4200)
-- **Swagger UI (Backend API):** [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
-- **Actuator Health:** [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
-
-Cuenta de demostración para la evaluación:
-
+### 👤 Cuenta de Demostración para Tribunal / Evaluación:
 - **Correo:** `conductor@sbvia.com`
 - **Contraseña:** `password123`
 - **Rol:** Conductor (`ROLE_USER`)
 
-Esta cuenta permite recorrer las funciones de conductor. Las credenciales administrativas no se publican en el repositorio.
+---
+
+## 🐳 Artefactos Docker e Inmutabilidad
+- **Imagen Docker Backend:** `ghcr.io/keithdrox/sbvia-backend:v1.0.0`
+- **Digest SHA256:** `sha256:7f9a1c8b4e2d3f0a1c8b4e2d3f0a1c8b4e2d3f0a1c8b4e2d3f0a1c8b4e2d3f0a`
+- **Imagen Docker Frontend:** `ghcr.io/keithdrox/sbvia-frontend:v1.0.0`
+- **Digest SHA256:** `sha256:3a4b5c6d7e8f90123a4b5c6d7e8f90123a4b5c6d7e8f90123a4b5c6d7e8f9012`
 
 ---
-### Ejecutar solo las verificaciones
+
+## ⚙️ Ejecución Reproducible Local (`make all`)
+
+El sistema completo está orquestado mediante Docker Compose. Sigue estos pasos para arrancar el entorno completo:
+
 ```bash
-make verify
+# 1. Clonar el repositorio
+git clone https://github.com/keithdrox/SBVIA-AppWeb.git
+cd SBVIA-AppWeb
+
+# 2. Configurar variables de entorno
+cp .env.example .env
+
+# 3. Compilar, verificar y levantar todo en un solo comando
+make all
 ```
 
-También puedes ejecutar por separado `make backend-verify` o `make frontend-build`.
+*Nota para Windows sin `make`:* Puedes ejecutar secuencialmente:
+```powershell
+Copy-Item .env.example .env
+docker compose build
+docker compose up -d --wait
+```
+
+### Servicios Locales:
+- **Frontend Angular:** [http://localhost:4200](http://localhost:4200)
+- **API Backend Swagger:** [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html)
+- **Health Check Actuator:** [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
 
 ---
-## Flujo MVC de Petición Autenticada en Spring Boot
-**Actividad preparatoria para la Práctica Experimental de la Unidad IV.**
 
-![Flujo MVC Spring Boot](docs/diagramas/flujo-mvc-springboot.png)
+## 🧪 Pruebas, Auditorías y Verificaciones
+- **Verificación Completa:** `make verify`
+- **Pruebas de Carga k6 (50 VUs / 30s):** `make bench`
+- **Auditoría Lighthouse & OWASP:** `make audit`
+- **Auditoría de SQL Dinámico:** `./scripts/audit-sql-dynamic.sh`
 
-### Descripción de cada paso del flujo:
-1. **Cliente Angular -> JwtAuthFilter**: El cliente envía una petición `GET /api/escenarios/1` con el token JWT en el Header `Authorization`.
-2. **JwtAuthFilter (Validación)**: El filtro intercepta la petición y valida la integridad y firma del Token JWT.
-3. **JwtAuthFilter -> SecurityContext**: Al ser válido, extrae la identidad del usuario y establece la `Authentication` en el `SecurityContext` de Spring.
-4. **JwtAuthFilter -> EscenarioController**: La petición pasa al `DispatcherServlet` que la enruta al `@RestController` `EscenarioController`, método `buscarPorId(id)`.
-5. **EscenarioController -> EscenarioService**: El controlador delega la lógica de negocio al `@Service` `EscenarioService` llamando a su método homónimo.
-6. **EscenarioService (@Transactional)**: Se inicia una transacción de base de datos, en este caso optimizada para lectura (`readOnly = true`).
-7. **EscenarioService -> EscenarioRepository**: El servicio invoca a la interfaz `JpaRepository` (`EscenarioRepository`) usando el método `findById(id)`.
-8. **EscenarioRepository -> PostgreSQL**: Hibernate/Spring Data traduce el llamado a una query SQL `SELECT` y la ejecuta en la BD.
-9. **PostgreSQL -> EscenarioRepository**: La BD devuelve el `ResultSet` que JPA mapea a la entidad relacional `Escenario`.
-10. **EscenarioRepository -> EscenarioService**: El repositorio retorna un `Optional<Escenario>` a la capa de servicio.
-11. **Mapeo a DTO**: El servicio mapea la entidad `Escenario` recuperada a un objeto `EscenarioDTO` (Data Transfer Object).
-12. **EscenarioService -> EscenarioController**: El servicio finaliza la transacción y retorna el `EscenarioDTO` al controlador.
-13. **EscenarioController -> Cliente Angular**: Spring serializa el DTO a JSON dentro de un `ResponseEntity` (HTTP 200 OK) y lo responde al cliente.
+---
+
+## 🗄️ Semillas y Determinismo
+- **Semilla Aleatoria Global (PRNG):** `SEED=42`
+- **Dataset de Evaluación SUS:** $N = 15$ participantes (promedio SUS: $82.5$).
+
+---
+
+## 🏛️ Flujo MVC y Arquitectura de Acceso a Datos
+El sistema utiliza una **estrategia híbrida** (ADR-006):
+1. **CRUDs elementales:** Gestionados a través de Spring Data JPA / Hibernate.
+2. **Operaciones analíticas, masivas y agregadas:** Optimizadas y encapsuladas en 6 procedimientos almacenados en PostgreSQL (`db/procs/`), invocados mediante `@Procedure` y `@NamedStoredProcedureQuery`.

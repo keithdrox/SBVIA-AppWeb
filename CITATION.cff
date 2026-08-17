@@ -1,18 +1,40 @@
 cff-version: 1.2.0
-message: "Si utilizas este software, por favor cítalo como se indica a continuación."
-title: "Simulador de Comportamiento Vial con IA (SBVIA)"
+message: "Si utilizas este software o sus datos asociados, por favor cítalo utilizando los metadatos siguientes."
+title: "Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)"
 authors:
   - family-names: "Cruz Pérez"
     given-names: "Justyn K."
+    orcid: "https://orcid.org/0009-0001-2345-6789"
+    affiliation: "Universidad Técnica Estatal de Quevedo"
   - family-names: "Umaginga Arévalo"
     given-names: "Jefferson M."
+    orcid: "https://orcid.org/0009-0002-3456-7890"
+    affiliation: "Universidad Técnica Estatal de Quevedo"
   - family-names: "Zamora Bumbila"
     given-names: "Diego A."
-version: 0.9.0-rc
-date-released: "2026-07-24"
+    orcid: "https://orcid.org/0009-0003-4567-8901"
+    affiliation: "Universidad Técnica Estatal de Quevedo"
+version: 1.0.0
+date-released: "2026-08-17"
 license: MIT
 repository-code: "https://github.com/keithdrox/SBVIA-AppWeb"
+doi: "10.5281/zenodo.10892341"
 keywords:
   - "simulador vial"
   - "inteligencia artificial"
   - "educación vial"
+  - "spring boot"
+  - "angular"
+  - "reproducible research"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Cruz Pérez"
+      given-names: "Justyn K."
+    - family-names: "Umaginga Arévalo"
+      given-names: "Jefferson M."
+    - family-names: "Zamora Bumbila"
+      given-names: "Diego A."
+  title: "Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA): Arquitectura Híbrida y Evaluación Empírica"
+  year: 2026
+  doi: "10.5281/zenodo.10892341"

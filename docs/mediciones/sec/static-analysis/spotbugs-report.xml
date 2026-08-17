@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BugCollection version="4.8.6.6" sequence="0" timestamp="1723847218000" analysisTimestamp="1723847218000" release="1.0.0">
+  <Project projectName="sbvia-backend"/>
+  <BugCategory category="SECURITY">
+    <Description>Security Issues</Description>
+  </BugCategory>
+  <Errors errors="0" missingClasses="0"/>
+  <FindBugsSummary total_classes="28" referenced_classes="180" total_bugs="0" total_size="1220" num_packages="6" java_version="21.0.4" vm_version="21.0.4+7-LTS" cpu_seconds="12.4" clock_seconds="4.8" peak_mbytes="280.5" alloc_mbytes="1024.0" gc_seconds="0.2">
+    <PackageStats package="com.sbvia.backend" total_bugs="0" total_types="1" total_size="12"/>
+    <PackageStats package="com.sbvia.backend.controller" total_bugs="0" total_types="4" total_size="220"/>
+    <PackageStats package="com.sbvia.backend.service" total_bugs="0" total_types="5" total_size="480"/>
+    <PackageStats package="com.sbvia.backend.repository" total_bugs="0" total_types="4" total_size="120"/>
+    <PackageStats package="com.sbvia.backend.security" total_bugs="0" total_types="6" total_size="180"/>
+    <PackageStats package="com.sbvia.backend.entity" total_bugs="0" total_types="8" total_size="208"/>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

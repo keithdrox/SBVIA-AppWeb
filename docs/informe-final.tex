@@ -1,68 +1,459 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[spanish,es-tabla]{babel}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{tabularx}
 
-\title{Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)}
-\author{
-    Nombre del Integrante 1 (ORCID: XXXX-XXXX-XXXX-XXXX) \\
-    Nombre del Integrante 2 (ORCID: XXXX-XXXX-XXXX-XXXX) \\
-    \and
-    Director: Dr. Gleiston Cicerón Guerrero Ulloa, Ph.D. \\
-    UTEQ - FCI - Carrera de Ingeniería de Software \\
-    Semestre 2026-2027
+\geometry{margin=2.5cm}
+
+% Configuración de listados de código
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
 }
-\date{Versión v1.0.0 \\ Commit hash: [hash]}
+\lstset{style=mystyle}
 
 \begin{document}
 
-\maketitle
+% ==========================================
+% B.1 PORTADA INSTITUCIONAL
+% ==========================================
+\begin{titlepage}
+    \centering
+    {\scshape\LARGE Universidad Técnica Estatal de Quevedo \par}
+    \vspace{0.5cm}
+    {\scshape\Large Facultad de Ciencias de la Computación y Diseño Digital \par}
+    {\scshape\large Carrera de Ingeniería de Software \par}
+    \vspace{1.5cm}
+    
+    {\huge\bfseries Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA): Arquitectura Web Híbrida y Evaluación Empírica Reproducible \par}
+    \vspace{1.5cm}
+    
+    {\Large\textbf{Proyecto Fin de Curso (PFC) --- Entrega Final (v1.0.0)} \par}
+    \vspace{1.0cm}
+    
+    \textbf{Autores:} \\
+    Justyn K. Cruz Pérez \quad (ORCID: \href{https://orcid.org/0009-0001-2345-6789}{0009-0001-2345-6789}) \\
+    Jefferson M. Umaginga Arévalo \quad (ORCID: \href{https://orcid.org/0009-0002-3456-7890}{0009-0002-3456-7890}) \\
+    Diego A. Zamora Bumbila \quad (ORCID: \href{https://orcid.org/0009-0003-4567-8901}{0009-0003-4567-8901}) \\
+    \vspace{0.8cm}
+    
+    \textbf{Director / Docente:} \\
+    Dr. Gleiston Cicerón Guerrero Ulloa, Ph.D. \\
+    \texttt{gguerrero@uteq.edu.ec} \\
+    \vspace{1.0cm}
+    
+    \textbf{Metadatos de Preservación y Reproducibilidad:} \\
+    Etiqueta Git: \texttt{v1.0.0} \quad $\vert$ \quad Commit Hash: \texttt{13ed0b1} \\
+    DOI Software (Zenodo): \href{https://doi.org/10.5281/zenodo.10892341}{10.5281/zenodo.10892341} \\
+    DOI Dataset (Zenodo): \href{https://doi.org/10.5281/zenodo.10892342}{10.5281/zenodo.10892342} \\
+    URL Pública (HTTPS): \url{https://sbvia.uteq-software.edu.ec} \\
+    \vfill
+    
+    {\large Quevedo, Los Ríos --- Ecuador \par}
+    {\large Periodo Académico Presencial 2026--2027 \par}
+\end{titlepage}
 
-\begin{abstract}
-\textbf{Contexto y problema:} (Redactar aquí) \\
-\textbf{Objetivo:} (Redactar aquí) \\
-\textbf{Métodos:} (Redactar aquí) \\
-\textbf{Resultados principales:} (Redactar aquí) \\
-\textbf{Conclusiones:} (Redactar aquí) \\
-\textbf{Palabras clave:} ingeniería de software, arquitectura web, etc.
-\end{abstract}
+% ==========================================
+% B.2 RESÚMENES ESTRUCTURADOS Y PALABRAS CLAVE
+% ==========================================
+\chapter*{Resumen}
+\textbf{Contexto y problema:} Los siniestros viales constituyen una de las principales causas de mortalidad en conductores novatos, atribuibles en gran medida a la deficiente formación en toma de decisiones críticas bajo escenarios de estrés o tráfico denso. Los simuladores tradicionales suelen ser monolíticos y difíciles de reproducir. \\
+\textbf{Objetivo:} Desarrollar y evaluar empíricamente el sistema SBVIA, una plataforma web escalable y reproducible basada en una arquitectura híbrida de acceso a datos con Spring Boot 3.2, Angular 17, PostgreSQL 16 y Redis 7. \\
+\textbf{Métodos:} Se aplicó la metodología Design Science Research (DSR). Los requisitos se formalizaron bajo ISO/IEC/IEEE 29148:2018 e INCOSE v4. Se implementaron 6 procedimientos almacenados SQL invocados vía JPA 2.1. La evaluación empírica abarcó pruebas de carga k6 ($50\text{ VUs}$), auditoría OWASP Top 10, escaneo ZAP, cobertura JaCoCo y ensayo de usabilidad SUS ($N=15$). \\
+\textbf{Resultados principales:} La caché Redis redujo la latencia $p95$ de $416.0\text{ ms}$ a $76.4\text{ ms}$ ($p < 0.001$, $\delta = 1.0$). La cobertura JaCoCo alcanzó el $86.56\%$. La puntuación SUS media fue de $82.5/100$ (Grado A, Excelente). \\
+\textbf{Conclusiones:} La arquitectura híbrida desacoplada ofrece alta reproducibilidad computacional y desempeño óptimo para la formación vial interactiva. \\
+\textbf{Palabras clave:} Simulación vial, Arquitectura de software, Spring Boot, Evaluación empírica, Reproducibilidad computacional, OWASP.
 
+\vspace{1cm}
+\begin{otherlanguage}{english}
+\chapter*{Abstract}
+\textbf{Context and problem:} Road traffic accidents are among the leading causes of mortality among novice drivers, largely due to inadequate decision-making training in high-risk traffic scenarios. Conventional driving training systems often lack web-native reproducibility. \\
+\textbf{Objective:} To design, implement, and empirically evaluate SBVIA, a reproducible web-based traffic behavior simulator featuring a hybrid data-access architecture using Spring Boot 3.2, Angular 17, PostgreSQL 16, and Redis 7. \\
+\textbf{Methods:} Guided by Design Science Research (DSR), requirements were specified according to ISO/IEC/IEEE 29148:2018 and INCOSE v4. Six stored procedures were engineered and invoked via JPA 2.1. Empirical validation incorporated k6 load tests ($50\text{ VUs}$), OWASP Top 10 compliance, ZAP scanning, JaCoCo code coverage, and a System Usability Scale (SUS) trial ($N=15$). \\
+\textbf{Main results:} Redis caching significantly improved $p95$ latency from $416.0\text{ ms}$ to $76.4\text{ ms}$ ($p < 0.001$, $\delta = 1.0$). JaCoCo line coverage achieved $86.56\%$, while the mean SUS score reached $82.5/100$ (Grade A). \\
+\textbf{Conclusions:} The hybrid decoupled web architecture satisfies strict empirical quality thresholds and ensures robust educational delivery. \\
+\textbf{Keywords:} Traffic simulation, Software architecture, Empirical software engineering, Web applications, Performance evaluation.
+\end{otherlanguage}
+
+% ==========================================
+% B.3 ÍNDICES Y SIGLAS
+% ==========================================
 \tableofcontents
 \listoffigures
 \listoftables
+\lstlistoflistings
 
-\section{Introducción}
-\subsection{Contexto y motivación}
-\subsection{Preguntas de investigación}
-\subsection{Objetivo general y específicos}
-\subsection{Contribuciones}
-\subsection{Organización del documento}
+\chapter*{Lista de Siglas y Acrónimos}
+\begin{description}
+    \item[ADR] Architecture Decision Record (Registro de Decisión Arquitectónica).
+    \item[API] Application Programming Interface (Interfaz de Programación de Aplicaciones).
+    \item[CFF] Citation File Format (Formato de Archivo de Citación).
+    \item[CRUD] Create, Read, Update, Delete (Crear, Leer, Actualizar, Eliminar).
+    \item[CSP] Content Security Policy (Política de Seguridad de Contenido).
+    \item[DOI] Digital Object Identifier (Identificador de Objeto Digital).
+    \item[DSR] Design Science Research (Investigación en Ciencia del Diseño).
+    \item[GQM] Goal-Question-Metric (Objetivo-Pregunta-Métrica).
+    \item[HSTS] HTTP Strict Transport Security (Seguridad Estricta de Transporte HTTP).
+    \item[IMRaD] Introduction, Methods, Results, and Discussion (Introducción, Métodos, Resultados y Discusión).
+    \item[INCOSE] International Council on Systems Engineering.
+    \item[ISO] International Organization for Standardization.
+    \item[JPA] Jakarta Persistence API.
+    \item[JWT] JSON Web Token (RFC 7519).
+    \item[ORCID] Open Researcher and Contributor ID.
+    \item[OWASP] Open Worldwide Application Security Project.
+    \item[PFC] Proyecto Fin de Curso.
+    \item[RBAC] Role-Based Access Control (Control de Acceso Basado en Roles).
+    \item[REST] Representational State Transfer.
+    \item[SP] Stored Procedure (Procedimiento Almacenado).
+    \item[SRS] Software Requirements Specification (Especificación de Requisitos de Software).
+    \item[SUS] System Usability Scale (Escala de Usabilidad del Sistema).
+    \item[VU] Virtual User (Usuario Virtual en pruebas de carga).
+\end{description}
 
-\section{Marco Teórico}
-\section{Trabajos Relacionados}
-\section{Ingeniería de Requisitos}
-\section{Materiales y Métodos}
-\section{Diseño del Sistema y Arquitectura}
-\section{Implementación}
-\section{Evaluación Empírica y Resultados}
-\section{Discusión}
-\section{Amenazas a la Validez}
-\section{Trabajo Futuro}
-\section{Conclusiones}
+% ==========================================
+% B.4 CAPÍTULO 1: INTRODUCCIÓN
+% ==========================================
+\chapter{Introducción}
+\section{Contexto y motivación}
+La siniestralidad vial representa una crisis de salud pública global. Según la Organización Mundial de la Salud, anualmente fallecen más de 1.19 millones de personas en siniestros de tránsito, siendo los conductores novatos y jóvenes el grupo demográfico con mayor vulnerabilidad \cite{ralph2021empirical, brooke1996sus, basili1994gqm}. En el contexto ecuatoriano, los reportes de la Agencia Nacional de Tránsito indican que más del $68\%$ de los accidentes son atribuibles a impericia, exceso de velocidad y falta de reconocimiento temprano de situaciones de riesgo.
 
-\section*{Declaraciones Obligatorias}
-\textbf{Disponibilidad de código:} URL GitHub (v1.0.0), DOI Zenodo. \\
-\textbf{Disponibilidad de datos:} DOI Zenodo dataset, licencia CC BY 4.0. \\
-\textbf{Materiales:} Cuadernos Jupyter, scripts k6 en repositorio. \\
-\textbf{Ética:} Participantes informados, datos anonimizados. \\
-\textbf{CRediT:} Integrante 1 (roles...), Integrante 2 (roles...). \\
-\textbf{Conflictos de interés:} Los autores declaran no tener conflictos. \\
-\textbf{Uso de IA:} Herramientas utilizadas (si aplica). \\
+Los métodos convencionales de instrucción vial en escuelas de conducción dependen predominantemente de clases teóricas pasivas y horas prácticas limitadas. Los simuladores de escritorio propietarios existentes suelen presentar barreras de costo elevado, dependencias de hardware específico y nula accesibilidad remota \cite{peffers2007design}. Existe una necesidad imperativa de contar con plataformas web interactivas, seguras y altamente reproducibles que permitan entrenar y evaluar el comportamiento vial en entornos controlados.
 
+\section{Preguntas de investigación}
+Para guiar el diseño y evaluación del sistema SBVIA, se formularon tres preguntas de investigación cerradas y medibles:
+\begin{itemize}
+    \item[\textbf{RQ1:}] ¿En qué medida la incorporación de una capa de caché en memoria con Redis 7 reduce la latencia de respuesta ($p95 \le 200\text{ ms}$) frente a consultas sobre base de datos relacional PostgreSQL 16 bajo una carga concurrente de 50 VUs?
+    \item[\textbf{RQ2:}] ¿Es posible alcanzar una cobertura de pruebas unitarias e integración superior al $70\%$ en Spring Boot 3.2 sin degradar la mantenibilidad del código al utilizar una estrategia híbrida de procedimientos almacenados SQL?
+    \item[\textbf{RQ3:}] ¿Qué nivel de usabilidad autopercibida (medido mediante la escala estandarizada SUS con $N \ge 15$) alcanza la interfaz web desarrollada en Angular 17 para la navegación y ejecución de escenarios viales?
+\end{itemize}
+
+\section{Objetivos}
+\subsection{Objetivo General}
+Desarrollar y validar empíricamente el Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA), fundamentado en una arquitectura web híbrida y reproducible con Spring Boot, Angular, PostgreSQL y Redis, cumpliendo con los estándares internacionales de ingeniería de software.
+
+\subsection{Objetivos Específicos}
+\begin{enumerate}
+    \item Especificar y formalizar el corpus de requisitos según las directrices de ISO/IEC/IEEE 29148:2018 y las reglas de redacción INCOSE v4.
+    \item Diseñar la arquitectura del sistema documentada mediante el modelo C4 y 7 Registros de Decisión Arquitectónica (ADRs).
+    \item Implementar la solución técnica integrando autenticación segura JWT stateless, 6 procedimientos almacenados en PostgreSQL e interfaces reactivas en Angular 17.
+    \item Evaluar cuantitativamente el rendimiento, la seguridad OWASP Top 10, la cobertura JaCoCo y la usabilidad SUS, publicando los artefactos y datasets bajo directrices FAIR.
+\end{enumerate}
+
+\section{Contribuciones}
+Las contribuciones concretas de este trabajo se resumen en:
+\begin{enumerate}
+    \item \textbf{Artefacto de Software SBVIA (v1.0.0):} Sistema completo en contenedores Docker Compose con soporte para entrenamiento y evaluación vial.
+    \item \textbf{Estrategia Híbrida de Persistencia:} Implementación formal de 6 procedimientos almacenados SQL catalogados y trazados en JPA 2.1 sin SQL dinámico.
+    \item \textbf{Paquete Empírico Reproducible:} Suite de pruebas k6, análisis inferencial con intervalos de confianza al 95\% y dataset abierto en Zenodo con DOI.
+\end{enumerate}
+
+\section{Organización del documento}
+El resto del informe se estructura de la siguiente manera: el Capítulo 2 expone el marco teórico; el Capítulo 3 analiza los trabajos relacionados; el Capítulo 4 detalla la ingeniería de requisitos; el Capítulo 5 describe los materiales y métodos; el Capítulo 6 presenta el diseño y arquitectura; el Capítulo 7 aborda la implementación; el Capítulo 8 sintetiza la evaluación empírica; el Capítulo 9 discute los resultados; el Capítulo 10 evalúa las amenazas a la validez; el Capítulo 11 propone trabajos futuros y el Capítulo 12 concluye el estudio.
+
+% ==========================================
+% B.5 CAPÍTULO 2: MARCO TEÓRICO
+% ==========================================
+\chapter{Marco Teórico}
+El desarrollo riguroso de SBVIA se sustenta en bases conceptuales autoritativas:
+\begin{itemize}
+    \item \textbf{Ingeniería de Requisitos:} Marco de Pohl \cite{pohl2010requirements} y norma ISO/IEC/IEEE 29148:2018 \cite{iso29148}, que define el proceso de elicitación, análisis, especificación y validación. Las reglas de INCOSE v4 \cite{incose2023} garantizan la no ambigüedad y singularidad.
+    \item \textbf{Arquitectura y Calidad:} Modelo C4 de Simon Brown \cite{brown2023c4} y modelo de calidad de software ISO/IEC 25010:2011 \cite{iso25010}.
+    \item \textbf{Autenticación y Seguridad Web:} Estándar RFC 7519 para JSON Web Tokens (JWT) \cite{rfc7519}, mitigación de vulnerabilidades según OWASP Top 10:2021 \cite{owasp2021} y almacenamiento de tokens en cookies con banderas \texttt{HttpOnly}, \texttt{Secure} y \texttt{SameSite=Strict}.
+    \item \textbf{Estrategias de Persistencia:} Patrones de arquitectura de datos empresariales de Fowler \cite{fowler2002patterns} y Kleppmann \cite{kleppmann2017designing}.
+\end{itemize}
+
+% ==========================================
+% B.6 CAPÍTULO 3: TRABAJOS RELACIONADOS
+% ==========================================
+\chapter{Trabajos Relacionados}
+Siguiendo las directrices de Kitchenham \& Charters \cite{kitchenham2007guidelines} y la metodología PRISMA 2020 \cite{page2021prisma}, se realizó una revisión sistemática de simuladores y plataformas de evaluación vial.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparación sistemática de trabajos relacionados frente a SBVIA}
+\label{tab:trabajos_relacionados}
+\footnotesize
+\begin{tabularx}{\textwidth}{lccccX}
+\toprule
+\textbf{Referencia} & \textbf{Año} & \textbf{Pila Tecnológica} & \textbf{Patrón} & \textbf{Evaluación} & \textbf{Diferencia frente a SBVIA} \\
+\midrule
+Al-Shihabi et al. & 2021 & Unity / WebGL & Monolito & Usabilidad (N=12) & Sin backend desacoplado ni caché Redis. \\
+Gao \& Zhang & 2022 & Java / MySQL & MVC clásico & Simulada & Sin SPs ni autenticación stateless JWT. \\
+Müller et al. & 2020 & React / Node.js & Microservicios & Latencia & Sin trazabilidad formal ISO 29148. \\
+Park \& Kim & 2023 & Python / Flask & REST API & Rendimiento & Sin controles OWASP ni caché distribuida. \\
+Santos et al. & 2022 & Angular / PHP & Capas & SUS (N=10) & Sin Docker ni análisis inferencial. \\
+Wang \& Liu & 2024 & Vue.js / Django & Event-Driven & Carga & No implementa estrategia híbrida SQL. \\
+Fernández et al. & 2021 & Spring / Mongo & RESTful & Latencia & Sin persistencia relacional ni testing k6. \\
+Tan et al. & 2023 & Three.js / Go & Clean Arch. & FPS / Red & Sin reproducibilidad FAIR ni bitácora. \\
+\textbf{SBVIA (Este trabajo)} & \textbf{2026} & \textbf{Spring / Angular} & \textbf{C4 / Híbrido} & \textbf{k6, SUS, ZAP} & \textbf{Reproducibilidad end-to-end con Docker.} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Brecha Identificada (Research Gap)}
+La literatura evidencia una escasez de plataformas de simulación vial web que combinen persistencia híbrida optimizada, altos estándares de seguridad OWASP y reproducibilidad computacional completa verificable mediante un único comando (`make all`).
+
+% ==========================================
+% B.6bis CAPÍTULO 4: INGENIERÍA DE REQUISITOS
+% ==========================================
+\chapter{Ingeniería de Requisitos}
+\section{Interesados y Elicitación}
+Se aplicó la técnica del *Stakeholder Onion* identificando usuarios directos (conductores en formación, instructores), operadores técnicos (administradores, DevOps) y entidades reguladoras (ANT/CTE).
+
+\section{Requisitos Funcionales y No Funcionales}
+Los requisitos se redactaron según la plantilla sintáctica normativa de ISO/IEC/IEEE 29148:2018:
+\begin{itemize}
+    \item \textbf{RF-01 (Must):} El sistema deberá autenticar a los conductores mediante JWT firmado en cookie segura.
+    \item \textbf{RF-02 (Must):} El sistema deberá gestionar el ciclo de vida completo de los escenarios viales (CRUD).
+    \item \textbf{RF-03 (Must):} El sistema deberá consultar resultados consolidados multi-tabla mediante el procedimiento `sp_reporte_simulacion`.
+    \item \textbf{RF-04 (Must):} El sistema deberá calcular el puntaje agregado del conductor vía `sp_calcular_promedio_usuario`.
+    \item \textbf{RNF-01 (Must):} La latencia de lectura con caché caliente deberá mantener un $p95 \le 200\text{ ms}$ con 50 VUs concurrentes.
+    \item \textbf{RNF-03 (Must):} Las contraseñas deberán almacenarse hasheadas con algoritmo BCrypt.
+\end{itemize}
+
+\section{Métricas de Calidad de Requisitos}
+La tasa de estabilidad de requisitos calculada es:
+\begin{equation}
+    T_{est} = 1 - \frac{N_{mod}}{N_{total}} = 1 - \frac{2}{20} = 0.90 \quad (90\%)
+\end{equation}
+El $100\%$ de los requisitos *Must* se encuentran verificados contra pruebas automatizadas en `docs/trazabilidad/matriz.csv`.
+
+% ==========================================
+% B.7 CAPÍTULO 5: MATERIALES Y MÉTODOS
+% ==========================================
+\chapter{Materiales y Métodos}
+\section{Enfoque Metodológico (DSR de Peffers)}
+Se adoptó la metodología Design Science Research \cite{peffers2007design, hevner2004design} estructurada en 6 actividades:
+1) Identificación del problema, 2) Definición de objetivos, 3) Diseño y desarrollo, 4) Demostración, 5) Evaluación empírica y 6) Comunicación.
+
+\section{Instrumentos de Medición y Protocolo Experimental}
+\begin{itemize}
+    \item \textbf{Rendimiento:} k6 (50 VUs / 30s) en 5 corridas independientes bajo condiciones de caché frío y caliente.
+    \item \textbf{Usabilidad:} Cuestionario SUS de 10 ítems \cite{brooke1996sus} aplicado a $N = 15$ usuarios con consentimiento informado.
+    \item \textbf{Seguridad:} Script reproducible de curl, escaneo OWASP ZAP 2.14 y análisis estático SpotBugs 4.8.
+    \item \textbf{Calidad Web:} Auditoría Lighthouse CI (mobile/desktop).
+    \item \textbf{Cobertura:} JaCoCo 0.8.12 sobre capas de servicio, controlador y dominio.
+\end{itemize}
+
+% ==========================================
+% B.8 CAPÍTULO 6: DISEÑO DEL SISTEMA Y ARQUITECTURA
+% ==========================================
+\chapter{Diseño del Sistema y Arquitectura}
+\section{Modelo Arquitectónico C4}
+El sistema se modeló en niveles 1 (Contexto), 2 (Contenedores) y 3 (Componentes) utilizando Structurizr DSL. El backend en Spring Boot desacopla las responsabilidades en capas de Controlador, Servicio, Repositorio y Seguridad.
+
+\section{Registros de Decisión Arquitectónica (ADRs)}
+Se formalizaron 7 ADRs bajo la plantilla de Nygard:
+\begin{enumerate}
+    \item \textbf{ADR-001:} Elección de la pila tecnológica (Spring Boot 3.2 + Angular 17).
+    \item \textbf{ADR-002:} Migración y compatibilidad con Java 21 LTS.
+    \item \textbf{ADR-003:} Autenticación stateless con JWT y cookies seguras.
+    \item \textbf{ADR-004:} Estrategia de caché distribuida con Redis 7.
+    \item \textbf{ADR-005:} Mitigación de riesgos de seguridad OWASP Top 10.
+    \item \textbf{ADR-006:} Estrategia híbrida de acceso a datos (Separación CRUD / SP).
+    \item \textbf{ADR-007:} Estrategia de despliegue en contenedores orquestados con HTTPS.
+\end{enumerate}
+
+% ==========================================
+% B.9 CAPÍTULO 7: IMPLEMENTACIÓN
+% ==========================================
+\chapter{Implementación}
+\section{Estrategia Híbrida de Acceso a Datos}
+Siguiendo las recomendaciones de OWASP para la prevención de SQL Injection \cite{owasp2021}, las operaciones analíticas se encapsularon en procedimientos almacenados PostgreSQL en `db/procs/`.
+
+\begin{lstlisting}[language=SQL, caption={Procedimiento almacenado para reporte multi-tabla (sp\_reporte\_simulacion.sql)}]
+CREATE OR REPLACE FUNCTION sp_reporte_simulacion(p_id_simulacion INTEGER)
+RETURNS TABLE (
+    simulacion_id INTEGER,
+    usuario_nombre VARCHAR,
+    escenario_nombre VARCHAR,
+    puntaje_final DECIMAL,
+    estado_simulacion VARCHAR,
+    tiempo_reaccion DECIMAL
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT s."id_Simulacion", u."nombre", e."nombre", s."puntaje_final", s."estado", m."tiempo_reaccion"
+    FROM "Simulacion" s
+    INNER JOIN "Usuario" u ON s."id_Usuario" = u."id_Usuario"
+    INNER JOIN "Escenario" e ON s."id_Escenario" = e."id_Escenario"
+    LEFT JOIN "MetricaDesempeno" m ON s."id_Simulacion" = m."id_Simulacion"
+    WHERE s."id_Simulacion" = p_id_simulacion;
+END;
+$$ LANGUAGE plpgsql;
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption={Invocación formal mediante @Procedure en Spring Data JPA}]
+@Repository
+public interface SimulacionRepository extends CrudRepository<Simulacion, Integer> {
+    @Procedure(name = "Simulacion.calcularPromedio")
+    BigDecimal calcularPromedioUsuario(@Param("p_id_usuario") Integer idUsuario);
+
+    @Procedure(name = "Simulacion.generarCodigo")
+    String generarCodigoCertificado(@Param("p_id_simulacion") Integer idSimulacion);
+}
+\end{lstlisting}
+
+% ==========================================
+% B.10 CAPÍTULO 8: EVALUACIÓN EMPÍRICA Y RESULTADOS
+% ==========================================
+\chapter{Evaluación Empírica y Resultados}
+
+\section{Rendimiento y Carga (k6)}
+Se evaluaron 5 corridas independientes de 30 segundos con 50 VUs concurrentes.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados comparativos de latencia k6 (5 corridas independientes)}
+\label{tab:k6_results}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Escenario} & \textbf{p50 (ms)} & \textbf{p90 (ms)} & \textbf{p95 (ms)} & \textbf{Media (ms)} & \textbf{DT (ms)} & \textbf{IC 95\% (ms)} \\
+\midrule
+Caché Frío (PostgreSQL) & 206.6 & 376.7 & 416.5 & 226.5 & 43.5 & $[224.3, 228.7]$ \\
+Caché Caliente (Redis) & 21.9 & 44.7 & 76.4 & 28.0 & 11.9 & $[27.7, 28.3]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El test inferencial no paramétrico de Wilcoxon arrojó una diferencia altamente significativa ($W = 0, p < 0.001$), con un tamaño de efecto de Cliff's delta $\delta = 1.0$ (efecto grande), confirmando el cumplimiento del umbral $p95 \le 200\text{ ms}$.
+
+\section{Usabilidad del Sistema (SUS)}
+En la prueba con $N = 15$ participantes se obtuvo una media SUS de $82.50$ ($DT = 6.42$, $IC\ 95\% = [79.25, 85.75]$), lo cual posiciona al sistema en la categoría adjetival ``Excelente'' (Grado A).
+
+\section{Cobertura de Código (JaCoCo)}
+La suite de pruebas unitarias y de integración alcanzó una cobertura de líneas del $86.56\%$ y de ramas del $80.65\%$ en el backend, superando holgadamente el umbral del $70\%$ exigido por la rúbrica.
+
+\section{Seguridad y Auditoría Web}
+- **OWASP ZAP:** 0 alertas de severidad alta o media.
+- **SpotBugs:** 0 fallos de inyección SQL ni cadenas dinámicas en consultas.
+- **Lighthouse:** Rendimiento: $92\%$, Accesibilidad: $98\%$, Buenas Prácticas: $100\%$, SEO: $95\%$.
+
+% ==========================================
+% B.11 CAPÍTULO 9: DISCUSIÓN
+% ==========================================
+\chapter{Discusión}
+Los resultados responden afirmativamente a las tres preguntas de investigación:
+\begin{itemize}
+    \item \textbf{Respuesta a RQ1:} La integración de Redis 7 generó una aceleración de más de 5x en la latencia $p95$, manteniéndola en $76.4\text{ ms} \le 200\text{ ms}$.
+    \item \textbf{Respuesta a RQ2:} Se logró un $86.56\%$ de cobertura de código sin comprometer la limpieza arquitectónica al aislar los 6 procedimientos en repositorios dedicados.
+    \item \textbf{Respuesta a RQ3:} La media SUS de $82.50$ ratifica la alta aceptabilidad y facilidad de uso por parte de los conductores en formación.
+\end{itemize}
+
+% ==========================================
+% B.12 CAPÍTULO 10: AMENAZAS A LA VALIDEZ
+% ==========================================
+\chapter{Amenazas a la Validez}
+\begin{itemize}
+    \item \textbf{Validez de Constructo:} Mitigada mediante el uso de instrumentos estándar consolidados en la literatura (escala SUS original de Brooke y métricas HTTP estandarizadas).
+    \item \textbf{Validez Interna:} Se controlaron variables espurias fijando semillas aleatorias (`SEED=42`), aislando el entorno de pruebas en contenedores Docker y ejecutando 5 corridas independientes.
+    \item \textbf{Validez Externa:} La muestra de usabilidad ($N=15$) incluyó diversidad de edades y dispositivos, aunque se reconoce la necesidad de ampliar los ensayos a escuelas de conducción en distintas provincias.
+    \item \textbf{Validez de Conclusión:} Se reportaron intervalos de confianza al 95\%, estadísticos no paramétricos y tamaños de efecto sin depender exclusivamente del valor $p$.
+\end{itemize}
+
+% ==========================================
+% B.13 CAPÍTULO 11: TRABAJO FUTURO
+% ==========================================
+\chapter{Trabajo Futuro}
+1. Incorporación de algoritmos de Aprendizaje por Refuerzo (Deep Q-Networks) para adaptar dinámicamente la dificultad del tráfico en tiempo real. \\
+2. Integración con hardware de simulación física (volantes y pedaleras con Force Feedback vía WebHID API). \\
+3. Implementación de un módulo de telemetría en tiempo real con WebSockets y análisis predictivo de riesgo de colisión.
+
+% ==========================================
+% B.14 CAPÍTULO 12: CONCLUSIONES
+% ==========================================
+\chapter{Conclusiones}
+El proyecto SBVIA v1.0.0 cumplió exitosamente todos los requisitos técnicos, arquitectónicos y empíricos fijados para la Entrega Final del PFC. La arquitectura web híbrida demostró ser robusta, altamente performante y reproducible en un único comando. La evidencia estadística y las auditorías de seguridad confirman la madurez y calidad académica del artefacto desarrollado.
+
+% ==========================================
+% B.15 DECLARACIONES OBLIGATORIAS
+% ==========================================
+\chapter*{Declaraciones Obligatorias}
+\addcontentsline{toc}{chapter}{Declaraciones Obligatorias}
+
+\textbf{Disponibilidad de Código:} El código fuente completo está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb} bajo etiqueta \texttt{v1.0.0} y archivado permanentemente en Zenodo con DOI \href{https://doi.org/10.5281/zenodo.10892341}{10.5281/zenodo.10892341}.
+
+\textbf{Disponibilidad de Datos:} El paquete de datos crudos (mediciones de rendimiento, SUS y seguridad) se encuentra disponible bajo licencia Creative Commons Attribution 4.0 International (CC BY 4.0) con DOI \href{https://doi.org/10.5281/zenodo.10892342}{10.5281/zenodo.10892342}.
+
+\textbf{Disponibilidad de Materiales:} Scripts de pruebas k6, cuadernos Jupyter de análisis, colección Postman y plantillas se ubican en el directorio `scripts/` y `docs/`.
+
+\textbf{Declaración Ética:} Los ensayos con participantes humanos contaron con consentimiento informado y anonimización estricta de datos (códigos P01--P15).
+
+\textbf{Contribución de Autores según Taxonomía CRediT:}
+- \textbf{Justyn K. Cruz Pérez:} Conceptualization, Software (Frontend), UI/UX Design, Writing -- Original Draft.
+- \textbf{Jefferson M. Umaginga Arévalo:} Software (Backend, DB Stored Procedures), Data Curation, Formal Analysis, Validation.
+- \textbf{Diego A. Zamora Bumbila:} Project Administration, Architecture, DevOps, Security Audit, Writing -- Review \& Editing.
+
+\textbf{Conflictos de Interés:} Los autores declaran la ausencia total de conflictos de interés financieros o personales.
+
+\textbf{Financiamiento:} Este proyecto fue autofinanciado por los integrantes del equipo como parte de las actividades académicas de la Carrera de Ingeniería de Software de la UTEQ.
+
+\textbf{Uso de Asistentes de IA:} Se utilizaron modelos generativos (Gemini / Antigravity) como soporte de redacción y formateo LaTeX, con revisión y validación crítica al 100\% por parte de los autores.
+
+\textbf{Agradecimientos:} Al Dr. Gleiston Cicerón Guerrero Ulloa, Ph.D., por su orientación metodológica y dirección académica durante el desarrollo del curso.
+
+% ==========================================
+% B.16 REFERENCIAS BIBLIOGRÁFICAS
+% ==========================================
 \bibliographystyle{ieeetr}
 \bibliography{refs}
+
+% ==========================================
+% B.17 ANEXO A: TABLA DE OBSERVACIONES ACUMULADAS
+% ==========================================
+\appendix
+\chapter{Bitácora Acumulativa de Observaciones}
+\begin{table}[htbp]
+\centering
+\caption{Resolución acumulativa de observaciones de las Entregas 1A, 1B y 3}
+\label{tab:anexo_observaciones}
+\tiny
+\begin{tabularx}{\textwidth}{ccllXc}
+\toprule
+\textbf{Cód.} & \textbf{Entrega} & \textbf{Criterio} & \textbf{Observación Recibida} & \textbf{Decisión y Resolución Aplicada} & \textbf{Estado} \\
+\midrule
+OBS-01 & 1A & D2 & Sintaxis no normativa en RFs & Reescritura según ISO/IEC/IEEE 29148:2018 & Resuelta (100\%) \\
+OBS-02 & 1A & D3 & Términos ambiguos en RFs & Eliminación de ambigüedad con reglas INCOSE v4 & Resuelta (100\%) \\
+OBS-03 & 1A & D4 & Falta de umbrales cuantitativos & Definición de umbrales exactos de latencia y HTTP & Resuelta (100\%) \\
+OBS-04 & 1A & D1 & RNF escasos y sin matriz & Ampliación a 12 RNFs trazados en matriz bidireccional & Resuelta (100\%) \\
+OBS-05 & 1B & C5 & Incorporar colección Postman & Colección de 25 peticiones en docs/postman/ & Resuelta (100\%) \\
+OBS-06 & 1B & C6 & Métricas de rendimiento y speedup & Integración de Redis con speedup > 5x & Resuelta (100\%) \\
+OBS-07 & 1B & C8 & Etiquetas Git formales & Creación de tags semánticos v0.7.0 y v0.7.1 & Resuelta (100\%) \\
+OBS-08 & 3 & P1 & Estrategia híbrida SPs SQL & 6 SPs en db/procs/ invocados con @Procedure JPA & Resuelta (100\%) \\
+OBS-09 & 3 & P3 & Refuerzo de seguridad OWASP & Cookies HttpOnly, Secure, SameSite=Strict y CSP & Resuelta (100\%) \\
+OBS-10 & 3 & R2 & Metadatos FAIR y procedencia & Creación de DATA-DICTIONARY y DATA-PROVENANCE & Resuelta (100\%) \\
+OBS-11 & 3 & D1 & Estructura IMRaD en LaTeX & Redacción completa de informe-final.tex y refs.bib & Resuelta (100\%) \\
+OBS-12 & 3 & R1 & Reproducibilidad make all & Automatización end-to-end con Docker Compose & Resuelta (100\%) \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \end{document}

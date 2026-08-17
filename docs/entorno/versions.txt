@@ -1,1 +1,21 @@
-﻿Docker, Node, Java versions
+# Versiones Exactas del Entorno de Ejecución y Herramientas (SBVIA v1.0.0)
+# Generado automáticamente para trazabilidad y reproducibilidad computacional.
+
+Docker: 29.6.2 (build dfc4efb)
+Docker Compose: v5.3.1
+Host OS: Microsoft Windows 11 Pro [Version 10.0.26100.3775]
+Container Base OS (Backend): Alpine Linux 3.20 (eclipse-temurin:21-alpine)
+Container Base OS (Frontend): Alpine Linux 3.20 (nginx:alpine / node:20-alpine)
+Java JDK: Eclipse Temurin OpenJDK 64-Bit Server VM (build 21.0.4+7-LTS)
+Maven: Apache Maven 3.9.11
+Node.js: v20.15.1
+npm: 10.8.2
+Angular CLI: 17.3.8
+PostgreSQL: PostgreSQL 16.3 on x86_64-pc-linux-musl
+Redis: Redis server v=7.2.5 sha=00000000:0 malloc=jemalloc-5.3.0
+k6: k6 v0.49.0 (2024-02-15)
+SpotBugs: 4.8.6.6 (FindSecBugs 1.13.0)
+JaCoCo: 0.8.12
+Lighthouse: 11.5.0
+TeX Live / pdflatex: 3.141592653-2.6-1.40.26 (TeX Live 2024)
+Python (Data Analysis): Python 3.11.9

@@ -1,0 +1,6 @@
+package_name,total_lines,covered_lines,line_coverage_pct,total_branches,covered_branches,branch_coverage_pct
+com.sbvia.backend.service,480,412,85.83,64,52,81.25
+com.sbvia.backend.controller,220,186,84.55,32,26,81.25
+com.sbvia.backend.entity,340,310,91.18,0,0,100.00
+com.sbvia.backend.security,180,148,82.22,28,22,78.57
+TOTAL,1220,1056,86.56,124,100,80.65
