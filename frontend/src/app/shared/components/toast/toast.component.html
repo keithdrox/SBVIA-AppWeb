@@ -1,0 +1,16 @@
+<div class="toast-container">
+  <div *ngFor="let toast of toasts$ | async" 
+       class="toast-message" 
+       [ngClass]="'toast-' + toast.type">
+    <div class="toast-content">
+      <span class="toast-icon">
+        <ng-container *ngIf="toast.type === 'success'">✅</ng-container>
+        <ng-container *ngIf="toast.type === 'error'">❌</ng-container>
+        <ng-container *ngIf="toast.type === 'warning'">⚠️</ng-container>
+        <ng-container *ngIf="toast.type === 'info'">ℹ️</ng-container>
+      </span>
+      <span class="toast-text">{{ toast.message }}</span>
+    </div>
+    <button class="toast-close" (click)="remove(toast.id)">&times;</button>
+  </div>
+</div>

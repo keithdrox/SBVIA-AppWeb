@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.sbvia.backend.dto.ActualizarUsuarioRequest;
 import com.sbvia.backend.dto.CambiarRolRequest;
 import jakarta.validation.Valid;
 
@@ -73,6 +74,24 @@ public class UsuarioController {
             @PathVariable Integer id,
             @Valid @RequestBody CambiarRolRequest request) {
         UsuarioDTO actualizado = authService.cambiarRol(id, request.getRol());
+        return ResponseEntity.ok(actualizado);
+    }
+
+    /**
+     * PUT /api/usuarios/{id} — Actualiza los datos de un usuario (Solo Admin).
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Operation(summary = "Actualizar datos de usuario", description = "Modifica los datos de un usuario (Solo Admin)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
+        @ApiResponse(responseCode = "403", description = "Acceso denegado"),
+        @ApiResponse(responseCode = "409", description = "Email ya registrado")
+    })
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(
+            @PathVariable Integer id,
+            @Valid @RequestBody ActualizarUsuarioRequest request) {
+        UsuarioDTO actualizado = authService.actualizarUsuario(id, request);
         return ResponseEntity.ok(actualizado);
     }
 

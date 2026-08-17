@@ -36,4 +36,8 @@ export class UsuarioService {
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+
+  actualizarUsuario(id: number, data: Partial<Usuario>): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.API_URL}/${id}`, data);
+  }
 }

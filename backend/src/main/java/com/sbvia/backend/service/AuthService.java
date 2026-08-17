@@ -182,6 +182,31 @@ public class AuthService {
     }
 
     /**
+     * Actualiza los datos de un usuario existente.
+     */
+    @Transactional
+    public UsuarioDTO actualizarUsuario(Integer id, ActualizarUsuarioRequest request) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
+
+        // Verificar email duplicado solo si cambió
+        if (!usuario.getEmail().equalsIgnoreCase(request.getEmail())) {
+            if (usuarioRepository.existsByEmail(request.getEmail())) {
+                throw new DuplicateEmailException("Ya existe un usuario registrado con el email: " + request.getEmail());
+            }
+            usuario.setEmail(request.getEmail());
+        }
+
+        usuario.setNombre(request.getNombre());
+        usuario.setApellido(request.getApellido());
+        usuario.setTelefono(request.getTelefono());
+        usuario.setTipoLicencia(request.getTipoLicencia());
+
+        usuario = usuarioRepository.save(usuario);
+        return mapToDTO(usuario);
+    }
+
+    /**
      * Elimina un usuario (soft delete).
      */
     @Transactional
