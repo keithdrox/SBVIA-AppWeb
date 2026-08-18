@@ -1,41 +1,121 @@
 <div class="dashboard-container">
+
+  <!-- HEADER -->
   <header class="dashboard-header">
     <div class="header-content">
-      <h1>SBVIA Dashboard</h1>
+      <!-- Logo -->
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 28 Q10 12 20 12 Q30 12 36 28" stroke="#00b4d8" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M8 28 L32 28" stroke="#00b4d8" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="11" y="22" width="6" height="8" rx="2" fill="#0d1b2a" stroke="#00b4d8" stroke-width="1.5"/>
+            <rect x="23" y="22" width="6" height="8" rx="2" fill="#0d1b2a" stroke="#00b4d8" stroke-width="1.5"/>
+            <circle cx="13" cy="32" r="2.5" fill="#00b4d8"/>
+            <circle cx="27" cy="32" r="2.5" fill="#00b4d8"/>
+          </svg>
+        </div>
+        <span class="logo-text">SBVIA</span>
+      </div>
+
+      <!-- User Menu -->
       <div class="user-menu">
-        <span class="user-name">Hola, {{ usuario?.nombre }} ({{ usuario?.rol }})</span>
-        <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        <div class="user-avatar">{{ usuario?.nombre?.charAt(0) }}</div>
+        <span class="user-name">Hola, {{ usuario?.nombre }}</span>
+        <button (click)="logout()" class="btn-logout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+          Cerrar Sesión
+        </button>
       </div>
     </div>
   </header>
 
+  <!-- MAIN -->
   <main class="dashboard-content">
-    <div class="welcome-card">
-      <h2>Bienvenido al Simulador de Comportamiento Vial</h2>
-      <p>Selecciona una opción del menú para comenzar.</p>
+    <div class="welcome-section">
+      <h2>Bienvenido al Centro de Control de SBVIA</h2>
+      <p>Selecciona un módulo para comenzar tu sesión de entrenamiento vial.</p>
     </div>
 
     <div class="cards-grid">
-      
-      <!-- Admin Only -->
-      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN'">
-        <h3>Escenarios de Simulación</h3>
-        <p>Configura y gestiona los escenarios viales.</p>
-        <a routerLink="/escenarios" class="btn-primary-outline">Gestionar Escenarios</a>
-      </div>
-      
-      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN'">
-        <h3>Administración de Usuarios</h3>
-        <p>Administra registros, roles y accesos.</p>
-        <a routerLink="/usuarios" class="btn-primary-outline">Gestionar Usuarios</a>
+
+      <!-- ESCENARIOS (Admin only) -->
+      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN'" (click)="navigate('/escenarios')">
+        <div class="card-header">
+          <div class="card-icon card-icon--blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+            </svg>
+          </div>
+          <h3>Escenarios de Simulación</h3>
+          <div class="card-badge">Admin</div>
+        </div>
+        <div class="card-image">
+          <img src="assets/img/card_escenarios.jpg" alt="Escenarios viales" />
+          <div class="card-image-overlay"></div>
+        </div>
+        <div class="card-body">
+          <p>Configurar y gestionar escenarios viales.</p>
+          <div class="card-metric">
+            <span class="metric-number">{{ totalEscenarios }}</span>
+            <span class="metric-label">Escenarios Activos</span>
+          </div>
+          <button class="btn-card btn-card--primary">Gestionar Escenarios</button>
+        </div>
       </div>
 
-      <!-- Everyone -->
-      <div class="dashboard-card">
-        <h3>Mis Prácticas</h3>
-        <p>Revisa tu historial de simulaciones.</p>
-        <a routerLink="/practicas" class="btn-primary">Ver Prácticas</a>
+      <!-- USUARIOS (Admin only) -->
+      <div class="dashboard-card" *ngIf="usuario?.rol === 'ROLE_ADMIN'" (click)="navigate('/usuarios')">
+        <div class="card-header">
+          <div class="card-icon card-icon--cyan">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
+          <h3>Administración de Usuarios</h3>
+          <div class="card-badge card-badge--cyan">Admin</div>
+        </div>
+        <div class="card-image">
+          <img src="assets/img/card_usuarios.jpg" alt="Usuarios del sistema" />
+          <div class="card-image-overlay"></div>
+        </div>
+        <div class="card-body">
+          <p>Administra registros, roles y accesos.</p>
+          <div class="card-metric">
+            <span class="metric-number">{{ totalUsuarios }}</span>
+            <span class="metric-label">Usuarios Registrados</span>
+          </div>
+          <button class="btn-card btn-card--primary">Gestionar Usuarios</button>
+        </div>
       </div>
+
+      <!-- MIS PRÁCTICAS (Todos) -->
+      <div class="dashboard-card" (click)="navigate('/practicas')">
+        <div class="card-header">
+          <div class="card-icon card-icon--orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3>Mis Prácticas</h3>
+        </div>
+        <div class="card-image">
+          <img src="assets/img/card_practicas.jpg" alt="Mis prácticas de simulación" />
+          <div class="card-image-overlay"></div>
+        </div>
+        <div class="card-body">
+          <p>Revisa tu historial de simulaciones y resultados.</p>
+          <div class="card-metric">
+            <span class="metric-number">{{ totalPracticas }}</span>
+            <span class="metric-label">Prácticas Recientes</span>
+          </div>
+          <button class="btn-card btn-card--outline">Ver Prácticas</button>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>

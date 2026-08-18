@@ -1,44 +1,102 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <div class="auth-header">
-      <h2>SBVIA</h2>
-      <p>Simulador de Comportamiento Vial</p>
+<div class="login-page">
+
+  <!-- COLUMNA IZQUIERDA: Inmersión visual -->
+  <div class="login-visual">
+    <img src="assets/img/login_bg.jpg" alt="Simulación vial" class="visual-bg" />
+    <div class="visual-overlay"></div>
+    <div class="visual-content">
+      <div class="visual-logo">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 28 Q10 12 20 12 Q30 12 36 28" stroke="#00b4d8" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M8 28 L32 28" stroke="#00b4d8" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="11" y="22" width="6" height="8" rx="2" fill="rgba(13,27,42,0.8)" stroke="#00b4d8" stroke-width="1.5"/>
+          <rect x="23" y="22" width="6" height="8" rx="2" fill="rgba(13,27,42,0.8)" stroke="#00b4d8" stroke-width="1.5"/>
+          <circle cx="13" cy="32" r="2.5" fill="#00b4d8"/>
+          <circle cx="27" cy="32" r="2.5" fill="#00b4d8"/>
+        </svg>
+        <span>SBVIA</span>
+      </div>
+      <div class="visual-tagline">
+        <h1>Simulador de<br>Comportamiento Vial</h1>
+        <p>Entrena, evalúa y mejora tus habilidades de conducción en un entorno seguro e inteligente.</p>
+      </div>
+      <div class="visual-features">
+        <div class="feature-chip">
+          <span class="chip-dot"></span>
+          Simulaciones en tiempo real
+        </div>
+        <div class="feature-chip">
+          <span class="chip-dot chip-dot--orange"></span>
+          IA adaptativa
+        </div>
+        <div class="feature-chip">
+          <span class="chip-dot chip-dot--cyan"></span>
+          Análisis de desempeño
+        </div>
+      </div>
     </div>
-    
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          [(ngModel)]="credentials.email" 
-          required 
-          placeholder="ejemplo@correo.com">
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          [(ngModel)]="credentials.password" 
-          required 
-          placeholder="••••••••">
-      </div>
-
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
-
-      <button type="submit" [disabled]="loading || !loginForm.form.valid" class="btn-primary">
-        {{ loading ? 'Iniciando...' : 'Iniciar Sesión' }}
-      </button>
-      
-      <div class="auth-footer">
-        ¿No tienes cuenta? <a routerLink="/registro">Regístrate aquí</a>
-      </div>
-    </form>
   </div>
+
+  <!-- COLUMNA DERECHA: Formulario -->
+  <div class="login-form-side">
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Iniciar Sesión</h2>
+        <p>Accede a tu cuenta para continuar</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="credentials.email"
+              required
+              placeholder="ejemplo@correo.com">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="credentials.password"
+              required
+              placeholder="••••••••">
+          </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" [disabled]="loading || !loginForm.form.valid" class="btn-submit">
+          <span *ngIf="!loading">Iniciar Sesión</span>
+          <span *ngIf="loading" class="loading-dots">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
+        <div class="form-footer">
+          ¿No tienes cuenta? <a routerLink="/registro">Regístrate aquí</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </div>

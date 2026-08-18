@@ -12,11 +12,18 @@ import { AuthService } from '../../auth/auth.service';
 })
 export class DashboardComponent implements OnInit {
   usuario: any;
+  totalEscenarios = 12;
+  totalUsuarios = 5;
+  totalPracticas = 8;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.currentUser();
+  }
+
+  navigate(path: string): void {
+    this.router.navigate([path]);
   }
 
   logout(): void {
