@@ -9,6 +9,9 @@ export interface Usuario {
   email: string;
   telefono?: string;
   tipoLicencia?: string;
+  cedula?: string;
+  tipoSangre?: string;
+  discapacidad?: string;
   rol: string;
   activo: boolean;
   creadoEn?: string;

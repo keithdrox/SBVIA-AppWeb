@@ -54,6 +54,15 @@ public class Usuario {
     @Column(name = "tipo_licencia", length = 255)
     private String tipoLicencia;
 
+    @Column(name = "cedula", length = 20, unique = true)
+    private String cedula;
+
+    @Column(name = "tipo_sangre", length = 10)
+    private String tipoSangre;
+
+    @Column(name = "discapacidad", length = 255)
+    private String discapacidad;
+
     @Column(name = "fecha_registro", nullable = false)
     @Builder.Default
     private LocalDate fechaRegistro = LocalDate.now();

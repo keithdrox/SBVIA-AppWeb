@@ -29,4 +29,10 @@ public class ActualizarUsuarioRequest {
     private String telefono;
 
     private String tipoLicencia;
+
+    private String cedula;
+
+    private String tipoSangre;
+
+    private String discapacidad;
 }

@@ -201,6 +201,9 @@ public class AuthService {
         usuario.setApellido(request.getApellido());
         usuario.setTelefono(request.getTelefono());
         usuario.setTipoLicencia(request.getTipoLicencia());
+        usuario.setCedula(request.getCedula());
+        usuario.setTipoSangre(request.getTipoSangre());
+        usuario.setDiscapacidad(request.getDiscapacidad());
 
         usuario = usuarioRepository.save(usuario);
         return mapToDTO(usuario);
@@ -239,6 +242,9 @@ public class AuthService {
                 .email(usuario.getEmail())
                 .telefono(usuario.getTelefono())
                 .tipoLicencia(usuario.getTipoLicencia())
+                .cedula(usuario.getCedula())
+                .tipoSangre(usuario.getTipoSangre())
+                .discapacidad(usuario.getDiscapacidad())
                 .rol(usuario.getRol().getNombre())
                 .activo(usuario.isActivo())
                 .creadoEn(usuario.getCreadoEn())
