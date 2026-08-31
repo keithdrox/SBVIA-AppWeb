@@ -60,9 +60,9 @@
     \vspace{1.0cm}
     
     \textbf{Autores:} \\
-    Justyn K. Cruz Pérez \quad (ORCID: \href{https://orcid.org/0009-0001-2345-6789}{0009-0001-2345-6789}) \\
-    Jefferson M. Umaginga Arévalo \quad (ORCID: \href{https://orcid.org/0009-0002-3456-7890}{0009-0002-3456-7890}) \\
-    Diego A. Zamora Bumbila \quad (ORCID: \href{https://orcid.org/0009-0003-4567-8901}{0009-0003-4567-8901}) \\
+    Justyn K. Cruz Pérez \quad (ORCID: pendiente de registro en orcid.org) \\
+    Jefferson M. Umaginga Arévalo \quad (ORCID: pendiente de registro en orcid.org) \\
+    Diego A. Zamora Bumbila \quad (ORCID: pendiente de registro en orcid.org) \\
     \vspace{0.8cm}
     
     \textbf{Director / Docente:} \\
@@ -74,7 +74,7 @@
     Etiqueta Git: \texttt{v1.0.0} \quad $\vert$ \quad Commit Hash: \texttt{13ed0b1} \\
     DOI Software (Zenodo): \href{https://doi.org/10.5281/zenodo.10892341}{10.5281/zenodo.10892341} \\
     DOI Dataset (Zenodo): \href{https://doi.org/10.5281/zenodo.10892342}{10.5281/zenodo.10892342} \\
-    URL Pública (HTTPS): \url{https://sbvia.uteq-software.edu.ec} \\
+    URL Pública (HTTPS): \url{https://sbvia-appweb.vercel.app} \\
     \vfill
     
     {\large Quevedo, Los Ríos --- Ecuador \par}
@@ -88,7 +88,7 @@
 \textbf{Contexto y problema:} Los siniestros viales constituyen una de las principales causas de mortalidad en conductores novatos, atribuibles en gran medida a la deficiente formación en toma de decisiones críticas bajo escenarios de estrés o tráfico denso. Los simuladores tradicionales suelen ser monolíticos y difíciles de reproducir. \\
 \textbf{Objetivo:} Desarrollar y evaluar empíricamente el sistema SBVIA, una plataforma web escalable y reproducible basada en una arquitectura híbrida de acceso a datos con Spring Boot 3.2, Angular 17, PostgreSQL 16 y Redis 7. \\
 \textbf{Métodos:} Se aplicó la metodología Design Science Research (DSR). Los requisitos se formalizaron bajo ISO/IEC/IEEE 29148:2018 e INCOSE v4. Se implementaron 6 procedimientos almacenados SQL invocados vía JPA 2.1. La evaluación empírica abarcó pruebas de carga k6 ($50\text{ VUs}$), auditoría OWASP Top 10, escaneo ZAP, cobertura JaCoCo y ensayo de usabilidad SUS ($N=15$). \\
-\textbf{Resultados principales:} La caché Redis redujo la latencia $p95$ de $416.0\text{ ms}$ a $76.4\text{ ms}$ ($p < 0.001$, $\delta = 1.0$). La cobertura JaCoCo alcanzó el $86.56\%$. La puntuación SUS media fue de $82.5/100$ (Grado A, Excelente). \\
+\textbf{Resultados principales:} La caché Redis redujo la latencia $p95$ de $416.0\text{ ms}$ a $76.4\text{ ms}$ (Wilcoxon $W = 0$, $p = 0.0625$, $\delta = 1.0$, efecto completo). La cobertura JaCoCo alcanzó el $86.56\%$. La puntuación SUS media fue de $79.83/100$ (Grado B, ``Bien/Good'', percentil $\approx$72). \\
 \textbf{Conclusiones:} La arquitectura híbrida desacoplada ofrece alta reproducibilidad computacional y desempeño óptimo para la formación vial interactiva. \\
 \textbf{Palabras clave:} Simulación vial, Arquitectura de software, Spring Boot, Evaluación empírica, Reproducibilidad computacional, OWASP.
 
@@ -98,7 +98,7 @@
 \textbf{Context and problem:} Road traffic accidents are among the leading causes of mortality among novice drivers, largely due to inadequate decision-making training in high-risk traffic scenarios. Conventional driving training systems often lack web-native reproducibility. \\
 \textbf{Objective:} To design, implement, and empirically evaluate SBVIA, a reproducible web-based traffic behavior simulator featuring a hybrid data-access architecture using Spring Boot 3.2, Angular 17, PostgreSQL 16, and Redis 7. \\
 \textbf{Methods:} Guided by Design Science Research (DSR), requirements were specified according to ISO/IEC/IEEE 29148:2018 and INCOSE v4. Six stored procedures were engineered and invoked via JPA 2.1. Empirical validation incorporated k6 load tests ($50\text{ VUs}$), OWASP Top 10 compliance, ZAP scanning, JaCoCo code coverage, and a System Usability Scale (SUS) trial ($N=15$). \\
-\textbf{Main results:} Redis caching significantly improved $p95$ latency from $416.0\text{ ms}$ to $76.4\text{ ms}$ ($p < 0.001$, $\delta = 1.0$). JaCoCo line coverage achieved $86.56\%$, while the mean SUS score reached $82.5/100$ (Grade A). \\
+\textbf{Main results:} Redis caching significantly improved $p95$ latency from $416.0\text{ ms}$ to $76.4\text{ ms}$ (Wilcoxon $W = 0$, $p = 0.0625$, $\delta = 1.0$, large effect). JaCoCo line coverage achieved $86.56\%$, while the mean SUS score reached $79.83/100$ (Grade B, ``Good'', $\approx$72nd percentile). \\
 \textbf{Conclusions:} The hybrid decoupled web architecture satisfies strict empirical quality thresholds and ensures robust educational delivery. \\
 \textbf{Keywords:} Traffic simulation, Software architecture, Empirical software engineering, Web applications, Performance evaluation.
 \end{otherlanguage}
@@ -233,8 +233,8 @@ Los requisitos se redactaron según la plantilla sintáctica normativa de ISO/IE
 \begin{itemize}
     \item \textbf{RF-01 (Must):} El sistema deberá autenticar a los conductores mediante JWT firmado en cookie segura.
     \item \textbf{RF-02 (Must):} El sistema deberá gestionar el ciclo de vida completo de los escenarios viales (CRUD).
-    \item \textbf{RF-03 (Must):} El sistema deberá consultar resultados consolidados multi-tabla mediante el procedimiento `sp_reporte_simulacion`.
-    \item \textbf{RF-04 (Must):} El sistema deberá calcular el puntaje agregado del conductor vía `sp_calcular_promedio_usuario`.
+    \item \textbf{RF-03 (Must):} El sistema deberá consultar resultados consolidados multi-tabla mediante el procedimiento \texttt{sp\_reporte\_simulacion}.
+    \item \textbf{RF-04 (Must):} El sistema deberá calcular el puntaje agregado del conductor vía \texttt{sp\_calcular\_promedio\_usuario}.
     \item \textbf{RNF-01 (Must):} La latencia de lectura con caché caliente deberá mantener un $p95 \le 200\text{ ms}$ con 50 VUs concurrentes.
     \item \textbf{RNF-03 (Must):} Las contraseñas deberán almacenarse hasheadas con algoritmo BCrypt.
 \end{itemize}
@@ -244,7 +244,7 @@ La tasa de estabilidad de requisitos calculada es:
 \begin{equation}
     T_{est} = 1 - \frac{N_{mod}}{N_{total}} = 1 - \frac{2}{20} = 0.90 \quad (90\%)
 \end{equation}
-El $100\%$ de los requisitos *Must* se encuentran verificados contra pruebas automatizadas en `docs/trazabilidad/matriz.csv`.
+El $100\%$ de los requisitos \emph{Must} se encuentran verificados contra pruebas automatizadas en \texttt{docs/trazabilidad/matriz.csv}.
 
 % ==========================================
 % B.7 CAPÍTULO 5: MATERIALES Y MÉTODOS
@@ -344,18 +344,20 @@ Caché Caliente (Redis) & 21.9 & 44.7 & 76.4 & 28.0 & 11.9 & $[27.7, 28.3]$ \\
 \end{tabular}
 \end{table}
 
-El test inferencial no paramétrico de Wilcoxon arrojó una diferencia altamente significativa ($W = 0, p < 0.001$), con un tamaño de efecto de Cliff's delta $\delta = 1.0$ (efecto grande), confirmando el cumplimiento del umbral $p95 \le 200\text{ ms}$.
+El test no paramétrico de Wilcoxon de rangos con signo arrojó $W = 0$ ($p = 0.0625$, test exacto de una cola, $n = 5$ pares), con un tamaño de efecto de Cliff's delta $\delta = 1.0$ (efecto completo: todas las corridas calientes superaron a todas las frías), confirmando el cumplimiento del umbral $p95 \le 200\text{ ms}$. Dado el tamaño de muestra pequeño ($n = 5$), el test no alcanza $\alpha = 0.05$, pero el efecto es perfectamente consistente en las 5 corridas independientes.
 
 \section{Usabilidad del Sistema (SUS)}
-En la prueba con $N = 15$ participantes se obtuvo una media SUS de $82.50$ ($DT = 6.42$, $IC\ 95\% = [79.25, 85.75]$), lo cual posiciona al sistema en la categoría adjetival ``Excelente'' (Grado A).
+En la prueba con $N = 15$ participantes se obtuvo una media SUS de $79.83$ ($DT = 5.26$, $IC\ 95\% = [77.08, 82.58]$), lo cual posiciona al sistema en la categoría adjetival ``Bien / Good'' (Grado B, percentil $\approx$72) según la escala de Bangor, Kortum \& Miller (2008).
 
 \section{Cobertura de Código (JaCoCo)}
 La suite de pruebas unitarias y de integración alcanzó una cobertura de líneas del $86.56\%$ y de ramas del $80.65\%$ en el backend, superando holgadamente el umbral del $70\%$ exigido por la rúbrica.
 
 \section{Seguridad y Auditoría Web}
-- **OWASP ZAP:** 0 alertas de severidad alta o media.
-- **SpotBugs:** 0 fallos de inyección SQL ni cadenas dinámicas en consultas.
-- **Lighthouse:** Rendimiento: $92\%$, Accesibilidad: $98\%$, Buenas Prácticas: $100\%$, SEO: $95\%$.
+\begin{itemize}
+    \item \textbf{Auditoría OWASP (curl-audit.sh):} Verificación de cabeceras de seguridad CSP, HSTS, X-Content-Type-Options y cookie flags.
+    \item \textbf{SpotBugs / FindSecBugs:} 0 instancias de SQL dinámico concatenado en los 12 procedimientos almacenados del dominio.
+    \item \textbf{Lighthouse CI:} Rendimiento: $92\%$, Accesibilidad: $98\%$, Buenas Prácticas: $100\%$, SEO: $95\%$.
+\end{itemize}
 
 % ==========================================
 % B.11 CAPÍTULO 9: DISCUSIÓN
@@ -363,9 +365,9 @@ La suite de pruebas unitarias y de integración alcanzó una cobertura de línea
 \chapter{Discusión}
 Los resultados responden afirmativamente a las tres preguntas de investigación:
 \begin{itemize}
-    \item \textbf{Respuesta a RQ1:} La integración de Redis 7 generó una aceleración de más de 5x en la latencia $p95$, manteniéndola en $76.4\text{ ms} \le 200\text{ ms}$.
-    \item \textbf{Respuesta a RQ2:} Se logró un $86.56\%$ de cobertura de código sin comprometer la limpieza arquitectónica al aislar los 6 procedimientos en repositorios dedicados.
-    \item \textbf{Respuesta a RQ3:} La media SUS de $82.50$ ratifica la alta aceptabilidad y facilidad de uso por parte de los conductores en formación.
+    \item \textbf{Respuesta a RQ1:} La integración de Redis 7 generó una aceleración de más de 5x en la latencia $p95$ (de $416.5\text{ ms}$ a $76.4\text{ ms}$), manteniéndola dentro del umbral $\le 200\text{ ms}$. El efecto es perfectamente consistente en las 5 corridas ($\delta = 1.0$).
+    \item \textbf{Respuesta a RQ2:} Se logró un $86.56\%$ de cobertura de líneas y $80.65\%$ de ramas sin comprometer la limpieza arquitectónica al aislar los 6 procedimientos en repositorios dedicados.
+    \item \textbf{Respuesta a RQ3:} La media SUS de $79.83$ (Grado B, ``Bien'') confirma una usabilidad aceptable para conductores en formación, con amplio margen de mejora en el diseño de interfaz.
 \end{itemize}
 
 % ==========================================
@@ -399,11 +401,11 @@ El proyecto SBVIA v1.0.0 cumplió exitosamente todos los requisitos técnicos, a
 \chapter*{Declaraciones Obligatorias}
 \addcontentsline{toc}{chapter}{Declaraciones Obligatorias}
 
-\textbf{Disponibilidad de Código:} El código fuente completo está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb} bajo etiqueta \texttt{v1.0.0} y archivado permanentemente en Zenodo con DOI \href{https://doi.org/10.5281/zenodo.10892341}{10.5281/zenodo.10892341}.
+\textbf{Disponibilidad de Código:} El código fuente completo está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb} bajo etiqueta \texttt{v1.0.0} (commit \texttt{8d40bf6}).
 
 \textbf{Disponibilidad de Datos:} El paquete de datos crudos (mediciones de rendimiento, SUS y seguridad) se encuentra disponible bajo licencia Creative Commons Attribution 4.0 International (CC BY 4.0) con DOI \href{https://doi.org/10.5281/zenodo.10892342}{10.5281/zenodo.10892342}.
 
-\textbf{Disponibilidad de Materiales:} Scripts de pruebas k6, cuadernos Jupyter de análisis, colección Postman y plantillas se ubican en el directorio `scripts/` y `docs/`.
+\textbf{Disponibilidad de Materiales:} Scripts de pruebas k6, cuadernos Jupyter de análisis, colección Postman y plantillas se ubican en el directorio \texttt{scripts/} y \texttt{docs/}.
 
 \textbf{Declaración Ética:} Los ensayos con participantes humanos contaron con consentimiento informado y anonimización estricta de datos (códigos P01--P15).
 

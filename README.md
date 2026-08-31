@@ -10,10 +10,10 @@ El sistema **Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA
 
 ---
 
-## 🚀 Despliegue en Producción y Acceso Público
-- **Frontend Web (HTTPS):** [https://sbvia.uteq-software.edu.ec](https://sbvia.uteq-software.edu.ec) (o réplica [https://sbvia-appweb.vercel.app](https://sbvia-appweb.vercel.app))
-- **API Backend / Actuator Health:** [https://api.sbvia.uteq-software.edu.ec/actuator/health](https://api.sbvia.uteq-software.edu.ec/actuator/health)
-- **Documentación Swagger UI:** [https://api.sbvia.uteq-software.edu.ec/api/swagger-ui.html](https://api.sbvia.uteq-software.edu.ec/api/swagger-ui.html)
+## 🚀 Despliegue y Acceso Público
+- **Frontend Web (HTTPS):** [https://sbvia-appweb.vercel.app](https://sbvia-appweb.vercel.app)
+- **API Backend / Actuator Health:** [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) (entorno local)
+- **Documentación Swagger UI:** [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html) (entorno local)
 
 ### 👤 Cuenta de Demostración para Tribunal / Evaluación:
 - **Correo:** `conductor@sbvia.com`
@@ -22,11 +22,12 @@ El sistema **Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA
 
 ---
 
-## 🐳 Artefactos Docker e Inmutabilidad
+## 🐳 Artefactos Docker
 - **Imagen Docker Backend:** `ghcr.io/keithdrox/sbvia-backend:v1.0.0`
-- **Digest SHA256:** `sha256:7f9a1c8b4e2d3f0a1c8b4e2d3f0a1c8b4e2d3f0a1c8b4e2d3f0a1c8b4e2d3f0a`
 - **Imagen Docker Frontend:** `ghcr.io/keithdrox/sbvia-frontend:v1.0.0`
-- **Digest SHA256:** `sha256:3a4b5c6d7e8f90123a4b5c6d7e8f90123a4b5c6d7e8f90123a4b5c6d7e8f9012`
+
+> Los digests SHA-256 exactos se obtienen al publicar las imágenes con `docker buildx build --push`.
+> Consultar el registro: [GitHub Container Registry](https://github.com/keithdrox/SBVIA-AppWeb/pkgs/container/sbvia-backend)
 
 ---
 
@@ -68,9 +69,29 @@ docker compose up -d --wait
 
 ---
 
+## 📄 Generación del Informe PDF (`make pdf`)
+
+El informe académico en LaTeX se compila con tres pasadas (pdflatex → bibtex → pdflatex × 2):
+
+```bash
+make pdf
+# Genera: docs/informe-final.pdf
+```
+
+*Requisitos: `pdflatex` y `bibtex` instalados localmente (TeX Live / MiKTeX).*
+
+Alternativa con Docker (sin instalación local):
+```bash
+docker run --rm -v "%cd%\docs:/work" -w /work \
+  texlive/texlive:latest \
+  sh -c "pdflatex -interaction=nonstopmode informe-final.tex && bibtex informe-final && pdflatex -interaction=nonstopmode informe-final.tex && pdflatex -interaction=nonstopmode informe-final.tex"
+```
+
+---
+
 ## 🗄️ Semillas y Determinismo
 - **Semilla Aleatoria Global (PRNG):** `SEED=42`
-- **Dataset de Evaluación SUS:** $N = 15$ participantes (promedio SUS: $82.5$).
+- **Dataset de Evaluación SUS:** $N = 15$ participantes (promedio SUS: 79.83, DT: 5.26).
 
 ---
 

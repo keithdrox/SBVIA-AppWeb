@@ -1,9 +1,9 @@
-.PHONY: all verify backend-verify frontend-build build up down bench audit clean
+.PHONY: all verify backend-verify frontend-build build up down bench audit pdf clean
 
 MAVEN_IMAGE ?= maven:3.9.11-eclipse-temurin-21-alpine
 NODE_IMAGE ?= node:20-alpine
 
-all: verify build up
+all: verify build up pdf
 
 verify: backend-verify frontend-build
 
@@ -32,3 +32,11 @@ audit:
 
 clean:
 	docker compose down --volumes --remove-orphans
+
+pdf:
+	@echo "Compilando informe LaTeX (3 pasadas)..."
+	cd docs && pdflatex -interaction=nonstopmode informe-final.tex
+	cd docs && bibtex informe-final
+	cd docs && pdflatex -interaction=nonstopmode informe-final.tex
+	cd docs && pdflatex -interaction=nonstopmode informe-final.tex
+	@echo "PDF generado: docs/informe-final.pdf"

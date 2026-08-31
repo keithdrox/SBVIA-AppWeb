@@ -4,21 +4,20 @@ title: "Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)"
 authors:
   - family-names: "Cruz Pérez"
     given-names: "Justyn K."
-    orcid: "https://orcid.org/0009-0001-2345-6789"
     affiliation: "Universidad Técnica Estatal de Quevedo"
+    # ORCID pendiente de registro: https://orcid.org (gratuito, 2 min)
   - family-names: "Umaginga Arévalo"
     given-names: "Jefferson M."
-    orcid: "https://orcid.org/0009-0002-3456-7890"
     affiliation: "Universidad Técnica Estatal de Quevedo"
+    # ORCID pendiente de registro: https://orcid.org (gratuito, 2 min)
   - family-names: "Zamora Bumbila"
     given-names: "Diego A."
-    orcid: "https://orcid.org/0009-0003-4567-8901"
     affiliation: "Universidad Técnica Estatal de Quevedo"
+    # ORCID pendiente de registro: https://orcid.org (gratuito, 2 min)
 version: 1.0.0
-date-released: "2026-08-17"
+date-released: "2026-08-31"
 license: MIT
 repository-code: "https://github.com/keithdrox/SBVIA-AppWeb"
-doi: "10.5281/zenodo.10892341"
 keywords:
   - "simulador vial"
   - "inteligencia artificial"
@@ -37,4 +36,3 @@ preferred-citation:
       given-names: "Diego A."
   title: "Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA): Arquitectura Híbrida y Evaluación Empírica"
   year: 2026
-  doi: "10.5281/zenodo.10892341"
