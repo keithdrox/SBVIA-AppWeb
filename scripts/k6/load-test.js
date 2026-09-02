@@ -12,8 +12,8 @@ export let options = {
     vus: 50,
     duration: '30s',
     thresholds: {
-        // RNF-01 (ISO 25010): p95 < 2000 ms bajo 50 usuarios concurrentes
-        http_req_duration: ['p(95)<2000'],
+        // RNF-01 (ISO 25010): p95 < 200 ms bajo 50 usuarios concurrentes
+        http_req_duration: ['p(95)<200'],
         http_req_failed: ['rate<0.01'],   // tasa de errores < 1%
     },
 };
