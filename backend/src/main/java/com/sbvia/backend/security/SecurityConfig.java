@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers("/api/auth/login", "/api/auth/registro"))
+                        .ignoringRequestMatchers("/api/auth/login", "/api/auth/registro", "/api/auth/refresh"))
 
                 // Cabeceras HTTP de seguridad (OWASP)
                 .headers(headers -> headers
