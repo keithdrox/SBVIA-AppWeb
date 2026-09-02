@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -111,6 +112,92 @@ class RepositoryIntegrationTest {
 
         assertThat(resultado.getContent()).hasSize(1);
         assertThat(resultado.getContent().get(0).getNombre()).isEqualTo("Av. 6 de Diciembre");
+    }
+
+    @Test
+    @DisplayName("conFiltros combina tipo de vía, dificultad y clima sobre escenarios activos")
+    void conFiltros_combinaTodosLosCriterios() {
+        escenarioRepository.save(Escenario.builder()
+                .nombre("Avenida urbana lluviosa")
+                .tipoVia("AVENIDA")
+                .nivelDificultad(3)
+                .clima("LLUVIOSO")
+                .densidadTrafico("Alta")
+                .activo(true)
+                .build());
+        escenarioRepository.save(Escenario.builder()
+                .nombre("Avenida con otro clima")
+                .tipoVia("AVENIDA")
+                .nivelDificultad(3)
+                .clima("SOLEADO")
+                .densidadTrafico("Media")
+                .activo(true)
+                .build());
+        escenarioRepository.save(Escenario.builder()
+                .nombre("Coincidencia inactiva")
+                .tipoVia("AVENIDA")
+                .nivelDificultad(3)
+                .clima("LLUVIOSO")
+                .densidadTrafico("Baja")
+                .activo(false)
+                .build());
+
+        List<Escenario> resultado = escenarioRepository.findAll(
+                EscenarioRepository.conFiltros("AVENIDA", 3, "LLUVIOSO"));
+
+        assertThat(resultado)
+                .extracting(Escenario::getNombre)
+                .containsExactly("Avenida urbana lluviosa");
+    }
+
+    @Test
+    @DisplayName("conFiltros acepta criterios nulos y conserva solo escenarios activos")
+    void conFiltros_sinCriteriosOpcionales() {
+        escenarioRepository.save(Escenario.builder()
+                .nombre("Activo sin filtros")
+                .tipoVia("CALLE")
+                .nivelDificultad(1)
+                .clima("NUBLADO")
+                .densidadTrafico("Baja")
+                .activo(true)
+                .build());
+        escenarioRepository.save(Escenario.builder()
+                .nombre("Inactivo sin filtros")
+                .tipoVia("CALLE")
+                .nivelDificultad(1)
+                .clima("NUBLADO")
+                .densidadTrafico("Baja")
+                .activo(false)
+                .build());
+
+        List<Escenario> resultado = escenarioRepository.findAll(
+                EscenarioRepository.conFiltros(null, null, null),
+                Sort.by("nombre"));
+
+        assertThat(resultado)
+                .extracting(Escenario::getNombre)
+                .contains("Activo sin filtros")
+                .doesNotContain("Inactivo sin filtros");
+    }
+
+    @Test
+    @DisplayName("conFiltros ignora cadenas vacías para tipo de vía y clima")
+    void conFiltros_ignoraCadenasVacias() {
+        escenarioRepository.save(Escenario.builder()
+                .nombre("Escenario dificultad dos")
+                .tipoVia("AUTOPISTA")
+                .nivelDificultad(2)
+                .clima("SOLEADO")
+                .densidadTrafico("Media")
+                .activo(true)
+                .build());
+
+        List<Escenario> resultado = escenarioRepository.findAll(
+                EscenarioRepository.conFiltros("   ", 2, ""));
+
+        assertThat(resultado)
+                .extracting(Escenario::getNombre)
+                .contains("Escenario dificultad dos");
     }
 
     @Test
