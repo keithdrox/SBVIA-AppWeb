@@ -12,7 +12,7 @@ Control formal del ciclo de vida y evolución de requisitos según la norma ISO/
 - **Requisitos Eliminados ($N_{del}$):** 0.
 - **Tasa de Estabilidad de Requisitos ($T_{est}$):**
   $$T_{est} = 1 - \frac{N_{mod}}{N_{total}} = 1 - \frac{2}{20} = 0.90 \quad (90.0\%)$$
-- **Porcentaje de Requisitos con Prioridad *Must* Verificados:** **100 %** ($8/8$).
+- **Porcentaje de Requisitos con Prioridad *Must* Verificados:** **85.71 %** ($12/14$). RNF-01 y RNF-02 permanecen parciales hasta completar cinco corridas formales y un protocolo frío/caliente comparable.
 
 ---
 
