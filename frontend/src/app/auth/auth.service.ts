@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -35,6 +35,24 @@ export class AuthService {
     );
   }
 
+  refreshSession(): Observable<boolean> {
+    return this.http.post(`${this.API_URL}/refresh`, {}, { withCredentials: true }).pipe(
+      tap((response: any) => {
+        this.accessToken.set(response.accessToken);
+        this.currentUser.set(response.usuario);
+      }),
+      // Si el refresh falla (por ejemplo, porque el usuario no tiene sesión guardada),
+      // simplemente atrapamos el error y devolvemos false silenciosamente.
+      catchError(() => {
+        this.clearSession(false);
+        return of(false);
+      }),
+      // Mapeamos a true en caso de éxito
+      tap(() => true)
+    );
+  }
+
+
   logout(callApi = true): void {
     if (callApi && this.accessToken()) {
       // Hacemos el llamado a la API para enviar el token a la blacklist de Redis
@@ -50,10 +68,12 @@ export class AuthService {
     }
   }
 
-  private clearSession(): void {
+  private clearSession(navigate = true): void {
     this.accessToken.set(null);
     this.currentUser.set(null);
-    this.router.navigate(['/login']);
+    if (navigate) {
+      this.router.navigate(['/login']);
+    }
   }
 
   getAccessToken(): string | null {
