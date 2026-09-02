@@ -143,9 +143,9 @@
 % ==========================================
 \chapter{Introducción}
 \section{Contexto y motivación}
-La siniestralidad vial representa una crisis de salud pública global. Según la Organización Mundial de la Salud, anualmente fallecen más de 1.19 millones de personas en siniestros de tránsito, siendo los conductores novatos y jóvenes el grupo demográfico con mayor vulnerabilidad \cite{ralph2021empirical, brooke1996sus, basili1994gqm}. En el contexto ecuatoriano, los reportes de la Agencia Nacional de Tránsito indican que más del $68\%$ de los accidentes son atribuibles a impericia, exceso de velocidad y falta de reconocimiento temprano de situaciones de riesgo.
+La siniestralidad vial representa una crisis de salud pública global. La Organización Mundial de la Salud estimó 1,19 millones de muertes anuales por siniestros de tránsito y señaló que estas lesiones constituyen la principal causa de muerte entre personas de 5 a 29 años \cite{who2023roadsafety}. Esta magnitud justifica investigar herramientas de formación que permitan practicar la identificación de peligros sin exponer al estudiante ni a terceros a riesgos reales.
 
-Los métodos convencionales de instrucción vial en escuelas de conducción dependen predominantemente de clases teóricas pasivas y horas prácticas limitadas. Los simuladores de escritorio propietarios existentes suelen presentar barreras de costo elevado, dependencias de hardware específico y nula accesibilidad remota \cite{peffers2007design}. Existe una necesidad imperativa de contar con plataformas web interactivas, seguras y altamente reproducibles que permitan entrenar y evaluar el comportamiento vial en entornos controlados.
+La evidencia científica sobre simuladores de conducción exige una interpretación prudente. Las revisiones disponibles muestran beneficios inmediatos en algunas destrezas simuladas, pero también heterogeneidad metodológica, muestras pequeñas y evidencia todavía insuficiente sobre la transferencia a la conducción real \cite{martin2019simulator, alonso2023simulators, krasniuk2024simulator}. Por ello, SBVIA se plantea como complemento académico para practicar decisiones y registrar resultados, no como sustituto de la formación práctica supervisada ni como instrumento clínico o habilitante.
 
 \section{Preguntas de investigación}
 Para guiar el diseño y evaluación del sistema SBVIA, se formularon tres preguntas de investigación cerradas y medibles:
@@ -194,32 +194,28 @@ El desarrollo riguroso de SBVIA se sustenta en bases conceptuales autoritativas:
 % B.6 CAPÍTULO 3: TRABAJOS RELACIONADOS
 % ==========================================
 \chapter{Trabajos Relacionados}
-Siguiendo las directrices de Kitchenham \& Charters \cite{kitchenham2007guidelines} y la metodología PRISMA 2020 \cite{page2021prisma}, se realizó una revisión sistemática de simuladores y plataformas de evaluación vial.
+Se realizó una revisión narrativa estructurada tomando como referencia las directrices de Kitchenham \& Charters \cite{kitchenham2007guidelines} y PRISMA 2020 \cite{page2021prisma}. No se presenta como una revisión sistemática completa, porque el proyecto no conserva un protocolo registrado ni un conjunto íntegro de resultados de búsqueda y exclusión. La síntesis se limita a trabajos identificables y directamente relacionados con la eficacia o validez de simuladores de conducción.
 
 \begin{table}[htbp]
 \centering
 \caption{Comparación sistemática de trabajos relacionados frente a SBVIA}
 \label{tab:trabajos_relacionados}
 \footnotesize
-\begin{tabularx}{\textwidth}{lccccX}
+\begin{tabularx}{\textwidth}{p{2.8cm}p{1cm}p{2.4cm}p{2.2cm}X}
 \toprule
-\textbf{Referencia} & \textbf{Año} & \textbf{Pila Tecnológica} & \textbf{Patrón} & \textbf{Evaluación} & \textbf{Diferencia frente a SBVIA} \\
+\textbf{Referencia} & \textbf{Año} & \textbf{Tipo} & \textbf{Corpus} & \textbf{Aporte y relación con SBVIA} \\
 \midrule
-Al-Shihabi et al. & 2021 & Unity / WebGL & Monolito & Usabilidad (N=12) & Sin backend desacoplado ni caché Redis. \\
-Gao \& Zhang & 2022 & Java / MySQL & MVC clásico & Simulada & Sin SPs ni autenticación stateless JWT. \\
-Müller et al. & 2020 & React / Node.js & Microservicios & Latencia & Sin trazabilidad formal ISO 29148. \\
-Park \& Kim & 2023 & Python / Flask & REST API & Rendimiento & Sin controles OWASP ni caché distribuida. \\
-Santos et al. & 2022 & Angular / PHP & Capas & SUS (N=10) & Sin Docker ni análisis inferencial. \\
-Wang \& Liu & 2024 & Vue.js / Django & Event-Driven & Carga & No implementa estrategia híbrida SQL. \\
-Fernández et al. & 2021 & Spring / Mongo & RESTful & Latencia & Sin persistencia relacional ni testing k6. \\
-Tan et al. & 2023 & Three.js / Go & Clean Arch. & FPS / Red & Sin reproducibilidad FAIR ni bitácora. \\
-\textbf{SBVIA (Este trabajo)} & \textbf{2026} & \textbf{Spring / Angular} & \textbf{C4 / Híbrido} & \textbf{k6, SUS, ZAP} & \textbf{Reproducibilidad end-to-end con Docker.} \\
+Martín-delosReyes et al. \cite{martin2019simulator} & 2019 & Revisión sistemática & 5 estudios & Evidencia insuficiente y heterogénea; sustenta una interpretación conservadora del alcance formativo. \\
+Wynne et al. \cite{wynne2019validation} & 2019 & Revisión de validación & 44 estudios & Aproximadamente la mitad mostró validez absoluta o relativa; diferencia entre desempeño simulado y real. \\
+Alonso et al. \cite{alonso2023simulators} & 2023 & Revisión sistemática & 15 estudios & Reporta indicios favorables, pero advierte muestras limitadas y falta de seguimiento longitudinal. \\
+Krasniuk et al. \cite{krasniuk2024simulator} & 2024 & Revisión de intervenciones & 15 estudios & Encuentra mejoras inmediatas en destrezas simuladas, sin certeza sobre transferencia duradera a carretera. \\
+\textbf{SBVIA} & \textbf{2026} & \textbf{Artefacto web} & \textbf{Caso académico} & \textbf{Integra escenarios, evaluación, trazabilidad y evidencia técnica reproducible; no mide reducción real de siniestros.} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Brecha Identificada (Research Gap)}
-La literatura evidencia una escasez de plataformas de simulación vial web que combinen persistencia híbrida optimizada, altos estándares de seguridad OWASP y reproducibilidad computacional completa verificable mediante un único comando (`make all`).
+La literatura revisada se concentra en el efecto pedagógico o en la validez del simulador, mientras que SBVIA aborda una brecha de ingeniería: documentar de forma trazable un artefacto web de apoyo formativo con autenticación, persistencia, caché, pruebas y mediciones reproducibles. Esta contribución es tecnológica y académica; los datos disponibles no permiten afirmar eficacia sobre la reducción de siniestros ni equivalencia con una práctica vial real.
 
 % ==========================================
 % B.6bis CAPÍTULO 4: INGENIERÍA DE REQUISITOS
