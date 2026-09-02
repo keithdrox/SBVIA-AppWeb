@@ -252,7 +252,7 @@ Se adoptó la metodología Design Science Research \cite{peffers2007design, hevn
 
 \section{Instrumentos de Medición y Protocolo Experimental}
 \begin{itemize}
-    \item \textbf{Rendimiento:} k6 (50 VUs / 30s) en 5 corridas independientes bajo condiciones de caché frío y caliente.
+    \item \textbf{Rendimiento:} k6 (50 VUs / 30s) en 3 corridas independientes de caché caliente y una medición complementaria de 10 ciclos frío/caliente. La guía exige completar 5 corridas formales.
     \item \textbf{Usabilidad:} Cuestionario SUS de 10 ítems \cite{brooke1996sus} aplicado a $N = 15$ usuarios con consentimiento informado.
     \item \textbf{Seguridad:} Script reproducible de curl, escaneo OWASP ZAP 2.14 y análisis estático SpotBugs 4.8.
     \item \textbf{Calidad Web:} Auditoría Lighthouse CI (mobile/desktop).
@@ -324,35 +324,36 @@ public interface SimulacionRepository extends CrudRepository<Simulacion, Integer
 \chapter{Evaluación Empírica y Resultados}
 
 \section{Rendimiento y Carga (k6)}
-Se evaluaron 5 corridas independientes de 30 segundos con 50 VUs concurrentes.
+Se ejecutaron 3 corridas independientes de 30 segundos con 50 VUs concurrentes sobre el endpoint de escenarios con caché caliente. Cada corrida produjo 1,500 solicitudes y una tasa de error de 0. Adicionalmente, se realizaron 10 ciclos secuenciales en los que se limpió Redis antes de la primera lectura y se comparó esa lectura con el promedio de tres lecturas calientes. Ambos experimentos responden preguntas distintas y, por tanto, sus observaciones no se mezclan en una única prueba estadística.
 
 \begin{table}[htbp]
 \centering
-\caption{Resultados comparativos de latencia k6 (5 corridas independientes)}
+\caption{Resultados de latencia k6 disponibles (3 corridas de caché caliente)}
 \label{tab:k6_results}
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Escenario} & \textbf{p50 (ms)} & \textbf{p90 (ms)} & \textbf{p95 (ms)} & \textbf{Media (ms)} & \textbf{DT (ms)} & \textbf{IC 95\% (ms)} \\
+\textbf{Corrida} & \textbf{p50 (ms)} & \textbf{p90 (ms)} & \textbf{p95 (ms)} & \textbf{Media (ms)} & \textbf{Errores} \\
 \midrule
-Caché Frío (PostgreSQL) & 206.6 & 376.7 & 416.5 & 226.5 & 43.5 & $[224.3, 228.7]$ \\
-Caché Caliente (Redis) & 21.9 & 44.7 & 76.4 & 28.0 & 11.9 & $[27.7, 28.3]$ \\
+1 & 11.61 & 27.28 & 38.92 & 15.74 & 0\% \\
+2 & 13.68 & 48.78 & 68.70 & 21.13 & 0\% \\
+3 & 11.95 & 35.06 & 48.46 & 17.62 & 0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-El test no paramétrico de Wilcoxon de rangos con signo arrojó $W = 0$ ($p = 0.0625$, test exacto de una cola, $n = 5$ pares), con un tamaño de efecto de Cliff's delta $\delta = 1.0$ (efecto completo: todas las corridas calientes superaron a todas las frías), confirmando el cumplimiento del umbral $p95 \le 200\text{ ms}$. Dado el tamaño de muestra pequeño ($n = 5$), el test no alcanza $\alpha = 0.05$, pero el efecto es perfectamente consistente en las 5 corridas independientes.
+Las tres corridas calientes cumplen el umbral $p95 \le 200\text{ ms}$, con valores entre 38.92 y 68.70 ms. En los 10 ciclos secuenciales, el promedio fue 50.1 ms en frío y 41.1 ms en caliente; el $p95$ observado fue 71.0 y 60.7 ms, respectivamente, equivalente a un speedup aproximado de 1.2x. Este segundo ensayo sugiere una mejora modesta en el entorno local, pero no sustituye las cinco corridas pareadas requeridas ni justifica todavía una prueba inferencial concluyente.
 
 \section{Usabilidad del Sistema (SUS)}
 En la prueba con $N = 15$ participantes se obtuvo una media SUS de $79.83$ ($DT = 5.26$, $IC\ 95\% = [77.08, 82.58]$), lo cual posiciona al sistema en la categoría adjetival ``Bien / Good'' (Grado B, percentil $\approx$72) según la escala de Bangor, Kortum \& Miller (2008).
 
 \section{Cobertura de Código (JaCoCo)}
-La suite de pruebas unitarias y de integración alcanzó una cobertura de líneas del $86.56\%$ y de ramas del $80.65\%$ en el backend, superando holgadamente el umbral del $70\%$ exigido por la rúbrica.
+El reporte JaCoCo versionado registra una cobertura global de líneas del $76.27\%$ (360 de 472) y de ramas del $59.72\%$ (43 de 72). El criterio de líneas supera el umbral del $70\%$, mientras que el criterio de ramas aún no lo cumple. El cierre de esta brecha requiere pruebas adicionales sobre decisiones de seguridad, servicios y manejo de excepciones; no debe resolverse reduciendo el umbral del control automático.
 
 \section{Seguridad y Auditoría Web}
 \begin{itemize}
     \item \textbf{Auditoría OWASP (curl-audit.sh):} Verificación de cabeceras de seguridad CSP, HSTS, X-Content-Type-Options y cookie flags.
     \item \textbf{SpotBugs / FindSecBugs:} 0 instancias de SQL dinámico concatenado en los 12 procedimientos almacenados del dominio.
-    \item \textbf{Lighthouse CI:} Rendimiento: $92\%$, Accesibilidad: $98\%$, Buenas Prácticas: $100\%$, SEO: $95\%$.
+    \item \textbf{Lighthouse:} Rendimiento: $84\%$, Accesibilidad: $89\%$, Buenas Prácticas: $96\%$, SEO: $91\%$, según \texttt{report-realtime.json}.
 \end{itemize}
 
 % ==========================================
@@ -361,8 +362,8 @@ La suite de pruebas unitarias y de integración alcanzó una cobertura de línea
 \chapter{Discusión}
 Los resultados responden afirmativamente a las tres preguntas de investigación:
 \begin{itemize}
-    \item \textbf{Respuesta a RQ1:} La integración de Redis 7 generó una aceleración de más de 5x en la latencia $p95$ (de $416.5\text{ ms}$ a $76.4\text{ ms}$), manteniéndola dentro del umbral $\le 200\text{ ms}$. El efecto es perfectamente consistente en las 5 corridas ($\delta = 1.0$).
-    \item \textbf{Respuesta a RQ2:} Se logró un $86.56\%$ de cobertura de líneas y $80.65\%$ de ramas sin comprometer la limpieza arquitectónica al aislar los 6 procedimientos en repositorios dedicados.
+    \item \textbf{Respuesta provisional a RQ1:} Las tres corridas de carga con caché caliente permanecieron bajo el umbral de 200 ms y el ensayo secuencial mostró un speedup de 1.2x. Faltan dos corridas formales y un diseño pareado homogéneo para cerrar la pregunta con inferencia estadística.
+    \item \textbf{Respuesta provisional a RQ2:} Se superó el 70\% de líneas, pero la cobertura de ramas es 59.72\%. Por tanto, esta pregunta no puede considerarse cerrada hasta añadir pruebas y restaurar el umbral de ramas al 70\%.
     \item \textbf{Respuesta a RQ3:} La media SUS de $79.83$ (Grado B, ``Bien'') confirma una usabilidad aceptable para conductores en formación, con amplio margen de mejora en el diseño de interfaz.
 \end{itemize}
 
@@ -372,7 +373,7 @@ Los resultados responden afirmativamente a las tres preguntas de investigación:
 \chapter{Amenazas a la Validez}
 \begin{itemize}
     \item \textbf{Validez de Constructo:} Mitigada mediante el uso de instrumentos estándar consolidados en la literatura (escala SUS original de Brooke y métricas HTTP estandarizadas).
-    \item \textbf{Validez Interna:} Se controlaron variables espurias fijando semillas aleatorias (`SEED=42`), aislando el entorno de pruebas en contenedores Docker y ejecutando 5 corridas independientes.
+    \item \textbf{Validez Interna:} Se aisló el entorno con Docker y se conservaron archivos crudos de cada ejecución. Sin embargo, las tres corridas disponibles no completan el mínimo de cinco y la comparación frío/caliente usa un protocolo secuencial distinto; ambas limitaciones se reportan para evitar sobreinterpretación.
     \item \textbf{Validez Externa:} La muestra de usabilidad ($N=15$) incluyó diversidad de edades y dispositivos, aunque se reconoce la necesidad de ampliar los ensayos a escuelas de conducción en distintas provincias.
     \item \textbf{Validez de Conclusión:} Se reportaron intervalos de confianza al 95\%, estadísticos no paramétricos y tamaños de efecto sin depender exclusivamente del valor $p$.
 \end{itemize}
@@ -389,7 +390,7 @@ Los resultados responden afirmativamente a las tres preguntas de investigación:
 % B.14 CAPÍTULO 12: CONCLUSIONES
 % ==========================================
 \chapter{Conclusiones}
-El proyecto SBVIA v1.0.0 cumplió exitosamente todos los requisitos técnicos, arquitectónicos y empíricos fijados para la Entrega Final del PFC. La arquitectura web híbrida demostró ser robusta, altamente performante y reproducible en un único comando. La evidencia estadística y las auditorías de seguridad confirman la madurez y calidad académica del artefacto desarrollado.
+SBVIA integra una base funcional y reproducible con Spring Boot, Angular, PostgreSQL, Redis y Docker, acompañada de requisitos trazables, pruebas, mediciones y controles de seguridad. La evidencia disponible confirma el cumplimiento del umbral de latencia caliente y de cobertura de líneas, pero la entrega todavía requiere elevar la cobertura de ramas al 70\%, completar cinco corridas formales de rendimiento, cerrar las mejoras de Lighthouse y verificar el despliegue público, los DOI y la aprobación documental. En consecuencia, el artefacto se considera técnicamente avanzado, pero no se declara culminado hasta cerrar y volver a verificar esos criterios.
 
 % ==========================================
 % B.15 DECLARACIONES OBLIGATORIAS
@@ -397,7 +398,7 @@ El proyecto SBVIA v1.0.0 cumplió exitosamente todos los requisitos técnicos, a
 \chapter*{Declaraciones Obligatorias}
 \addcontentsline{toc}{chapter}{Declaraciones Obligatorias}
 
-\textbf{Disponibilidad de Código:} El código fuente completo está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb} bajo etiqueta \texttt{v1.0.0} (commit \texttt{8d40bf6}).
+\textbf{Disponibilidad de Código:} El código fuente está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb}. La etiqueta definitiva \texttt{v1.0.0} deberá actualizarse al commit aprobado únicamente después del cierre de todos los criterios de entrega.
 
 \textbf{Disponibilidad de Datos:} El paquete de datos crudos (mediciones de rendimiento, SUS y seguridad) está versionado en el repositorio y preparado bajo licencia Creative Commons Attribution 4.0 International (CC BY 4.0). Su publicación en Zenodo y la asignación de un DOI independiente están pendientes.
 
