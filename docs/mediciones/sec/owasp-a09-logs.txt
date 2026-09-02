@@ -1,0 +1,10 @@
+﻿# Evidencia OWASP A09 - Registro de eventos de seguridad
+# Generado: 2026-09-02 16:49:54
+# Backend: docker compose (sbvia-backend) -> logback a stdout
+# Los eventos de autenticacion (login exitoso/fallido/bloqueado) se registran con prefijo EVENTO_SEGURIDAD.
+# Spring Security registra autenticacion y autorizacion a nivel INFO (ver application.yml -> logging).
+
+## Logs reales (ultimos 3 min):
+sbvia-backend  | 2026-09-02 21:49:49.540 INFO  c.s.b.controller.AuthController - EVENTO_SEGURIDAD: login-exitoso email=admin@sbvia.com ip=172.19.0.1
+sbvia-backend  | 2026-09-02 21:49:50.142 WARN  c.s.b.controller.AuthController - EVENTO_SEGURIDAD: login-fallido email=admin@sbvia.com ip=172.19.0.1 motivo=credenciales_invalidas
+
