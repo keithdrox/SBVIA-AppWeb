@@ -8,12 +8,12 @@ authors:
     affiliation: "Universidad Técnica Estatal de Quevedo"
   - family-names: "Umaginga Arévalo"
     given-names: "Jefferson M."
+    orcid: "https://orcid.org/XXXX-XXXX-XXXX-XXXX"
     affiliation: "Universidad Técnica Estatal de Quevedo"
-    # ORCID pendiente de registro: https://orcid.org (gratuito, 2 min)
   - family-names: "Zamora Bumbila"
     given-names: "Diego A."
+    orcid: "https://orcid.org/XXXX-XXXX-XXXX-XXXX"
     affiliation: "Universidad Técnica Estatal de Quevedo"
-    # ORCID pendiente de registro: https://orcid.org (gratuito, 2 min)
 version: 1.0.0
 date-released: "2026-08-31"
 license: MIT
