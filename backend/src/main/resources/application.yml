@@ -56,3 +56,14 @@ server:
   port: 8080
   servlet:
     context-path: /
+
+logging:
+  # OWASP A09: registro de eventos de seguridad (autenticación y autorización).
+  level:
+    root: INFO
+    # Eventos de autenticación/autorización de Spring Security (login fallido, acceso denegado, etc.)
+    org.springframework.security: INFO
+    # Logs de eventos de seguridad propios (com.sbvia.backend.controller.AuthController)
+    com.sbvia.backend: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"

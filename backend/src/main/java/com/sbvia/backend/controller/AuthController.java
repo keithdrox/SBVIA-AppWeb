@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Autenticación", description = "Endpoints de registro, login, logout y refresh token JWT")
+@Slf4j
 public class AuthController {
 
     private static final String ACCESS_COOKIE = "accessToken";
@@ -77,17 +79,25 @@ public class AuthController {
         String ip = clientIp(httpRequest);
 
         // OWASP A07: limitar intentos fallidos de autenticación por IP (429).
-        loginRateLimiter.check(ip);
+        try {
+            loginRateLimiter.check(ip);
+        } catch (com.sbvia.backend.exception.RateLimitExceededException ex) {
+            log.warn("EVENTO_SEGURIDAD: login-bloqueado ip={} motivo=rate_limit app {}", ip, ex.getMessage());
+            throw ex;
+        }
 
         AuthResponse response;
         try {
             response = authService.login(request);
         } catch (org.springframework.security.core.AuthenticationException ex) {
             loginRateLimiter.recordFailure(ip);
+            log.warn("EVENTO_SEGURIDAD: login-fallido email={} ip={} motivo=credenciales_invalidas",
+                    request.getEmail(), ip);
             throw ex;
         }
 
         loginRateLimiter.reset(ip);
+        log.info("EVENTO_SEGURIDAD: login-exitoso email={} ip={}", request.getEmail(), ip);
 
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
                 response.getExpiresIn(), "/");
