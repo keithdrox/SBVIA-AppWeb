@@ -1,0 +1,75 @@
+\begin{thebibliography}{10}
+
+\bibitem{ralph2021empirical}
+P.~Ralph, N.~b. Ali, S.~Baltes, D.~Bianculli, J.~Diaz, Y.~Dittrich, N.~Ernst,
+  M.~Felderer, R.~Feldt, A.~Filieri, {\em et~al.}, ``Empirical standards for
+  software engineering research,'' {\em ACM Transactions on Software
+  Engineering and Methodology (TOSEM)}, vol.~30, no.~4, pp.~1--49, 2021.
+
+\bibitem{brooke1996sus}
+J.~Brooke, ``Sus: A 'quick and dirty' usability scale,'' {\em Usability
+  Evaluation in Industry}, vol.~189, no.~194, pp.~4--7, 1996.
+
+\bibitem{basili1994gqm}
+V.~R. Basili, G.~Caldiera, and H.~D. Rombach, ``The goal question metric
+  approach,'' {\em Encyclopedia of Software Engineering}, vol.~1, pp.~528--532,
+  1994.
+
+\bibitem{peffers2007design}
+K.~Peffers, T.~Tuunanen, M.~A. Rothenberger, and S.~Chatterjee, ``A design
+  science research methodology for information systems research,'' {\em Journal
+  of Management Information Systems}, vol.~24, no.~3, pp.~45--77, 2007.
+
+\bibitem{pohl2010requirements}
+K.~Pohl, {\em Requirements Engineering: Fundamentals, Principles, and
+  Techniques}.
+\newblock Springer Publishing Company, 2010.
+
+\bibitem{iso29148}
+{ISO/IEC/IEEE}, ``Systems and software engineering -- life cycle processes --
+  requirements engineering,'' tech. rep., ISO/IEC/IEEE 29148:2018, 2018.
+
+\bibitem{incose2023}
+{INCOSE}, ``Incose guide to writing requirements,'' Tech. Rep.
+  INCOSE-TP-2010-006-04, International Council on Systems Engineering, 2023.
+
+\bibitem{brown2023c4}
+S.~Brown, {\em The C4 Model for Visualising Software Architecture}.
+\newblock Leanpub, 2023.
+
+\bibitem{iso25010}
+{ISO/IEC}, ``Systems and software engineering -- systems and software quality
+  requirements and evaluation (square) -- system and software quality models,''
+  tech. rep., ISO/IEC 25010:2011, 2011.
+
+\bibitem{rfc7519}
+M.~Jones, J.~Bradley, and N.~Sakimura, ``Json web token (jwt),'' 2015.
+
+\bibitem{owasp2021}
+{OWASP Foundation}, ``Owasp top 10: 2021 -- the ten most critical web
+  application security risks,'' tech. rep., OWASP, 2021.
+
+\bibitem{fowler2002patterns}
+M.~Fowler, {\em Patterns of Enterprise Application Architecture}.
+\newblock Addison-Wesley Longman Publishing Co., Inc., 2002.
+
+\bibitem{kleppmann2017designing}
+M.~Kleppmann, {\em Designing Data-Intensive Applications: The Big Ideas Behind
+  Reliable, Scalable, and Maintainable Systems}.
+\newblock O'Reilly Media, 2017.
+
+\bibitem{kitchenham2007guidelines}
+B.~Kitchenham and S.~Charters, ``Guidelines for performing systematic
+  literature reviews in software engineering,'' {\em EBSE Technical Report
+  EBSE-2007-01}, 2007.
+
+\bibitem{page2021prisma}
+M.~J. Page, J.~E. McKenzie, P.~M. Bossuyt, I.~Boutron, T.~C. Hoffmann, C.~D.
+  Mulrow, {\em et~al.}, ``The prisma 2020 statement: an updated guideline for
+  reporting systematic reviews,'' {\em BMJ}, vol.~372, p.~n71, 2021.
+
+\bibitem{hevner2004design}
+A.~R. Hevner, S.~T. March, J.~Park, and S.~Ram, ``Design science in information
+  systems research,'' {\em MIS Quarterly}, vol.~28, no.~1, pp.~75--105, 2004.
+
+\end{thebibliography}
