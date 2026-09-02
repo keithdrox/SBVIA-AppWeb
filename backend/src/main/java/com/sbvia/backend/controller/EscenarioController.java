@@ -30,17 +30,22 @@ public class EscenarioController {
     private final EscenarioService escenarioService;
 
     /**
-     * GET /api/escenarios — Listar escenarios con paginación.
+     * GET /api/escenarios — Listar escenarios con paginación y filtros opcionales.
      * Accesible por cualquier usuario autenticado (ROLE_USER, ROLE_ADMIN, ROLE_INSTRUCTOR).
+     * Filtros: tipoVia, nivelDificultad, clima (todos opcionales).
      */
     @GetMapping
-    @Operation(summary = "Listar escenarios", description = "Lista todos los escenarios activos con paginación")
+    @Operation(summary = "Listar escenarios", description = "Lista escenarios activos con paginación y filtros opcionales (tipoVia, nivelDificultad, clima)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista devuelta exitosamente"),
         @ApiResponse(responseCode = "401", description = "No autorizado")
     })
-    public ResponseEntity<Page<EscenarioDTO>> listar(Pageable pageable) {
-        Page<EscenarioDTO> page = escenarioService.listarActivos(pageable);
+    public ResponseEntity<Page<EscenarioDTO>> listar(
+            @RequestParam(required = false) String tipoVia,
+            @RequestParam(required = false) Integer nivelDificultad,
+            @RequestParam(required = false) String clima,
+            Pageable pageable) {
+        Page<EscenarioDTO> page = escenarioService.buscarFiltrado(tipoVia, nivelDificultad, clima, pageable);
         return ResponseEntity.ok(page);
     }
 

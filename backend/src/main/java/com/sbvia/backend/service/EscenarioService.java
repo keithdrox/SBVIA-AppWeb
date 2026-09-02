@@ -40,6 +40,20 @@ public class EscenarioService {
     }
 
     /**
+     * Lista escenarios activos aplicando filtros opcionales por tipo de vía,
+     * nivel de dificultad y clima. Usa Criteria API (Specification), por lo que
+     * no degrada a SQL dinámico ni concatenación de cadenas.
+     * Soporta: ?tipoVia=URBANA&nivelDificultad=3&clima=LLUVIOSO&page=0&size=10
+     */
+    @Transactional(readOnly = true)
+    public Page<EscenarioDTO> buscarFiltrado(String tipoVia, Integer nivelDificultad, String clima, Pageable pageable) {
+        Page<EscenarioDTO> page = escenarioRepository
+                .findAll(EscenarioRepository.conFiltros(tipoVia, nivelDificultad, clima), pageable)
+                .map(this::mapToDTO);
+        return new CacheablePage<>(page);
+    }
+
+    /**
      * Busca un escenario por ID. Retorna 404 si no existe.
      */
     @Transactional(readOnly = true)
