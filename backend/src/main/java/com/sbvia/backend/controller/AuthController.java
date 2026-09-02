@@ -124,12 +124,12 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponse> refresh(
             @CookieValue(value = REFRESH_COOKIE, required = false) String cookieRefreshToken,
-            @Valid @RequestBody(required = false) RefreshTokenRequest request) {
-        String refreshToken = cookieRefreshToken != null
+            @RequestBody(required = false) RefreshTokenRequest request) {
+        String refreshToken = (cookieRefreshToken != null && !cookieRefreshToken.isBlank())
                 ? cookieRefreshToken
-                : request != null ? request.getRefreshToken() : null;
+                : (request != null ? request.getRefreshToken() : null);
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new IllegalArgumentException("Refresh token ausente");
+            throw new org.springframework.security.authentication.BadCredentialsException("Refresh token ausente o no proporcionado");
         }
 
         AuthResponse response = authService.refresh(refreshToken);
