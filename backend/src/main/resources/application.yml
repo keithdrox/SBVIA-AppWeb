@@ -32,8 +32,12 @@ security:
     expiration-ms: 3600000
     refresh-expiration-ms: 604800000
   cookie:
-    # false en desarrollo (HTTP local). Establecer COOKIE_SECURE=true en producción (HTTPS)
+    # false en desarrollo (HTTP local). Establecer COOKIE_SECURE=true en producci��n (HTTPS)
     secure: ${COOKIE_SECURE:false}
+  login:
+    # OWASP A07: m�ximo de intentos fallidos y duraci�n del bloqueo (segundos)
+    max-attempts: ${LOGIN_MAX_ATTEMPTS:5}
+    lock-duration-seconds: ${LOGIN_LOCK_SECONDS:60}
 
 springdoc:
   api-docs:

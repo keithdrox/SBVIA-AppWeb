@@ -2,6 +2,7 @@ package com.sbvia.backend.controller;
 
 import com.sbvia.backend.dto.*;
 import com.sbvia.backend.service.AuthService;
+import com.sbvia.backend.service.LoginRateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controlador REST para autenticación: registro, login, logout y refresh token.
@@ -31,6 +34,7 @@ public class AuthController {
     private static final String REFRESH_COOKIE = "refreshToken";
 
     private final AuthService authService;
+    private final LoginRateLimiter loginRateLimiter;
 
     /** Controla el flag Secure de la cookie. false en dev (HTTP), true en prod (HTTPS). */
     @Value("${security.cookie.secure:false}")
@@ -69,8 +73,22 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "Autenticación exitosa"),
         @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
     })
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthResponse response = authService.login(request);
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        String ip = clientIp(httpRequest);
+
+        // OWASP A07: limitar intentos fallidos de autenticación por IP (429).
+        loginRateLimiter.check(ip);
+
+        AuthResponse response;
+        try {
+            response = authService.login(request);
+        } catch (org.springframework.security.core.AuthenticationException ex) {
+            loginRateLimiter.recordFailure(ip);
+            throw ex;
+        }
+
+        loginRateLimiter.reset(ip);
+
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
                 response.getExpiresIn(), "/");
         ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
@@ -151,5 +169,17 @@ public class AuthController {
                 .path(path)
                 .maxAge(maxAgeSeconds)
                 .build();
+    }
+
+    /**
+     * Obtiene la dirección IP del cliente, respetando el encabezado X-Forwarded-For
+     * cuando la petición llega a través de un proxy (frontend nginx).
+     */
+    private String clientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }

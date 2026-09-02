@@ -53,10 +53,13 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(requestHandler)
                         .ignoringRequestMatchers("/api/auth/login", "/api/auth/registro", "/api/auth/refresh"))
 
-                // Cabeceras HTTP de seguridad (OWASP)
+                // Cabeceras HTTP de seguridad (OWASP A05)
                 .headers(headers -> headers
                         .contentTypeOptions(contentType -> {})  // X-Content-Type-Options: nosniff
                         .frameOptions(frame -> frame.deny())     // X-Frame-Options: DENY
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000))      // Strict-Transport-Security
                         .xssProtection(xss -> xss
                                 .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
                         .contentSecurityPolicy(csp ->
