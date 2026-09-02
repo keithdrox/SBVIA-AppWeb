@@ -1,0 +1,137 @@
+{
+    "root_group": {
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "listar status is 200": {
+                    "name": "listar status is 200",
+                    "path": "::listar status is 200",
+                    "id": "2545870181f53257d37141b057e27687",
+                    "passes": 1450,
+                    "fails": 0
+                }
+            },
+        "name": "",
+        "path": ""
+    },
+    "metrics": {
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 1451,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_waiting": {
+            "min": 8.662169,
+            "med": 18.215507,
+            "max": 2192.144384,
+            "p(90)": 52.513324,
+            "p(95)": 125.875265,
+            "avg": 45.28155462991048
+        },
+        "data_sent": {
+            "count": 671554,
+            "rate": 20558.048954281658
+        },
+        "http_req_blocked": {
+            "med": 0.009001,
+            "max": 49.679746,
+            "p(90)": 0.016001,
+            "p(95)": 0.039053000000000004,
+            "avg": 0.9757427436250858,
+            "min": 0.0013
+        },
+        "checks": {
+            "passes": 1450,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 5912265,
+            "rate": 180990.11144403287
+        },
+        "vus": {
+            "value": 50,
+            "min": 0,
+            "max": 50
+        },
+        "iterations": {
+            "count": 1450,
+            "rate": 44.38834551459511
+        },
+        "http_req_duration": {
+            "min": 9.108403,
+            "med": 19.378084,
+            "max": 2192.463812,
+            "p(90)": 53.574006,
+            "p(95)": 126.40571249999999,
+            "avg": 46.22656705582352,
+            "thresholds": {
+                "p(95)<200": false
+            }
+        },
+        "vus_max": {
+            "value": 50,
+            "min": 50,
+            "max": 50
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(90)": 53.574006,
+            "p(95)": 126.40571249999999,
+            "avg": 46.22656705582352,
+            "min": 9.108403,
+            "med": 19.378084,
+            "max": 2192.463812
+        },
+        "http_req_connecting": {
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.9286829758787042,
+            "min": 0,
+            "med": 0,
+            "max": 49.528332
+        },
+        "iteration_duration": {
+            "avg": 1046.7523223344815,
+            "min": 1010.233756,
+            "med": 1020.5983114999999,
+            "max": 1585.658107,
+            "p(90)": 1054.9303676000002,
+            "p(95)": 1127.6675745
+        },
+        "http_req_receiving": {
+            "avg": 0.8991192915230869,
+            "min": 0.036203,
+            "med": 0.423433,
+            "max": 19.385635,
+            "p(90)": 2.074059,
+            "p(95)": 3.2445994999999996
+        },
+        "http_reqs": {
+            "count": 1451,
+            "rate": 44.41895816667414
+        },
+        "http_req_sending": {
+            "p(90)": 0.076607,
+            "p(95)": 0.11101,
+            "avg": 0.04589313439007588,
+            "min": 0.0045,
+            "med": 0.026602,
+            "max": 2.094061
+        },
+        "http_req_tls_handshaking": {
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0
+        }
+    },
+    "setup_data": {
+        "email": "conductor@sbvia.com",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJyb2wiOiJST0xFX1VTRVIiLCJlbWFpbCI6ImNvbmR1Y3RvckBzYnZpYS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoic2J2aWEtYXBpIiwic3ViIjoiNCIsImF1ZCI6WyJzYnZpYS13ZWIiXSwianRpIjoiOWY0MGM3N2MtOTYwYS00Yzg0LWIxMDgtMmY1OWQxMTFjNjc0IiwibmJmIjoxNzg4MzkzMjAxLCJpYXQiOjE3ODgzOTMyMDEsImV4cCI6MTc4ODM5NjgwMX0.uVZWUfm5WsLu5wLU2PfdCCdqbx2Ow-C3v2g5XZZSOFE"
+    }
+}
