@@ -89,15 +89,15 @@ class AuthControllerUnitTest {
     @Test
     void refreshRechazaLaAusenciaDeToken() {
         assertThatThrownBy(() -> authController.refresh(null, null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Refresh token ausente");
+                .isInstanceOf(org.springframework.security.authentication.BadCredentialsException.class)
+                .hasMessage("Refresh token ausente o no proporcionado");
     }
 
     @Test
     void refreshRechazaUnTokenEnBlanco() {
         assertThatThrownBy(() -> authController.refresh(null, solicitud("  ")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Refresh token ausente");
+                .isInstanceOf(org.springframework.security.authentication.BadCredentialsException.class)
+                .hasMessage("Refresh token ausente o no proporcionado");
     }
 
     private RefreshTokenRequest solicitud(String token) {
