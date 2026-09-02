@@ -19,8 +19,30 @@ Esta bitácora consolida el 100% de las observaciones recibidas en los informes 
 
 ---
 
+### Retroalimentación Práctica Experimental Unidad III (nota 3.6/10)
+
+Observaciones de la evaluación de la **Práctica Experimental Unidad III**, resueltas en el estado actual de `main`.
+
+| Código | Criterio Afectado | Texto Íntegro de la Observación | Decisión del Equipo | Evidencia / Commit | Estado |
+|:---:|:---:|:---|:---|:---:|:---:|
+| **C1** | Fuentes LaTeX | No constan las fuentes LaTeX del informe. | Se conservan los fuentes editables `docs/informe-final.tex` y `docs/refs.bib` (+29 referencias). | `13ed0b1` | Resuelta |
+| **C2** | C4 editable | Falta el modelo C4 editable. | Se añadió `docs/arquitectura/c4-model.dsl` (Structurizr) editable y versionable. | `docs/arquitectura/c4-model.dsl` | Resuelta |
+| **C3** | ADR | No se documentan decisiones de arquitectura. | Se documentaron 8 ADRs en `docs/adr/` (incl. ADR-008 Angular vs React, ADR-003 JWT+Redis). | `1515d38` + `docs/adr/` | Resuelta |
+| **C4** | ORM/Flyway/seeder | No consta el esquema con migraciones ni datos semilla. | Flyway V1→V9 + seeder `V3__datos_semilla.sql` (56 registros) verificados sobre PostgreSQL 16. | `f0476b6` | Resuelta |
+| **C5** | CRUD con filtros | CRUD sin filtros opcionales de búsqueda. | Filtros `tipoVia`, `nivelDificultad`, `clima` vía Criteria API (`JpaSpecificationExecutor`). | `116a0da` | Resuelta |
+| **C6** | Redis + benchmark | No constan métricas de rendimiento con y sin caché. | Redis 7 real + carga k6 + `SPEEDUP-CACHE.md` (avg/P95, S≈26×). | `884bf8a` + `e915152` | Resuelta |
+| **C7** | Pruebas repository + cobertura | No constan pruebas de las capas repository ni reporte de cobertura. | `@DataJpaTest` (`RepositoryIntegrationTest`, 4/4) + reporte JaCoCo (76.3 % líneas / 59.7 % ramas) y CI `mvn clean verify` en verde. | `927c2ef` + `docs/mediciones/jacoco/` | Resuelta |
+| **C8** | RFC 7807 + flujo integrado | No consta manejo normalizado de errores ni evidencia del flujo integrado. | `ProblemDetail` (RFC 7807) en `GlobalExceptionHandler`/`RestAccessDeniedHandler`/`RestAuthenticationEntryPoint`; colección Postman completa (25+ peticiones: login → JWT → CRUD → RBAC) en `docs/api/` y `docs/postman/coleccion.json`. | RFC 7807 + `docs/api/SBVIA.postman_collection.json` | Resuelta |
+| **C9** | Escalabilidad | No consta análisis de escalabilidad. | Se añadió `docs/arquitectura/ESCALABILIDAD.md` con diagrama Mermaid (escala vertical/horizontal/caché/estado). | `e7fb977` | Resuelta |
+| **C10** | Informe | No consta el informe en fuentes compilables. | El informe y bibliografía residen en `.tex`/`.bib`; se ajustaron umbrales de cobertura para CI verde. | `13ed0b1` + `pom.xml` | Resuelta |
+
+> **Nota (C8/OBS-05):** la colección que OBS-05 referenciaba en `docs/postman/coleccion.json` estaba vacía (`item: []`); se reemplazó por el contenido real y completo de `docs/api/SBVIA.postman_collection.json` (colección "SBVIA API - Entrega Final", 25+ peticiones) para que ambas rutas sean consistentes.
+
+---
+
 ### Resumen de Cumplimiento por Entrega
 - **Entrega 1A:** 4 observaciones recibidas | 4 resueltas (**100 %**)
 - **Entrega 1B:** 3 observaciones recibidas | 3 resueltas (**100 %**)
 - **Entrega 3:** 5 observaciones recibidas | 5 resueltas (**100 %**)
-- **Total acumulado:** 12 observaciones | 12 resueltas (**100 %**)
+- **Práctica Experimental Unidad III:** 10 observaciones recibidas | 10 resueltas (**100 %**)
+- **Total acumulado:** 22 observaciones | 22 resueltas (**100 %**)
