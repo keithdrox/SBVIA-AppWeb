@@ -1,0 +1,137 @@
+{
+    "metrics": {
+        "vus": {
+            "max": 50,
+            "value": 48,
+            "min": 48
+        },
+        "data_received": {
+            "rate": 195512.93626614375,
+            "count": 6116065
+        },
+        "checks": {
+            "passes": 1500,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_receiving": {
+            "avg": 1.2444280113257846,
+            "min": 0.032705,
+            "med": 0.54526,
+            "max": 28.987853,
+            "p(90)": 2.52022,
+            "p(95)": 4.487648
+        },
+        "data_sent": {
+            "count": 694704,
+            "rate": 22207.680735217025
+        },
+        "vus_max": {
+            "value": 50,
+            "min": 50,
+            "max": 50
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 1501,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_duration{expected_response:true}": {
+            "med": 11.97031,
+            "max": 498.775816,
+            "p(90)": 35.276684,
+            "p(95)": 48.573265,
+            "avg": 17.94294396535645,
+            "min": 5.252238
+        },
+        "iteration_duration": {
+            "med": 1012.860429,
+            "max": 1135.106742,
+            "p(90)": 1041.930137,
+            "p(95)": 1054.30170395,
+            "avg": 1019.1461446419996,
+            "min": 1005.515205
+        },
+        "http_req_waiting": {
+            "p(90)": 33.393464,
+            "p(95)": 44.322285,
+            "avg": 16.647749349100586,
+            "min": 4.854475,
+            "med": 11.154926,
+            "max": 498.310438
+        },
+        "http_reqs": {
+            "count": 1501,
+            "rate": 47.98263545849852
+        },
+        "iterations": {
+            "count": 1500,
+            "rate": 47.950668346267676
+        },
+        "http_req_duration": {
+            "avg": 17.94294396535645,
+            "min": 5.252238,
+            "med": 11.97031,
+            "max": 498.775816,
+            "p(90)": 35.276684,
+            "p(95)": 48.573265,
+            "thresholds": {
+                "p(95)<2000": false
+            }
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "avg": 0.4827288094603596,
+            "min": 0,
+            "med": 0,
+            "max": 20.58353,
+            "p(90)": 0
+        },
+        "http_req_blocked": {
+            "med": 0.010002,
+            "max": 20.667444,
+            "p(90)": 0.018603,
+            "p(95)": 0.043205,
+            "avg": 0.5006167894736843,
+            "min": 0.0023
+        },
+        "http_req_tls_handshaking": {
+            "p(95)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0
+        },
+        "http_req_sending": {
+            "min": 0.005601,
+            "med": 0.030305,
+            "max": 5.984898,
+            "p(90)": 0.085214,
+            "p(95)": 0.11982,
+            "avg": 0.05076660493004665
+        }
+    },
+    "setup_data": {
+        "email": "conductor@sbvia.com",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiZW1haWwiOiJjb25kdWN0b3JAc2J2aWEuY29tIiwicm9sIjoiUk9MRV9VU0VSIiwiaXNzIjoic2J2aWEtYXBpIiwic3ViIjoiNCIsImF1ZCI6WyJzYnZpYS13ZWIiXSwianRpIjoiOWZkZjY4ZWUtZDE2Mi00ZGJiLWEzMzctMzY5MDg5ZTZhOGUwIiwibmJmIjoxNzg4Mzg2MzU4LCJpYXQiOjE3ODgzODYzNTgsImV4cCI6MTc4ODM4OTk1OH0.zBR6wYi9Idmz6eFFQjOxUUVKZIBR9KCgRdLHKjZBB5U"
+    },
+    "root_group": {
+        "checks": {
+            "listar status is 200": {
+                "name": "listar status is 200",
+                "path": "::listar status is 200",
+                "id": "2545870181f53257d37141b057e27687",
+                "passes": 1500,
+                "fails": 0
+            }
+        },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {}
+    }
+}

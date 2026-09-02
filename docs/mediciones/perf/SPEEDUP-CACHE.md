@@ -1,86 +1,82 @@
 # Medición del Speedup del Caché Redis
 
-**Práctica:** Unidad III - Práctica Experimental (punto 6)
 **Consulta principal medida:** `GET /api/escenarios` (listado paginado)
 **Stack:** Spring Boot 3.4.1 / Java 21 + PostgreSQL 16 (fuente) y Redis 7 (caché `@Cacheable`)
+**Fecha de la medición:** 2026-09-02 (entorno local, Docker Desktop para Windows)
 
 ---
 
 ## 1. Metodología
 
-1. Se desactivó el caché Redis (`@CacheEvict` configurado a mano apagando Redis) para medir la latencia **sin caché** (cada petición consulta PostgreSQL).
-2. Se reactivó Redis y se ejecutó la **misma** consulta **con caché** (`CacheConfig` + `@Cacheable` en `EscenarioService.listarActivos`, TTL 5 min).
-3. La consulta principal de listado se ejecutó **10 veces por configuración**, registrando la latencia en milisegundos.
-4. Se calcularon el **promedio** y el **percentil 95 (P95)** de cada grupo.
-5. **Speedup**: `S = T_sin / T_con` (tiempo sin caché dividido entre tiempo con caché).
+1. Cada ciclo comienza con `FLUSHALL` en Redis (se limpia la entrada de caché del repositorio de escenarios).
+2. Se cronometra el **primer** `GET /api/escenarios` autenticado (cache-miss → consulta a PostgreSQL a través de Spring Data JPA).
+3. Se cronometran **3 hits consecutivos** (cache-hit → servidos desde Redis vía `@Cacheable` en `EscenarioService`) y se promedia.
+4. Se repite el ciclo 10 veces.
+5. **Speedup**: `S = T_cache_miss / T_cache_hit` (promedio de los 10 ciclos).
 
-> Datos medidos sobre el entorno local Docker (`make up`) con la herramienta k6, coherentes con `docs/mediciones/perf/k6-report.md`. La mejora observada (20-30x) coincide con el rango documentado.
+> Medición con peticiones HTTP reales (`Invoke-WebRequest`) contra el backend en `http://localhost:8080`, usuario autenticado (conductor@sbvia.com). Datos crudos en `docs/mediciones/perf/speedup-realtime.txt`.
 
 ---
 
-## 2. Tabla de 10 ejecuciones (ms)
+## 2. Tabla de 10 ciclos (ms)
 
-| N.º corrida | Sin caché (ms) | Con caché Redis (ms) |
+| N.º ciclo | Cache miss (PostgreSQL) | Cache hit (Redis) |
 |:---:|---:|---:|
-| 1 | 356 | 11 |
-| 2 | 384 | 12 |
-| 3 | 392 | 12 |
-| 4 | 418 | 13 |
-| 5 | 447 | 14 |
-| 6 | 512 | 16 |
-| 7 | 689 | 21 |
-| 8 | 812 | 34 |
-| 9 | 866 | 43 |
-| 10 | 947 | 47 |
+| 1 | 42 | 37.3 |
+| 2 | 39 | 34.3 |
+| 3 | 45 | 33.0 |
+| 4 | 51 | 36.0 |
+| 5 | 39 | 37.7 |
+| 6 | 47 | 36.0 |
+| 7 | 40 | 35.3 |
+| 8 | 71 | 48.7 |
+| 9 | 60 | 52.0 |
+| 10 | 67 | 60.7 |
 
 ## 3. Resumen estadístico
 
-| Métrica | Sin caché (ms) | Con caché Redis (ms) | Speedup S |
+| Métrica | Cache miss (ms) | Cache hit Redis (ms) | Speedup S |
 |:---|:---:|:---:|:---:|
-| **Promedio** | 582.3 | 22.3 | **26.1x** |
-| **P95** | 947 | 47 | **20.1x** |
-| Mínimo | 356 | 11 | 32.4x |
-| Máximo | 947 | 47 | 20.1x |
+| **Promedio** | 50.1 | 41.1 | **1.2x** |
+| **P95** | 71.0 | 60.7 | **1.2x** |
+| Mínimo | 39 | 33.0 | 1.18x |
+| Máximo | 71 | 60.7 | 1.17x |
 
 ### Cálculo del speedup
 
 ```
-S_promedio = T_sin / T_con = 582.3 ms / 22.3 ms ≈ 26.1x
-S_p95      = T_sin / T_con = 947 ms / 47 ms     ≈ 20.1x
+S_promedio = T_miss / T_hit = 50.1 ms / 41.1 ms ≈ 1.2x
+S_p95      = T_miss / T_hit = 71.0 ms / 60.7 ms ≈ 1.2x
 ```
 
 ---
 
-## 4. Análisis de la mejora
+## 4. Análisis honesto de la mejora
 
-1. **Reducción drástica de latencia**: la consulta de listado pasa de ~582 ms de promedio (PostgreSQL) a ~22 ms (Redis), es decir, **~26 veces más rápida** en promedio.
+1. **En entorno local y a baja carga, el speedup es modesto (~1.2x).** La consulta a PostgreSQL de una tabla pequeña de escenarios es rápida (~50 ms), por lo que el ahorro del caché es limitado en este escenario sin carga.
 
-2. **Comportamiento estable en caché**: el hit de caché tiene una variabilidad mínima (11-47 ms), mientras que la consulta a PostgreSQL muestra una cola pronunciada (hasta 947 ms) reflejando el costo de planificación/lectura de una tabla poblada y de paginación de `Pageable`.
+2. **El valor real del caché aparece bajo carga:** en las pruebas de carga k6 (50 VUs, 30 s, 3 corridas) el `GET /api/escenarios` se sirve de forma **estable** desde Redis con p95 de 39–69 ms y 0 % de errores, sin saturar PostgreSQL (ver `k6-report.md`). Al liberar la base de datos de las lecturas repetidas, el backend mantiene latencias consistentes bajo concurrencia.
 
-3. **Efecto en el P95**: incluso en el percentil 95, el speedup es de ~20x (947 ms → 47 ms), lo que mejora la experiencia percibida bajo carga.
+3. **Trade-off (cache-aside):** la mejora aplica a lecturas repetidas de datos estáticos (escenarios). Se contrarresta con `@CacheEvict` en las operaciones de escritura (`crear`, `actualizar`, `eliminar`), que invalidan la entrada y garantizan coherencia. El costo es una duplicación temporal en Redis y la gestión del TTL.
 
-4. **Impacto en el requisito RNF-01** (p95 < 2000 ms con 50 usuarios): al servir el listado desde Redis en hits posteriores, el p95 de la consulta medida pasa de un margen ajustado a un valor muy holgado, liberando PostgreSQL para las operaciones de escritura (CRUD) y la capa de stored procedures.
-
-5. **Trade-off (cache-aside)**: la mejora aplica a lecturas repetidas de datos relativamente estáticos (escenarios). Se contrarresta con `@CacheEvict` en operaciones de escritura (`crear`, `actualizar`, `eliminar`), que invalidan la entrada completa y garantizan coherencia; el costo es una duplicación temporal en memoria Redis y la necesidad de gestionar el TTL.
+4. **Corrección de la medición anterior:** los valores de speedup citados previamente (20–30x y 3.75x) correspondían a estimaciones que no se sostienen con la medición real reproducible de este entorno, por lo que se reemplazan por la presente tabla medida.
 
 ---
 
 ## 5. Cómo reproducir
 
 ```bash
-# Entorno completo
-make up
+# Entorno completo arriba (backend en localhost:8080, Redis ejecutándose)
+docker compose up -d --wait
 
-# 1) Medir SIN caché: detener Redis (o desactivar CacheConfig) y ejecutar
-docker compose stop redis
-k6 run scripts/k6/load-test.js
+# 1) Limpiar la caché de escenarios
+docker compose exec redis redis-cli FLUSHALL
 
-# 2) Medir CON caché: reactivar Redis
-docker compose start redis
-k6 run scripts/k6/load-test.js
+# 2) Medir primer GET (cache miss -> PostgreSQL) y hits repetidos (cache hit -> Redis)
+#    con un cliente autenticado (ver docs/mediciones/perf/speedup-realtime.txt para los valores)
 
 # 3) Cálculo manual del speedup
-# S = T_sin / T_con
+# S = T_cache_miss / T_cache_hit
 ```
 
-Consulta de referencia en el código: `EscenarioService.listarActivos` (`backend/src/main/java/com/sbvia/backend/service/EscenarioService.java`).
+Consulta de referencia en el código: `EscenarioService` (`backend/src/main/java/com/sbvia/backend/service/EscenarioService.java`) y `CacheConfig` (`backend/src/main/java/com/sbvia/backend/config/CacheConfig.java`).

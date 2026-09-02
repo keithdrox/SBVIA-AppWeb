@@ -1,0 +1,137 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "listar status is 200": {
+                    "name": "listar status is 200",
+                    "path": "::listar status is 200",
+                    "id": "2545870181f53257d37141b057e27687",
+                    "passes": 1500,
+                    "fails": 0
+                }
+            }
+    },
+    "metrics": {
+        "http_req_duration": {
+            "med": 11.615055,
+            "max": 540.081299,
+            "p(90)": 27.297248,
+            "p(95)": 38.931884,
+            "avg": 16.086802419053956,
+            "min": 2.249226,
+            "thresholds": {
+                "p(95)<2000": false
+            }
+        },
+        "http_req_sending": {
+            "max": 1.659372,
+            "p(90)": 0.086214,
+            "p(95)": 0.114619,
+            "avg": 0.04345332644903402,
+            "min": 0.005001,
+            "med": 0.028104
+        },
+        "iterations": {
+            "count": 1500,
+            "rate": 48.10963876463509
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 2.249226,
+            "med": 11.615055,
+            "max": 540.081299,
+            "p(90)": 27.297248,
+            "p(95)": 38.931884,
+            "avg": 16.086802419053956
+        },
+        "iteration_duration": {
+            "avg": 1017.7413984133328,
+            "min": 1005.680932,
+            "med": 1012.555715,
+            "max": 1081.589648,
+            "p(90)": 1032.3995324,
+            "p(95)": 1054.8996617
+        },
+        "vus": {
+            "value": 48,
+            "min": 48,
+            "max": 50
+        },
+        "checks": {
+            "passes": 1500,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_waiting": {
+            "avg": 15.039967065289806,
+            "min": 5.213732,
+            "med": 10.864382,
+            "max": 539.553812,
+            "p(90)": 25.555759,
+            "p(95)": 34.839513
+        },
+        "data_received": {
+            "count": 6116065,
+            "rate": 196161.1185406853
+        },
+        "http_reqs": {
+            "rate": 48.141711857144855,
+            "count": 1501
+        },
+        "vus_max": {
+            "value": 50,
+            "min": 50,
+            "max": 50
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 1501,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "data_sent": {
+            "count": 694704,
+            "rate": 22281.30565889804
+        },
+        "http_req_connecting": {
+            "max": 51.165026,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 1.0202596888740838,
+            "min": 0,
+            "med": 0
+        },
+        "http_req_receiving": {
+            "avg": 1.0033820273151228,
+            "min": -3.240077,
+            "med": 0.480353,
+            "max": 22.32722,
+            "p(90)": 2.092749,
+            "p(95)": 4.057747
+        },
+        "http_req_blocked": {
+            "p(95)": 0.052809,
+            "avg": 1.0419401838774163,
+            "min": 0.0019,
+            "med": 0.009601,
+            "max": 51.254541,
+            "p(90)": 0.018003
+        }
+    },
+    "setup_data": {
+        "email": "conductor@sbvia.com",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiZW1haWwiOiJjb25kdWN0b3JAc2J2aWEuY29tIiwicm9sIjoiUk9MRV9VU0VSIiwiaXNzIjoic2J2aWEtYXBpIiwic3ViIjoiNCIsImF1ZCI6WyJzYnZpYS13ZWIiXSwianRpIjoiNTBkZGY1ODUtZTdlNC00ZmRhLWFlNWQtMGE0ZGQwZDJiOGJiIiwibmJmIjoxNzg4Mzg2MzU2LCJpYXQiOjE3ODgzODYzNTYsImV4cCI6MTc4ODM4OTk1Nn0.SfbfaVRUulNgqtv3f4ecuTOhx5cmoKxwa8kz4RnUv7I"
+    }
+}

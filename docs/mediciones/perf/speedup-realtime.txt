@@ -1,0 +1,21 @@
+﻿# Medición del Speedup del Caché Redis
+
+# Medicion real: 10 ciclos (cada ciclo: FLUSHALL redis -> primer GET cache-frio PostgreSQL, luego promedio 3 GET cache-caliente Redis)
+
+| N. | Cache frio (ms) | Cache caliente (ms) |
+|:--:|--:|--:|
+
+| 1 | 42 | 37.3 |
+| 2 | 39 | 34.3 |
+| 3 | 45 | 33 |
+| 4 | 51 | 36 |
+| 5 | 39 | 37.7 |
+| 6 | 47 | 36 |
+| 7 | 40 | 35.3 |
+| 8 | 71 | 48.7 |
+| 9 | 60 | 52 |
+| 10 | 67 | 60.7 |
+
+**Promedio:** frio=50.1 ms | caliente=41.1 ms | **Speedup S = 1.2x**
+
+**P95:** frio=71 ms | caliente=60.7 ms | **Speedup P95 = 1.2x**

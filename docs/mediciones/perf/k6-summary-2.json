@@ -1,0 +1,137 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "listar status is 200": {
+                    "id": "2545870181f53257d37141b057e27687",
+                    "passes": 1500,
+                    "fails": 0,
+                    "name": "listar status is 200",
+                    "path": "::listar status is 200"
+                }
+            }
+    },
+    "metrics": {
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 1501,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "iterations": {
+            "count": 1500,
+            "rate": 47.8963768508028
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "avg": 0.723337593604264,
+            "min": 0,
+            "med": 0,
+            "max": 28.965027,
+            "p(90)": 0
+        },
+        "http_req_sending": {
+            "min": 0.005901,
+            "med": 0.032705,
+            "max": 5.739857,
+            "p(90)": 0.098911,
+            "p(95)": 0.164218,
+            "avg": 0.06941831912058623
+        },
+        "vus": {
+            "min": 50,
+            "max": 50,
+            "value": 50
+        },
+        "vus_max": {
+            "max": 50,
+            "value": 50,
+            "min": 50
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 21.468766591605586,
+            "min": 5.501078,
+            "med": 13.695046,
+            "max": 529.947111,
+            "p(90)": 48.779498,
+            "p(95)": 68.83247
+        },
+        "iteration_duration": {
+            "max": 1116.323162,
+            "p(90)": 1057.3280327,
+            "p(95)": 1071.62001025,
+            "avg": 1023.0968085159985,
+            "min": 1006.152488,
+            "med": 1014.6905790000001
+        },
+        "http_req_blocked": {
+            "avg": 0.7449985109926712,
+            "min": 0.0019,
+            "med": 0.010802,
+            "max": 29.379396,
+            "p(90)": 0.019203,
+            "p(95)": 0.054609
+        },
+        "http_req_duration": {
+            "avg": 21.468766591605586,
+            "min": 5.501078,
+            "med": 13.695046,
+            "max": 529.947111,
+            "p(90)": 48.779498,
+            "p(95)": 68.83247,
+            "thresholds": {
+                "p(95)<2000": false
+            }
+        },
+        "http_req_waiting": {
+            "med": 12.781406,
+            "max": 527.826757,
+            "p(90)": 47.183237,
+            "p(95)": 66.210734,
+            "avg": 20.31755659826781,
+            "min": 5.188628
+        },
+        "http_req_receiving": {
+            "avg": 1.0817916742171885,
+            "min": 0.026504,
+            "med": 0.50108,
+            "max": 29.300083,
+            "p(90)": 2.226071,
+            "p(95)": 4.067778
+        },
+        "checks": {
+            "passes": 1500,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 6116065,
+            "rate": 195291.56938933683
+        },
+        "http_reqs": {
+            "count": 1501,
+            "rate": 47.928307768703334
+        },
+        "data_sent": {
+            "count": 694704,
+            "rate": 22182.536389173405
+        }
+    },
+    "setup_data": {
+        "email": "conductor@sbvia.com",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJ0eXBlIjoiYWNjZXNzIiwiZW1haWwiOiJjb25kdWN0b3JAc2J2aWEuY29tIiwicm9sIjoiUk9MRV9VU0VSIiwiaXNzIjoic2J2aWEtYXBpIiwic3ViIjoiNCIsImF1ZCI6WyJzYnZpYS13ZWIiXSwianRpIjoiNmU4YjNlNzAtNjY4YS00OGRjLWJjN2ItYTcwZjdhNDRiNTkwIiwibmJmIjoxNzg4Mzg2MzU3LCJpYXQiOjE3ODgzODYzNTcsImV4cCI6MTc4ODM4OTk1N30.hsWUU7QgegLnR5GRPVnyxNW3aspMqDngEyCBY3w4m2k"
+    }
+}
