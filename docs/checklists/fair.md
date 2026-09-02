@@ -6,28 +6,28 @@ Evaluación del paquete de datos, software y metadatos de SBVIA según las direc
 
 ## 1. Encontrabilidad (Findability)
 
-- [x] **F1. Metadatos y datos asignados con un identificador global único y persistente:**
-  - Software: DOI de Zenodo (`10.5281/zenodo.10892341`).
-  - Dataset de mediciones: DOI independiente en Zenodo (`10.5281/zenodo.10892342`).
+- [ ] **F1. Metadatos y datos asignados con un identificador global único y persistente:**
+  - Software: pendiente de publicación y asignación de DOI en Zenodo.
+  - Dataset de mediciones: pendiente de publicación separada y asignación de un DOI independiente.
 - [x] **F2. Los datos se describen con metadatos enriquecidos:**
   - Definidos en `CITATION.cff` (v1.2.0), `CONTRIBUTORS.md` (CRediT) y `DATA-DICTIONARY.md`.
-- [x] **F3. Los metadatos incluyen explícitamente el identificador de los datos que describen:**
-  - Enlaces bidireccionales entre el repositorio Git y los registros Zenodo.
-- [x] **F4. Los metadatos y datos son indexables y buscables:**
-  - Indexados en OpenAIRE, DataCite y Zenodo Search.
+- [ ] **F3. Los metadatos incluyen explícitamente el identificador de los datos que describen:**
+  - Pendiente de incorporar los DOI reales después de crear los registros Zenodo.
+- [ ] **F4. Los metadatos y datos son indexables y buscables:**
+  - Pendiente de publicación e indexación en Zenodo, DataCite y OpenAIRE.
 
 ---
 
 ## 2. Accesibilidad (Accessibility)
 
-- [x] **A1. Recuperables mediante su identificador utilizando un protocolo de comunicaciones estándar y abierto:**
-  - Protocolo HTTPS y API REST de GitHub / Zenodo.
+- [ ] **A1. Recuperables mediante su identificador utilizando un protocolo de comunicaciones estándar y abierto:**
+  - El repositorio Git es accesible por HTTPS; los registros Zenodo aún están pendientes.
 - [x] **A1.1. El protocolo es abierto, gratuito y universalmente implementable:**
   - HTTP/HTTPS estándar.
 - [x] **A1.2. El protocolo permite autenticación y autorización si es necesario:**
   - Descargas públicas sin restricciones de autenticación.
-- [x] **A2. Los metadatos siguen siendo accesibles incluso si los datos ya no están disponibles:**
-  - Política de preservación permanente de Zenodo / CERN.
+- [ ] **A2. Los metadatos siguen siendo accesibles incluso si los datos ya no están disponibles:**
+  - Se cumplirá después de depositar los artefactos en Zenodo.
 
 ---
 

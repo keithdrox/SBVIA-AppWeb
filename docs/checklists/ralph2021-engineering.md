@@ -13,7 +13,7 @@ Basado en el estándar empírico de Ralph et al. (2021) para investigación en i
 | **ER3** | **Diseño y Arquitectura:** Describe la arquitectura, componentes y decisiones clave de diseño. | ✅ | `informe-final.tex` (Cap. 6), C4 model nivel 1-3 y 7 ADRs formales. |
 | **ER4** | **Evaluación empírica:** El artefacto se evalúa rigurosamente contra requisitos medibles. | ✅ | Pruebas k6 (50 VUs), usabilidad SUS (N=15), JaCoCo (>=70%), OWASP y Lighthouse. |
 | **ER5** | **Amenazas a la validez:** Identifica limitaciones y amenazas según cuatro categorías (constructo, interna, externa, conclusión). | ✅ | `informe-final.tex` (Cap. 10) y `docs/etica/ETHICS.md`. |
-| **ER6** | **Disponibilidad y Reproducibilidad:** El artefacto y sus datos están disponibles públicamente para replicación. | ✅ | `make all` ejecutable en un solo comando, DOIs en Zenodo, datos crudos en `docs/mediciones/`. |
+| **ER6** | **Disponibilidad y Reproducibilidad:** El artefacto y sus datos están disponibles públicamente para replicación. | ⚠️ Parcial | `make all` y datos crudos en `docs/mediciones/`; faltan el despliegue HTTPS y los dos DOI reales en Zenodo. |
 
 ---
 

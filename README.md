@@ -2,8 +2,8 @@
 
 [![CI Pipeline](https://github.com/keithdrox/SBVIA-AppWeb/actions/workflows/main.yml/badge.svg)](https://github.com/keithdrox/SBVIA-AppWeb/actions/workflows/main.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DOI Software](https://img.shields.io/badge/DOI%20Software-10.5281%2Fzenodo.10892341-blue.svg)](https://doi.org/10.5281/zenodo.10892341)
-[![DOI Dataset](https://img.shields.io/badge/DOI%20Dataset-10.5281%2Fzenodo.10892342-green.svg)](https://doi.org/10.5281/zenodo.10892342)
+[![DOI Software](https://img.shields.io/badge/DOI%20Software-pendiente-lightgrey.svg)](#publicacion-y-preservacion)
+[![DOI Dataset](https://img.shields.io/badge/DOI%20Dataset-pendiente-lightgrey.svg)](#publicacion-y-preservacion)
 
 ## 📌 Descripción del Proyecto
 El sistema **Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA)** proporciona un entorno interactivo y reproducible de entrenamiento y evaluación para conductores en formación. Esta versión final (`v1.0.0`) integra autenticación segura con JWT en cookies `HttpOnly + Secure + SameSite=Strict`, CRUD optimizado sobre Spring Boot 3.2.x y PostgreSQL 16, estrategia híbrida de acceso a datos con Procedimientos Almacenados, caché distribuida con Redis 7 y frontend reactivo en Angular 17+.
@@ -11,7 +11,7 @@ El sistema **Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA
 ---
 
 ## 🚀 Despliegue y Acceso Público
-- **Frontend Web (HTTPS):** [https://sbvia-appweb.vercel.app](https://sbvia-appweb.vercel.app)
+- **Frontend Web (HTTPS):** pendiente de despliegue y verificación pública.
 - **API Backend / Actuator Health:** [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) (entorno local)
 - **Documentación Swagger UI:** [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html) (entorno local)
 
@@ -28,6 +28,10 @@ El sistema **Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA
 
 > Los digests SHA-256 exactos se obtienen al publicar las imágenes con `docker buildx build --push`.
 > Consultar el registro: [GitHub Container Registry](https://github.com/keithdrox/SBVIA-AppWeb/pkgs/container/sbvia-backend)
+
+## Publicación y preservación
+
+Los DOI del software y del dataset se incorporarán únicamente después de publicar ambos artefactos en registros Zenodo separados. La URL pública también se añadirá cuando el despliegue HTTPS responda correctamente y haya sido verificado.
 
 ---
 
