@@ -31,10 +31,10 @@ Observaciones de la evaluación de la **Práctica Experimental Unidad III**, res
 | **C4** | ORM/Flyway/seeder | No consta el esquema con migraciones ni datos semilla. | Flyway V1→V9 + seeder `V3__datos_semilla.sql` (56 registros) verificados sobre PostgreSQL 16. | `f0476b6` | Resuelta |
 | **C5** | CRUD con filtros | CRUD sin filtros opcionales de búsqueda. | Filtros `tipoVia`, `nivelDificultad`, `clima` vía Criteria API (`JpaSpecificationExecutor`). | `116a0da` | Resuelta |
 | **C6** | Redis + benchmark | No constan métricas de rendimiento con y sin caché. | Redis 7 real + 3 corridas k6 calientes + ensayo secuencial frío/caliente (speedup aproximado 1.2x). Faltan 2 corridas formales. | `docs/mediciones/perf/` | Parcial |
-| **C7** | Pruebas repository + cobertura | No constan pruebas de las capas repository ni reporte de cobertura. | `@DataJpaTest` y reporte JaCoCo (76.3 % líneas / 59.7 % ramas). Líneas cumplen; ramas siguen bajo el 70 %. | `927c2ef` + `docs/mediciones/jacoco/` | Parcial |
+| **C7** | Pruebas repository + cobertura | No constan pruebas de las capas repository ni reporte de cobertura. | 52 pruebas y reporte JaCoCo (79.73 % líneas / 70.41 % ramas), con umbrales Maven de 70 % para ambas métricas. | `a725e7b` + `b7d0825` | Resuelta |
 | **C8** | RFC 7807 + flujo integrado | No consta manejo normalizado de errores ni evidencia del flujo integrado. | `ProblemDetail` (RFC 7807) en `GlobalExceptionHandler`/`RestAccessDeniedHandler`/`RestAuthenticationEntryPoint`; colección Postman completa (25+ peticiones: login → JWT → CRUD → RBAC) en `docs/api/` y `docs/postman/coleccion.json`. | RFC 7807 + `docs/api/SBVIA.postman_collection.json` | Resuelta |
 | **C9** | Escalabilidad | No consta análisis de escalabilidad. | Se añadió `docs/arquitectura/ESCALABILIDAD.md` con diagrama Mermaid (escala vertical/horizontal/caché/estado). | `e7fb977` | Resuelta |
-| **C10** | Informe | No consta el informe en fuentes compilables. | El informe y la bibliografía residen en `.tex`/`.bib`; debe regenerarse el PDF y elevarse la cobertura de ramas sin reducir el umbral académico. | `docs/informe-final.tex` + `docs/refs.bib` | Parcial |
+| **C10** | Informe | No consta el informe en fuentes compilables. | El informe y la bibliografía residen en `.tex`/`.bib`; la cobertura ya cumple y queda pendiente regenerar y revisar el PDF final. | `docs/informe-final.tex` + `docs/refs.bib` | Parcial |
 
 > **Nota (C8/OBS-05):** la colección que OBS-05 referenciaba en `docs/postman/coleccion.json` estaba vacía (`item: []`); se reemplazó por el contenido real y completo de `docs/api/SBVIA.postman_collection.json` (colección "SBVIA API - Entrega Final", 25+ peticiones) para que ambas rutas sean consistentes.
 
@@ -44,5 +44,5 @@ Observaciones de la evaluación de la **Práctica Experimental Unidad III**, res
 - **Entrega 1A:** 4 observaciones recibidas | 3 resueltas y 1 parcial.
 - **Entrega 1B:** 3 observaciones recibidas | 2 resueltas y 1 parcial.
 - **Entrega 3:** 5 observaciones recibidas | 5 resueltas (**100 %**)
-- **Práctica Experimental Unidad III:** 10 observaciones recibidas | 7 resueltas y 3 parciales.
-- **Total acumulado:** 22 observaciones | 17 resueltas y 5 parciales.
+- **Práctica Experimental Unidad III:** 10 observaciones recibidas | 8 resueltas y 2 parciales.
+- **Total acumulado:** 22 observaciones | 18 resueltas y 4 parciales.
