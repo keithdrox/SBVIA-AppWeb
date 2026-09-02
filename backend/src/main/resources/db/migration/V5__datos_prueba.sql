@@ -14,7 +14,7 @@ INSERT INTO "Rol" ("nombre", "descripcion") VALUES
 -- 2. Insertar Usuarios
 INSERT INTO "Usuario" ("nombre", "apellido", "email", "password_hash", "fecha_registro", "estado", "activo", "id_Rol") VALUES
 ('Carlos', 'Mendoza', 'dba@sbvia.com', '$2a$10$N/8q6.x6mU7iUf/a5.X9t.H.R2X.lS49e9h3Kk28.2F95t703h7vG', '2025-01-10', 'Activo', true, 1), -- DBA
-('Ana', 'Gomez', 'admin@sbvia.com', '$2a$10$N/8q6.x6mU7iUf/a5.X9t.H.R2X.lS49e9h3Kk28.2F95t703h7vG', '2025-01-15', 'Activo', true, 2), -- Admin
+('Ana', 'Gomez', 'admin@sbvia.com', '$2a$12$haOmxF2SUYtiOxDt.ySwrOasLCX1TIPhGWbD8d2brL1iQxZwWdGi2', '2025-01-15', 'Activo', true, 2), -- Admin
 ('Luis', 'Torres', 'instructor@sbvia.com', '$2a$10$N/8q6.x6mU7iUf/a5.X9t.H.R2X.lS49e9h3Kk28.2F95t703h7vG', '2025-02-01', 'Activo', true, 3), -- Instructor
 ('Juan', 'Perez', 'conductor@sbvia.com', '$2a$10$N/8q6.x6mU7iUf/a5.X9t.H.R2X.lS49e9h3Kk28.2F95t703h7vG', '2025-03-01', 'Activo', true, 4), -- Conductor
 ('Maria', 'Lopez', 'auditor@sbvia.com', '$2a$10$N/8q6.x6mU7iUf/a5.X9t.H.R2X.lS49e9h3Kk28.2F95t703h7vG', '2025-03-05', 'Activo', true, 5); -- Auditor
