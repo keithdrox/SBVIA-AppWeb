@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, of, map, filter, take } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -8,12 +8,20 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private readonly API_URL = '/api/auth';
-  
+
   // El token de acceso se almacena en memoria, no en localStorage (Regla de seguridad Entrega 1B)
   private accessToken = signal<string | null>(null);
-  
+
   // Perfil del usuario autenticado
   public currentUser = signal<any>(null);
+
+  /**
+   * Indica si el intento de restauración de sesión al iniciar la app ya terminó
+   * (tanto si tuvo éxito como si no). El guard espera a que esto sea `true`
+   * antes de evaluar isAuthenticated(), evitando la condición de carrera con F5.
+   */
+  private sessionReadySubject = new BehaviorSubject<boolean>(false);
+  public sessionReady$ = this.sessionReadySubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -22,6 +30,8 @@ export class AuthService {
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
+        // Tras un login manual también marcamos la sesión como lista
+        this.sessionReadySubject.next(true);
       })
     );
   }
@@ -31,27 +41,36 @@ export class AuthService {
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
+        this.sessionReadySubject.next(true);
       })
     );
   }
 
+  /**
+   * Intenta restaurar la sesión usando la cookie HttpOnly de refresh token.
+   * Llamado por APP_INITIALIZER al arrancar la aplicación.
+   * Al terminar (con éxito o error) emite en sessionReady$ para desbloquear el authGuard.
+   */
   refreshSession(): Observable<boolean> {
     return this.http.post(`${this.API_URL}/refresh`, {}, { withCredentials: true }).pipe(
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
       }),
-      // Si el refresh falla (por ejemplo, porque el usuario no tiene sesión guardada),
-      // simplemente atrapamos el error y devolvemos false silenciosamente.
+      map(() => true),
       catchError(() => {
-        this.clearSession(false);
+        // No hay cookie válida: el usuario no estaba logueado. Es normal.
+        this.accessToken.set(null);
+        this.currentUser.set(null);
         return of(false);
       }),
-      // Mapeamos a true en caso de éxito
-      tap(() => true)
+      tap(() => {
+        // Siempre marcamos la sesión como resuelta al terminar,
+        // sin importar si el refresh tuvo éxito o no.
+        this.sessionReadySubject.next(true);
+      })
     );
   }
-
 
   logout(callApi = true): void {
     if (callApi && this.accessToken()) {
@@ -71,6 +90,8 @@ export class AuthService {
   private clearSession(navigate = true): void {
     this.accessToken.set(null);
     this.currentUser.set(null);
+    // Al cerrar sesión, reseteamos la señal de ready para el próximo ciclo
+    this.sessionReadySubject.next(false);
     if (navigate) {
       this.router.navigate(['/login']);
     }
@@ -82,5 +103,17 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this.accessToken() !== null;
+  }
+
+  /**
+   * Espera a que la sesión esté resuelta y luego devuelve si el usuario
+   * está autenticado. Usado por el authGuard para evitar race conditions.
+   */
+  waitForSessionAndCheck(): Observable<boolean> {
+    return this.sessionReady$.pipe(
+      filter(ready => ready === true),
+      take(1),
+      map(() => this.isAuthenticated())
+    );
   }
 }
