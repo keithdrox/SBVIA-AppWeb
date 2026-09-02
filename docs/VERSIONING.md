@@ -11,5 +11,8 @@ Dado un número de versión `MAJOR.MINOR.PATCH`, se incrementa:
 
 Las etiquetas adicionales (ej. `-rc`, `-alpha`) están disponibles como metadatos de pre-lanzamiento.
 
-## Entrega Actual
-La versión actual del repositorio para la Tercera Entrega corresponde a `v0.9.0-rc`, lo que indica un candidato a versión (*release candidate*) que precede a la versión estable final (`v1.0.0`). Todos los commits siguen convenciones de Conventional Commits para permitir la generación de changelogs de forma automática en un futuro.
+## Entrega actual
+
+El repositorio se encuentra en preparación de la Entrega Final `v1.0.0`. La etiqueta definitiva debe apuntar al commit aprobado para entrega únicamente después de cerrar las pruebas, las evidencias, el despliegue y la documentación pendientes.
+
+La versión `v0.9.0` se conserva como referencia de la tercera entrega. Los commits siguen Conventional Commits para mantener un historial legible y facilitar la generación del changelog.
