@@ -1,6 +1,11 @@
-package_name,total_lines,covered_lines,line_coverage_pct,total_branches,covered_branches,branch_coverage_pct
-com.sbvia.backend.service,480,412,85.83,64,52,81.25
-com.sbvia.backend.controller,220,186,84.55,32,26,81.25
-com.sbvia.backend.entity,340,310,91.18,0,0,100.00
-com.sbvia.backend.security,180,148,82.22,28,22,78.57
-TOTAL,1220,1056,86.56,124,100,80.65
+﻿package_name,total_lines,covered_lines,line_coverage_pct,total_branches,covered_branches,branch_coverage_pct
+com.sbvia.backend.exception,20,8,40.00,0,0,100.00
+com.sbvia.backend.repository,0,0,100.00,0,0,100.00
+com.sbvia.backend.dto,4,2,50.00,0,0,100.00
+com.sbvia.backend,3,1,33.33,0,0,100.00
+com.sbvia.backend.entity,0,0,100.00,0,0,100.00
+com.sbvia.backend.controller,74,52,70.27,16,15,93.75
+com.sbvia.backend.service,184,145,78.80,16,11,68.75
+com.sbvia.backend.config,25,25,100.00,0,0,100.00
+com.sbvia.backend.security,147,127,86.39,28,16,57.14
+TOTAL,457,360,78.77,60,42,70.00
