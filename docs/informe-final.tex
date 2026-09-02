@@ -155,6 +155,26 @@ Para guiar el diseño y evaluación del sistema SBVIA, se formularon tres pregun
     \item[\textbf{RQ3:}] ¿Qué nivel de usabilidad autopercibida (medido mediante la escala estandarizada SUS con $N \ge 15$) alcanza la interfaz web desarrollada en Angular 17 para la navegación y ejecución de escenarios viales?
 \end{itemize}
 
+\section{Calidad del producto de software}
+La calidad de SBVIA se analiza como un conjunto de propiedades observables y no como una afirmación general. ISO/IEC 25010 distingue características como adecuación funcional, eficiencia de desempeño, compatibilidad, usabilidad, fiabilidad, seguridad, mantenibilidad y portabilidad \cite{iso25010}. En este proyecto, la adecuación funcional se contrasta mediante pruebas de servicios y controladores; la eficiencia se mide con percentiles de latencia; la usabilidad se observa con SUS y Lighthouse; la seguridad se revisa mediante controles de autenticación, autorización, cabeceras y análisis automatizado; y la portabilidad se apoya en contenedores Docker.
+
+Esta descomposición evita confundir una compilación exitosa con un producto terminado. Un sistema puede arrancar y, aun así, incumplir un requisito de autorización, carecer de cobertura sobre ramas críticas o no disponer de evidencia reproducible. Por ese motivo, cada requisito no funcional se asocia a una métrica, un umbral y un artefacto de verificación. El criterio de aceptación solo se considera satisfecho cuando los tres elementos son coherentes entre sí.
+
+\section{Autenticación, autorización y gestión de sesión}
+JWT define un formato compacto para transportar declaraciones firmadas entre partes \cite{rfc7519}; no prescribe por sí solo dónde debe almacenarse un token ni elimina riesgos de sesión. En SBVIA, el token de renovación se entrega mediante cookie \texttt{HttpOnly}, reduciendo la exposición frente a scripts ejecutados en el navegador. Las banderas \texttt{Secure} y \texttt{SameSite} restringen su transporte y contexto, mientras que el control CSRF protege las operaciones que dependen de credenciales enviadas automáticamente por el navegador.
+
+La autenticación responde quién es el usuario; la autorización determina qué operaciones puede ejecutar. El modelo RBAC separa los permisos de conductor y administrador. Esta distinción se verifica con respuestas HTTP diferenciadas: 401 cuando falta una identidad válida y 403 cuando existe identidad, pero no privilegio suficiente. La bitácora de eventos registra intentos de autenticación y el limitador de frecuencia reduce ataques repetitivos contra el inicio de sesión. Estos controles se relacionan con las categorías de control de acceso, fallos criptográficos, configuración insegura, identificación y registro descritas por OWASP \cite{owasp2021}.
+
+\section{Persistencia, caché y consistencia}
+La arquitectura de datos combina operaciones CRUD mediante ORM con procedimientos almacenados para consultas o transformaciones delimitadas. El uso de ORM favorece mantenibilidad en operaciones transaccionales comunes, mientras que los procedimientos permiten encapsular lógica SQL estable y auditable. Esta separación sigue el principio de utilizar cada mecanismo donde aporta valor y evita trasladar indiscriminadamente toda la lógica al motor de base de datos \cite{fowler2002patterns, kleppmann2017designing}.
+
+Redis actúa como caché de lecturas frecuentes de escenarios. Una caché introduce la necesidad de definir clave, tiempo de vida, serialización e invalidación. El beneficio esperado es reducir trabajo repetido y latencia, pero su evaluación debe comparar condiciones equivalentes y conservar datos crudos. Por ello, el informe diferencia las corridas concurrentes de caché caliente del ensayo secuencial frío/caliente; combinarlas como si fueran una misma muestra produciría una inferencia inválida.
+
+\section{Reproducibilidad y datos FAIR}
+La reproducibilidad computacional requiere conservar código, configuración, versiones, datos de entrada y comandos de ejecución. Peng plantea que la evidencia científica computacional debe permitir reconstruir los resultados, y Sandve et al. recomiendan registrar cada transformación y evitar operaciones manuales no documentadas \cite{peng2011reproducible, sandve2013ten}. SBVIA organiza scripts, mediciones crudas, resúmenes y procedencia dentro del repositorio para reducir la distancia entre afirmación y evidencia.
+
+Los principios FAIR establecen que datos y metadatos deben ser encontrables, accesibles, interoperables y reutilizables \cite{wilkinson2016fair}. El repositorio ya aporta formatos abiertos, diccionario de datos, licencia y procedencia. Sin embargo, la encontrabilidad persistente no se considera completa hasta depositar por separado el software y el dataset en Zenodo y obtener dos DOI reales. Esta condición se reporta como pendiente para preservar la integridad académica.
+
 \section{Objetivos}
 \subsection{Objetivo General}
 Desarrollar y validar empíricamente el Simulador de Comportamiento Vial con Inteligencia Artificial (SBVIA), fundamentado en una arquitectura web híbrida y reproducible con Spring Boot, Angular, PostgreSQL y Redis, cumpliendo con los estándares internacionales de ingeniería de software.
@@ -224,6 +244,10 @@ La literatura revisada se concentra en el efecto pedagógico o en la validez del
 \section{Interesados y Elicitación}
 Se aplicó la técnica del *Stakeholder Onion* identificando usuarios directos (conductores en formación, instructores), operadores técnicos (administradores, DevOps) y entidades reguladoras (ANT/CTE).
 
+Los conductores necesitan registrarse, autenticarse, consultar escenarios y recibir retroalimentación comprensible. Los administradores requieren gestionar catálogos y usuarios sin acceder a funciones fuera de su rol. El equipo técnico necesita diagnóstico, configuración reproducible y procedimientos de recuperación. Finalmente, el tribunal académico requiere trazabilidad entre requisito, implementación, prueba y evidencia. Estas perspectivas se documentaron mediante historias de usuario, casos de uso, matriz de trazabilidad y criterios de aceptación.
+
+La elicitación combinó revisión del alcance académico, entrevistas semiestructuradas y análisis del sistema existente. Cada necesidad fue transformada en una declaración verificable, procurando que contuviera sujeto, obligación, acción, objeto y condición. La redacción normativa usa ``deberá'' para separar requisitos de explicaciones de diseño, de acuerdo con ISO/IEC/IEEE 29148 \cite{iso29148}. La prioridad Must indica que el requisito es indispensable para la versión final; no implica que esté automáticamente verificado.
+
 \section{Requisitos Funcionales y No Funcionales}
 Los requisitos se redactaron según la plantilla sintáctica normativa de ISO/IEC/IEEE 29148:2018:
 \begin{itemize}
@@ -234,6 +258,16 @@ Los requisitos se redactaron según la plantilla sintáctica normativa de ISO/IE
     \item \textbf{RNF-01 (Must):} La latencia de lectura con caché caliente deberá mantener un $p95 \le 200\text{ ms}$ con 50 VUs concurrentes.
     \item \textbf{RNF-03 (Must):} Las contraseñas deberán almacenarse hasheadas con algoritmo BCrypt.
 \end{itemize}
+
+\section{Alcance y exclusiones}
+La versión evaluada cubre autenticación, roles, gestión de escenarios, registro de simulaciones, consulta de métricas y operaciones administrativas. El término ``simulador'' describe un flujo web de decisiones sobre escenarios viales; no representa un gemelo físico del vehículo ni reproduce fuerzas, campo visual o dinámica vehicular con fidelidad certificada. Tampoco realiza diagnóstico médico, evaluación legal de aptitud para conducir ni emisión de licencias.
+
+Las capacidades de inteligencia artificial adaptativa, gráficos tridimensionales avanzados, integración con volante y telemetría en tiempo real se mantienen fuera del alcance de v1.0.0. Declarar estas exclusiones previene que funcionalidades futuras sean contabilizadas como resultados presentes y permite evaluar el artefacto contra un límite funcional concreto.
+
+\section{Trazabilidad y control de cambios}
+La matriz ubicada en \texttt{docs/trazabilidad/matriz.csv} enlaza cada identificador con módulo, prueba, estado y tipo de acceso a datos. Los estados \texttt{VERIFIED}, \texttt{TESTED} y \texttt{PARTIAL} tienen significados distintos: verificado implica evidencia suficiente frente al criterio; probado indica que existe una comprobación automatizada del comportamiento referido; parcial señala que la evidencia o la implementación todavía no cubre el criterio completo.
+
+El historial de requisitos registra adiciones y modificaciones entre entregas. Este mecanismo permite distinguir evolución legítima de alcance frente a regresiones. Una actualización de requisito debe reflejarse en su prueba, documentación y, cuando corresponda, decisión arquitectónica. De igual forma, una medición nueva no modifica por sí sola el requisito: únicamente actualiza su evidencia y estado de cumplimiento.
 
 \section{Métricas de Calidad de Requisitos}
 La tasa de estabilidad de requisitos calculada es:
@@ -259,12 +293,34 @@ Se adoptó la metodología Design Science Research \cite{peffers2007design, hevn
     \item \textbf{Cobertura:} JaCoCo 0.8.12 sobre capas de servicio, controlador y dominio.
 \end{itemize}
 
+\section{Variables y criterios de aceptación}
+Para rendimiento, la variable principal es la duración de solicitudes HTTP y el estadístico de decisión es el percentil 95. Se selecciona $p95$ porque representa el límite experimentado por la mayoría de usuarios sin ocultar la cola de latencias tras una media. Las variables secundarias son $p50$, $p90$, $p99$, media, desviación y tasa de errores. Los criterios son $p95 \le 200$ ms con caché caliente y $p95 \le 500$ ms en frío.
+
+Para cobertura, las unidades son líneas y ramas instrumentadas por JaCoCo. La cobertura de líneas confirma ejecución, mientras que la de ramas exige recorrer resultados alternativos de decisiones. Ambas deben alcanzar al menos 70\%; aprobar solo una no satisface el criterio conjunto. Para usabilidad, la variable es el puntaje SUS individual en escala de 0 a 100 y el umbral del proyecto es 68. Para seguridad, se utilizan resultados categóricos por control, hallazgos del escáner y ausencia de defectos de severidad bloqueante.
+
+\section{Procedimiento reproducible}
+El protocolo comienza desde una copia limpia del repositorio. Se configuran las variables descritas en \texttt{.env.example}, se construyen los contenedores y se espera a que los chequeos de salud confirmen PostgreSQL, Redis, backend y frontend. Las pruebas unitarias se ejecutan antes de carga para evitar medir una versión funcionalmente defectuosa. Cada corrida de rendimiento conserva su salida cruda y un resumen tabular con identificador, carga, duración y percentiles.
+
+La condición fría requiere invalidar Redis antes de la lectura inicial; la condición caliente requiere precargar la misma clave y mantener constantes endpoint, conjunto de datos, número de usuarios virtuales y duración. Las corridas deben alternarse o parearse para reducir el sesgo temporal. El análisis estadístico solo se calcula cuando se dispone de al menos cinco pares comparables. Lighthouse se ejecuta sobre una compilación de producción, y los controles de seguridad se aplican contra servicios levantados con configuración equivalente a la documentada.
+
+\section{Gestión de evidencia}
+Los archivos crudos no se reemplazan por capturas aisladas. Los JSON de k6 y Lighthouse permiten recalcular indicadores; los CSV facilitan inspección; y los documentos Markdown explican comandos, ambiente y decisiones. \texttt{DATA-PROVENANCE.md} relaciona datos con scripts, mientras \texttt{DATA-DICTIONARY.md} define columnas y unidades. Esta separación entre dato, transformación e interpretación sigue las recomendaciones para investigación reproducible \cite{sandve2013ten, ralph2021empirical}.
+
 % ==========================================
 % B.8 CAPÍTULO 6: DISEÑO DEL SISTEMA Y ARQUITECTURA
 % ==========================================
 \chapter{Diseño del Sistema y Arquitectura}
 \section{Modelo Arquitectónico C4}
 El sistema se modeló en niveles 1 (Contexto), 2 (Contenedores) y 3 (Componentes) utilizando Structurizr DSL. El backend en Spring Boot desacopla las responsabilidades en capas de Controlador, Servicio, Repositorio y Seguridad.
+
+En el nivel de contexto, el conductor y el administrador acceden mediante navegador, mientras los servicios de persistencia permanecen aislados de Internet. En el nivel de contenedores, Angular entrega la interfaz, Spring Boot expone la API, PostgreSQL conserva el estado durable y Redis almacena datos temporales. Docker Compose define red, dependencias y verificaciones de salud. En el nivel de componentes, los controladores traducen HTTP, los servicios aplican reglas, los repositorios abstraen persistencia y la configuración de seguridad forma la frontera de confianza.
+
+El recorrido típico comienza con una petición HTTPS al frontend. La aplicación envía solicitudes a la API incluyendo credenciales según la política de cookies. El filtro de seguridad valida sesión y rol antes de invocar el controlador. Para una consulta de escenarios, el servicio intenta recuperar la representación serializada desde Redis; si no existe, consulta PostgreSQL, construye la respuesta y actualiza la caché. En una modificación, el servicio persiste y debe invalidar las entradas relacionadas para evitar servir datos obsoletos.
+
+\section{Atributos arquitectónicos}
+La seguridad se favorece mediante mínimo privilegio, separación de roles y secretos externos a la imagen. La mantenibilidad se apoya en dependencias dirigidas y responsabilidades diferenciadas. La portabilidad proviene de imágenes reproducibles y configuración por variables. La observabilidad usa endpoints de salud y registros de eventos. La escalabilidad horizontal es viable para el backend si el estado compartido permanece en PostgreSQL y Redis; cualquier dato de sesión almacenado solo en memoria de una instancia limitaría esa propiedad \cite{bass2021software, richards2020fundamentals}.
+
+La arquitectura también tiene compromisos. Redis añade complejidad operativa y posibles problemas de consistencia; los procedimientos almacenados aumentan dependencia con PostgreSQL; y JWT exige revocación y rotación bien definidas. Los ADR documentan estas decisiones para que una alternativa futura pueda evaluarse contra el contexto original, no únicamente contra preferencias tecnológicas.
 
 \section{Registros de Decisión Arquitectónica (ADRs)}
 Se formalizaron 7 ADRs bajo la plantilla de Nygard:
@@ -278,12 +334,18 @@ Se formalizaron 7 ADRs bajo la plantilla de Nygard:
     \item \textbf{ADR-007:} Estrategia de despliegue en contenedores orquestados con HTTPS.
 \end{enumerate}
 
+ADR-008 documenta posteriormente la comparación Angular frente a React. Esta adición no invalida ADR-001: amplía su justificación con criterios de estructura, experiencia del equipo, ecosistema y costo de migración. En conjunto, los ADR constituyen una memoria de decisiones; no son manuales de implementación ni sustituyen pruebas.
+
 % ==========================================
 % B.9 CAPÍTULO 7: IMPLEMENTACIÓN
 % ==========================================
 \chapter{Implementación}
 \section{Estrategia Híbrida de Acceso a Datos}
 Siguiendo las recomendaciones de OWASP para la prevención de SQL Injection \cite{owasp2021}, las operaciones analíticas se encapsularon en procedimientos almacenados PostgreSQL en `db/procs/`.
+
+El catálogo identifica seis procedimientos exigidos por la entrega: reporte de simulación, promedio por usuario, reporte diario, actualización de inactivos, validación de escenario y generación de código de certificado. Cada entrada registra propósito, parámetros, tablas involucradas y consumidor previsto. Las migraciones Flyway mantienen el esquema bajo control de versiones y permiten reconstruir una base vacía en el mismo orden.
+
+El uso de parámetros evita concatenar entrada del usuario dentro de SQL. No obstante, un procedimiento almacenado no es seguro por definición: también requiere privilegios mínimos, validación de argumentos y revisión de cualquier sentencia dinámica. Por ello, el repositorio incluye una auditoría estática específica y pruebas de integración sobre repositorios.
 
 \begin{lstlisting}[language=SQL, caption={Procedimiento almacenado para reporte multi-tabla (sp\_reporte\_simulacion.sql)}]
 CREATE OR REPLACE FUNCTION sp_reporte_simulacion(p_id_simulacion INTEGER)
@@ -306,6 +368,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 \end{lstlisting}
+
+\section{Flujo de autenticación}
+Durante el registro, el backend valida los datos de entrada, comprueba unicidad y almacena una derivación BCrypt de la contraseña. En el inicio de sesión, las credenciales se comparan sin recuperar la contraseña original. Tras una autenticación válida, la respuesta entrega la sesión mediante cookies con atributos restrictivos; el frontend no persiste el token de renovación en \texttt{localStorage}. La restauración después de recargar utiliza el endpoint de renovación y sincroniza el estado antes de resolver las rutas protegidas.
+
+La protección incluye limitación de intentos de login y registro de eventos relevantes. Las respuestas de error emplean códigos HTTP semánticos y evitan revelar si una cuenta concreta existe cuando esa información facilitaría enumeración. El cierre de sesión invalida el contexto del cliente y expira las cookies. Estas medidas se prueban en capas unitarias, de controlador y mediante peticiones funcionales.
+
+\section{Frontend y experiencia de uso}
+Angular organiza vistas de autenticación, dashboard, escenarios, usuarios y prácticas. Las rutas sensibles incorporan guardas y la administración se presenta únicamente al rol correspondiente. El diseño busca consistencia visual, navegación mediante teclado y contraste legible. Lighthouse complementa, pero no sustituye, una revisión manual: una puntuación agregada puede ocultar controles sin etiqueta, orden de foco incorrecto o mensajes que dependen exclusivamente del color.
+
+Las mejoras recientes añadieron el landmark \texttt{main} y ajustaron contraste en el login. El reporte actual muestra avances, aunque rendimiento y accesibilidad permanecen por debajo de una meta ideal de 90. La siguiente iteración debe atender las auditorías individuales del JSON y repetir la medición en las mismas condiciones.
+
+\section{Configuración y operación}
+El repositorio incluye Dockerfiles, Compose, guía de despliegue, runbook y procedimiento de respaldo. Los secretos se inyectan mediante variables y no deben versionarse. Los chequeos de salud ordenan el arranque y permiten distinguir un contenedor iniciado de un servicio disponible. Para recuperación, el runbook debe probarse restaurando un respaldo en una base aislada; conservar solo el comando de creación no demuestra recuperabilidad.
 
 \begin{lstlisting}[language=Java, caption={Invocación formal mediante @Procedure en Spring Data JPA}]
 @Repository
@@ -346,6 +421,8 @@ Las tres corridas calientes cumplen el umbral $p95 \le 200\text{ ms}$, con valor
 \section{Usabilidad del Sistema (SUS)}
 En la prueba con $N = 15$ participantes se obtuvo una media SUS de $79.83$ ($DT = 5.26$, $IC\ 95\% = [77.08, 82.58]$), lo cual posiciona al sistema en la categoría adjetival ``Bien / Good'' (Grado B, percentil $\approx$72) según la escala de Bangor, Kortum \& Miller (2008).
 
+SUS mide percepción de usabilidad y no porcentaje de tareas completadas \cite{brooke1996sus}. El resultado sugiere una recepción favorable en la muestra observada, pero no demuestra eficacia pedagógica ni representa automáticamente a todos los conductores. La muestra es pequeña y localizada; por tanto, se informa tamaño, dispersión e intervalo de confianza. Los registros se conservan anonimizados mediante códigos P01--P15.
+
 \section{Cobertura de Código (JaCoCo)}
 El reporte JaCoCo versionado registra una cobertura global de líneas del $76.27\%$ (360 de 472) y de ramas del $59.72\%$ (43 de 72). El criterio de líneas supera el umbral del $70\%$, mientras que el criterio de ramas aún no lo cumple. El cierre de esta brecha requiere pruebas adicionales sobre decisiones de seguridad, servicios y manejo de excepciones; no debe resolverse reduciendo el umbral del control automático.
 
@@ -355,6 +432,13 @@ El reporte JaCoCo versionado registra una cobertura global de líneas del $76.27
     \item \textbf{SpotBugs / FindSecBugs:} 0 instancias de SQL dinámico concatenado en los 12 procedimientos almacenados del dominio.
     \item \textbf{Lighthouse:} Rendimiento: $84\%$, Accesibilidad: $89\%$, Buenas Prácticas: $96\%$, SEO: $91\%$, según \texttt{report-realtime.json}.
 \end{itemize}
+
+La evidencia funcional cubre diferencias entre 400, 401, 403 y 429, atributos de cookie y cabeceras. El análisis dinámico automatizado es una ayuda de detección y puede producir falsos positivos o no alcanzar rutas autenticadas. Por ello, los resultados de ZAP se complementan con pruebas dirigidas y revisión de configuración. Del mismo modo, la ausencia de hallazgos en SpotBugs no equivale a ausencia absoluta de vulnerabilidades; expresa únicamente que las reglas ejecutadas no identificaron defectos bloqueantes en esa versión.
+
+\section{Síntesis de cumplimiento}
+Los resultados se clasifican en tres grupos. Se consideran cumplidos el umbral de latencia caliente en las corridas disponibles, la tasa de error observada, el objetivo SUS, la cobertura de líneas y los controles funcionales documentados. Se consideran parciales el protocolo de cinco corridas, la comparación estadística frío/caliente, la cobertura de ramas, la descarga completa de certificado y los objetivos de Lighthouse. Permanecen externos al código la firma de aprobación, el despliegue HTTPS verificable, el video, la defensa y los DOI.
+
+Esta clasificación es deliberadamente conservadora. Un requisito parcial no invalida el avance técnico, pero impide declarar finalización total. La matriz de trazabilidad funciona como fuente operativa para cerrar cada brecha y actualizar el informe solo después de producir nueva evidencia.
 
 % ==========================================
 % B.11 CAPÍTULO 9: DISCUSIÓN
@@ -366,6 +450,12 @@ Los resultados responden afirmativamente a las tres preguntas de investigación:
     \item \textbf{Respuesta provisional a RQ2:} Se superó el 70\% de líneas, pero la cobertura de ramas es 59.72\%. Por tanto, esta pregunta no puede considerarse cerrada hasta añadir pruebas y restaurar el umbral de ramas al 70\%.
     \item \textbf{Respuesta a RQ3:} La media SUS de $79.83$ (Grado B, ``Bien'') confirma una usabilidad aceptable para conductores en formación, con amplio margen de mejora en el diseño de interfaz.
 \end{itemize}
+
+La latencia caliente observada es suficientemente baja para el umbral académico, pero el speedup 1.2x del ensayo secuencial es menor que el declarado en versiones anteriores del informe. La diferencia demuestra por qué es necesario versionar datos crudos y separar protocolos. El beneficio de caché depende del tamaño de datos, proximidad del motor, costo de serialización y proporción de aciertos; en un entorno local con PostgreSQL y Redis cercanos, el margen puede ser reducido.
+
+La cobertura presenta otra distinción relevante. El 76.27\% de líneas indica una base razonable de ejecución automatizada, pero el 59.72\% de ramas revela rutas alternativas sin observar. Las áreas con mayor riesgo son seguridad, excepciones y servicios, porque una rama no cubierta puede corresponder precisamente a un rechazo, expiración o dato ausente. Elevar esta métrica aporta más valor que reducir el umbral para obtener un control verde.
+
+El resultado SUS debe leerse junto con Lighthouse. SUS captura percepción posterior al uso; Lighthouse inspecciona propiedades técnicas de una página y configuración de carga. Una media SUS favorable puede coexistir con oportunidades de accesibilidad. La triangulación evita reducir la experiencia de usuario a una única cifra y orienta acciones concretas sobre contraste, semántica, foco y rendimiento.
 
 % ==========================================
 % B.12 CAPÍTULO 10: AMENAZAS A LA VALIDEZ
