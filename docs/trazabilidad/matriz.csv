@@ -7,8 +7,8 @@ RF-05,FUNC,Generación de reporte consolidado diario de actividad,Backend,Simula
 RF-06,FUNC,Actualización masiva de conductores inactivos,Backend,AuthControllerTest.java,VERIFIED,SP,db/procs/sp_actualizar_usuarios_inactivos.sql
 RF-07,FUNC,Validación cruzada de consistencia de reglas de escenario,Backend,EscenarioServiceTest.java,VERIFIED,SP,db/procs/sp_validar_escenario.sql
 RF-08,FUNC,Generación de código secuencial único para certificado,Backend,SimulacionServiceTest.java,VERIFIED,SP,db/procs/sp_generar_codigo_certificado.sql
-RNF-01,PERF,Latencia de lectura en caché caliente p95 <= 200ms,API,scripts/k6/load-test.js,VERIFIED,,
-RNF-02,PERF,Latencia de lectura en frío p95 <= 500ms,API,scripts/k6/load-test.js,VERIFIED,,
+RNF-01,PERF,Latencia de lectura en caché caliente p95 <= 200ms,API,scripts/k6/load-test.js,PARTIAL-3-OF-5-RUNS,,
+RNF-02,PERF,Latencia de lectura en frío p95 <= 500ms,API,docs/mediciones/perf/speedup-realtime.txt,PARTIAL-SEQUENTIAL-SAMPLE,,
 RNF-03,SEC,Contraseñas hasheadas con BCrypt y factor de costo >= 10,Backend,AuthServiceTest.java,VERIFIED,,
 RNF-04,SEC,Cookie de token con HttpOnly + Secure + SameSite=Strict,Backend,AuthControllerTest.java,VERIFIED,,
 RNF-05,SEC,Ausencia total de SQL dinámico en procedimientos,Database,scripts/audit-sql-dynamic.sh,VERIFIED,,
@@ -18,4 +18,4 @@ US-02,USER,Inicio de sesión seguro y obtención de cookie,Frontend,app.componen
 US-03,USER,Exploración interactiva de escenarios viales,Frontend,app.component.spec.ts,TESTED,CRUD-ORM,
 US-04,USER,Ejecución de simulación y captura de decisiones,Frontend,app.component.spec.ts,TESTED,SP,db/procs/sp_reporte_simulacion.sql
 US-05,USER,Visualización de métricas y feedback en dashboard,Frontend,app.component.spec.ts,TESTED,SP,db/procs/sp_calcular_promedio_usuario.sql
-US-06,USER,Descarga de certificado con código secuencial,Frontend,app.component.spec.ts,TESTED,SP,db/procs/sp_generar_codigo_certificado.sql
+US-06,USER,Descarga de certificado con código secuencial,Frontend,app.component.spec.ts,PARTIAL-ROUTE-ONLY,SP,db/procs/sp_generar_codigo_certificado.sql
