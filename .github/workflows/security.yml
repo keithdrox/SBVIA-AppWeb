@@ -29,11 +29,12 @@ jobs:
       - name: Esperar hasta que la API responda
         shell: bash
         run: |
-          for intento in {1..30}; do
+          for intento in {1..60}; do
             if curl --fail --silent http://localhost:8080/actuator/health > /dev/null; then
+              echo "API lista tras $intento intentos"
               exit 0
             fi
-            sleep 5
+            sleep 4
           done
           docker compose logs backend
           exit 1
