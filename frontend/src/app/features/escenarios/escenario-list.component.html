@@ -1,54 +1,43 @@
-<div class="list-container">
-  <div class="header-actions">
-    <h2>Gestión de Escenarios</h2>
+<div class="escenarios-page">
+  <div class="page-header">
     <div>
-      <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
-      <a *ngIf="isAdmin" routerLink="/escenarios/nuevo" class="btn-primary" style="text-decoration:none; display:inline-block; margin-left: 10px;">+ Nuevo Escenario</a>
+      <span class="eyebrow">Gestión</span>
+      <h1>Escenarios viales</h1>
+      <p>Selecciona un escenario para practicar o administra los existentes.</p>
+    </div>
+    <a *ngIf="isAdmin" routerLink="/escenarios/nuevo" class="btn-create">+ Nuevo escenario</a>
+  </div>
+  <div class="filters" *ngIf="escenarios.length > 0">
+    <button class="filter-chip active" (click)="cambiarPagina(0)">Todos</button>
+  </div>
+  <div class="card-grid">
+    <article class="escenario-card" *ngFor="let esc of escenarios">
+      <div class="card-header">
+        <span class="card-badge">{{ esc.tipoVia }}</span>
+        <div class="card-dificultad">{{ '★'.repeat(esc.nivelDificultad) }}{{ '☆'.repeat(5 - esc.nivelDificultad) }}</div>
+      </div>
+      <h3>{{ esc.nombre }}</h3>
+      <div class="card-meta">
+        <span>{{ esc.clima }}</span>
+        <span>{{ esc.densidadTrafico }}</span>
+      </div>
+      <div class="card-actions">
+        <a class="btn-practicar" [routerLink]="['/simulacion', esc.id]">Iniciar práctica →</a>
+        <div class="admin-actions" *ngIf="isAdmin">
+          <a class="btn-icon" title="Editar" [routerLink]="['/escenarios/editar', esc.id]">✏️</a>
+          <button class="btn-icon" title="Eliminar" (click)="eliminar(esc.id)">🗑️</button>
+        </div>
+      </div>
+    </article>
+    <div class="empty-state" *ngIf="escenarios.length === 0">
+      <span class="empty-icon">◈</span>
+      <p>No hay escenarios registrados aún.</p>
+      <a *ngIf="isAdmin" routerLink="/escenarios/nuevo" class="btn-create">Crear primer escenario</a>
     </div>
   </div>
-
-  <div class="table-responsive">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Tipo Vía</th>
-          <th>Dificultad</th>
-          <th>Clima</th>
-          <th>Tráfico</th>
-          <th>Práctica</th>
-          <th *ngIf="isAdmin">Administración</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let esc of escenarios">
-          <td>{{ esc.id }}</td>
-          <td>{{ esc.nombre }}</td>
-          <td><span class="badge badge-info">{{ esc.tipoVia }}</span></td>
-          <td>
-            <span class="dificultad-stars">
-              {{ '★'.repeat(esc.nivelDificultad) }}{{ '☆'.repeat(5 - esc.nivelDificultad) }}
-            </span>
-          </td>
-          <td>{{ esc.clima }}</td>
-          <td>{{ esc.densidadTrafico }}</td>
-          <td><a class="btn-practicar" [routerLink]="['/simulacion', esc.id]">Iniciar</a></td>
-          <td *ngIf="isAdmin" class="actions-cell">
-            <a class="btn-icon btn-edit" title="Editar" [routerLink]="['/escenarios/editar', esc.id]" style="text-decoration:none; cursor:pointer;">✏️</a>
-            <button class="btn-icon btn-delete" title="Eliminar" (click)="eliminar(esc.id)">🗑️</button>
-          </td>
-        </tr>
-        <tr *ngIf="escenarios.length === 0">
-          <td [attr.colspan]="isAdmin ? 8 : 7" class="text-center">No hay escenarios registrados.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
   <div class="pagination" *ngIf="totalPages > 1">
-    <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">&laquo; Anterior</button>
+    <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">← Anterior</button>
     <span>Página {{ page + 1 }} de {{ totalPages }}</span>
-    <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente &raquo;</button>
+    <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente →</button>
   </div>
 </div>

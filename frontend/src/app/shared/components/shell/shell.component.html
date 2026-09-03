@@ -1,0 +1,48 @@
+<div class="app-shell" [class.sidebar-collapsed]="!sidebarAbierto">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">S</span>
+      <span class="brand-text" *ngIf="sidebarAbierto">SBVIA</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label" *ngIf="sidebarAbierto">Panel</span>
+      </a>
+      <a routerLink="/escenarios" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label" *ngIf="sidebarAbierto">Escenarios</span>
+      </a>
+      <a routerLink="/practicas" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">▣</span>
+        <span class="nav-label" *ngIf="sidebarAbierto">Prácticas</span>
+      </a>
+      <a *ngIf="usuario?.rol === 'ROLE_ADMIN'" routerLink="/usuarios" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">★</span>
+        <span class="nav-label" *ngIf="sidebarAbierto">Usuarios</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button type="button" class="nav-item" (click)="logout()">
+        <span class="nav-icon">⟶</span>
+        <span class="nav-label" *ngIf="sidebarAbierto">Salir</span>
+      </button>
+    </div>
+  </aside>
+  <div class="main-area">
+    <header class="topbar">
+      <button type="button" class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <div class="topbar-spacer"></div>
+      <div class="account">
+        <div class="account-info">
+          <strong>{{ usuario?.nombre }}</strong>
+          <small>{{ usuario?.rol === 'ROLE_ADMIN' ? 'Administrador' : 'Conductor' }}</small>
+        </div>
+        <span class="avatar">{{ usuario?.nombre?.charAt(0) || 'U' }}</span>
+      </div>
+    </header>
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

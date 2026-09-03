@@ -1,133 +1,119 @@
-<div class="list-container">
-  <div class="header-actions">
-    <h2>Administración de Usuarios</h2>
+<div class="usuarios-page">
+  <div class="page-header">
     <div>
-      <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
+      <span class="eyebrow">Administración</span>
+      <h1>Usuarios</h1>
+      <p>Gestiona cuentas, roles y accesos del sistema.</p>
     </div>
   </div>
 
-  <div class="table-responsive">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre Completo</th>
-          <th>Email</th>
-          <th>Cédula</th>
-          <th>Teléfono</th>
-          <th>Licencia</th>
-          <th>Rol Actual</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let u of usuarios">
-          <td>{{ u.id }}</td>
-          <td>{{ u.nombre }} {{ u.apellido }}</td>
-          <td>{{ u.email }}</td>
-          <td>{{ u.cedula || 'N/A' }}</td>
-          <td>{{ u.telefono || 'N/A' }}</td>
-          <td><span class="badge" [ngClass]="{'badge-info': u.tipoLicencia}">{{ u.tipoLicencia || 'N/A' }}</span></td>
-          
-          <!-- Selector de Rol Inline -->
-          <td>
-            <select [ngModel]="u.rol" (ngModelChange)="cambiarRol(u, $event)" class="role-select" [disabled]="!u.activo">
-              <option *ngFor="let rol of rolesDisponibles" [value]="rol">{{ rol }}</option>
-            </select>
-          </td>
+  <div class="stats-row">
+    <article class="stat-mini"><span class="stat-dot green"></span><div><small>Total usuarios</small><strong>{{ usuarios.length }}</strong></div></article>
+    <article class="stat-mini"><span class="stat-dot blue"></span><div><small>Activos</small><strong>{{ usuarios.filter(u => u.activo).length }}</strong></div></article>
+  </div>
 
-          <td>
-            <span class="badge" [ngClass]="u.activo ? 'badge-success' : 'badge-danger'">
-              {{ u.activo ? 'Activo' : 'Inactivo' }}
-            </span>
-          </td>
-          
-          <td class="actions-cell">
-            <button class="btn-icon btn-edit" title="Editar" (click)="abrirModalEditar(u)" [disabled]="!u.activo">
-              ✏️
-            </button>
-            <button class="btn-icon btn-delete" title="Desactivar" (click)="desactivarUsuario(u.id, u.nombre)" [disabled]="!u.activo">
-              🚫
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="usuarios.length === 0">
-          <td colspan="8" class="text-center">No hay usuarios registrados.</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card-grid">
+    <article class="usuario-card" *ngFor="let u of usuarios">
+      <div class="card-top">
+        <div class="avatar-lg" [class.inactive]="!u.activo">{{ u.nombre?.charAt(0) || '?' }}</div>
+        <div class="card-status">
+          <span class="badge" [ngClass]="u.activo ? 'badge-active' : 'badge-inactive'">{{ u.activo ? 'Activo' : 'Inactivo' }}</span>
+        </div>
+      </div>
+      <h3>{{ u.nombre }} {{ u.apellido }}</h3>
+      <p class="card-email">{{ u.email }}</p>
+      <div class="card-details">
+        <span *ngIf="u.cedula">📍 {{ u.cedula }}</span>
+        <span *ngIf="u.telefono">📞 {{ u.telefono }}</span>
+        <span *ngIf="u.tipoLicencia" class="badge badge-licencia">{{ u.tipoLicencia }}</span>
+      </div>
+      <div class="card-role">
+        <select [ngModel]="u.rol" (ngModelChange)="cambiarRol(u, $event)" class="role-select" [disabled]="!u.activo">
+          <option *ngFor="let rol of rolesDisponibles" [value]="rol">{{ rol }}</option>
+        </select>
+      </div>
+      <div class="card-actions">
+        <button class="btn-edit" title="Editar" (click)="abrirModalEditar(u)" [disabled]="!u.activo">✏️ Editar</button>
+        <button class="btn-delete" title="Desactivar" (click)="desactivarUsuario(u.id, u.nombre)" [disabled]="!u.activo">🚫 Desactivar</button>
+      </div>
+    </article>
+
+    <div class="empty-state" *ngIf="usuarios.length === 0">
+      <span class="empty-icon">★</span>
+      <p>No hay usuarios registrados.</p>
+    </div>
   </div>
 
   <div class="pagination" *ngIf="totalPages > 1">
-    <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">&laquo; Anterior</button>
+    <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">← Anterior</button>
     <span>Página {{ page + 1 }} de {{ totalPages }}</span>
-    <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente &raquo;</button>
+    <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente →</button>
   </div>
 </div>
 
 <!-- Modal de Edición de Usuario -->
-<div class="modal-backdrop" *ngIf="mostrarModal">
-  <div class="modal-content">
+<div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3>Editar Usuario</h3>
       <button class="btn-close" (click)="cerrarModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form (ngSubmit)="guardarCambiosUsuario()" #editForm="ngForm">
-        <div class="form-group">
-          <label>Nombre *</label>
-          <input type="text" name="nombre" [(ngModel)]="usuarioEditando.nombre" required class="form-control">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" name="nombre" [(ngModel)]="usuarioEditando.nombre" required class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Apellido *</label>
+            <input type="text" name="apellido" [(ngModel)]="usuarioEditando.apellido" required class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" [(ngModel)]="usuarioEditando.email" required email class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" name="telefono" [(ngModel)]="usuarioEditando.telefono" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Tipo de Licencia</label>
+            <select name="tipoLicencia" [(ngModel)]="usuarioEditando.tipoLicencia" class="form-control">
+              <option [ngValue]="null">Ninguna / N/A</option>
+              <option value="A">Tipo A (Motos)</option>
+              <option value="B">Tipo B (Autos)</option>
+              <option value="C">Tipo C (Taxis/Pesados)</option>
+              <option value="D">Tipo D (Buses)</option>
+              <option value="E">Tipo E (Camiones)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cédula</label>
+            <input type="text" name="cedula" [(ngModel)]="usuarioEditando.cedula" class="form-control" maxlength="20">
+          </div>
+          <div class="form-group">
+            <label>Tipo de Sangre</label>
+            <select name="tipoSangre" [(ngModel)]="usuarioEditando.tipoSangre" class="form-control">
+              <option [ngValue]="null">Desconocido</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Discapacidad</label>
+            <input type="text" name="discapacidad" [(ngModel)]="usuarioEditando.discapacidad" class="form-control" placeholder="Ej. Visual, Auditiva, Ninguna...">
+          </div>
         </div>
-        <div class="form-group">
-          <label>Apellido *</label>
-          <input type="text" name="apellido" [(ngModel)]="usuarioEditando.apellido" required class="form-control">
-        </div>
-        <div class="form-group">
-          <label>Email *</label>
-          <input type="email" name="email" [(ngModel)]="usuarioEditando.email" required email class="form-control">
-        </div>
-        <div class="form-group">
-          <label>Teléfono</label>
-          <input type="text" name="telefono" [(ngModel)]="usuarioEditando.telefono" class="form-control">
-        </div>
-        <div class="form-group">
-          <label>Tipo de Licencia</label>
-          <select name="tipoLicencia" [(ngModel)]="usuarioEditando.tipoLicencia" class="form-control">
-            <option [ngValue]="null">Ninguna / N/A</option>
-            <option value="A">Tipo A (Motos)</option>
-            <option value="B">Tipo B (Autos)</option>
-            <option value="C">Tipo C (Taxis/Pesados)</option>
-            <option value="D">Tipo D (Buses)</option>
-            <option value="E">Tipo E (Camiones)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Cédula</label>
-          <input type="text" name="cedula" [(ngModel)]="usuarioEditando.cedula" class="form-control" maxlength="20">
-        </div>
-        <div class="form-group">
-          <label>Tipo de Sangre</label>
-          <select name="tipoSangre" [(ngModel)]="usuarioEditando.tipoSangre" class="form-control">
-            <option [ngValue]="null">Desconocido</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Discapacidad (Especifique o deje en blanco)</label>
-          <input type="text" name="discapacidad" [(ngModel)]="usuarioEditando.discapacidad" class="form-control" placeholder="Ej. Visual, Auditiva, Ninguna...">
-        </div>
-        
         <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="!editForm.form.valid || guardando">
+          <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="!editForm.form.valid || guardando">
             {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
           </button>
         </div>
@@ -137,8 +123,8 @@
 </div>
 
 <!-- Modal de Confirmación -->
-<div class="modal-backdrop" *ngIf="mostrarConfirmacion">
-  <div class="modal-content modal-confirm">
+<div class="modal-backdrop" *ngIf="mostrarConfirmacion" (click)="cerrarConfirmacion()">
+  <div class="modal-content modal-small" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3>Confirmar Acción</h3>
       <button class="btn-close" (click)="cerrarConfirmacion()">&times;</button>
@@ -147,8 +133,8 @@
       <p>{{ mensajeConfirmacion }}</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="cerrarConfirmacion()">Cancelar</button>
-      <button type="button" class="btn-primary" (click)="accionConfirmacion()">Confirmar</button>
+      <button type="button" class="btn-cancel" (click)="cerrarConfirmacion()">Cancelar</button>
+      <button type="button" class="btn-save btn-danger" (click)="accionConfirmacion()">Confirmar</button>
     </div>
   </div>
 </div>

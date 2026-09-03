@@ -1,30 +1,70 @@
-<div class="dashboard-shell">
-  <header class="topbar">
-    <a class="brand" routerLink="/dashboard"><span class="brand-icon">🚙</span><strong>SBVIA</strong></a>
-    <nav><a routerLink="/escenarios">Escenarios</a><a routerLink="/practicas">Mis prácticas</a><a *ngIf="usuario?.rol === 'ROLE_ADMIN'" routerLink="/usuarios">Usuarios</a></nav>
-    <div class="account"><span class="avatar">{{ usuario?.nombre?.charAt(0) || 'U' }}</span><div><strong>{{ usuario?.nombre }}</strong><small>{{ usuario?.rol === 'ROLE_ADMIN' ? 'Administrador' : 'Conductor' }}</small></div><button type="button" (click)="logout()">Salir</button></div>
-  </header>
-  <main>
-    <section class="hero"><div><span class="eyebrow">Panel de control</span><h1>Hola, {{ usuario?.nombre }} 👋</h1><p>Entrena, analiza tu desempeño y mejora tus decisiones al conducir.</p></div><button type="button" (click)="navigate('/escenarios')">Iniciar nueva práctica <span>→</span></button></section>
-    <section class="stats" [class.loading]="cargandoMetricas">
-      <article><span class="stat-icon blue">◉</span><div><small>Prácticas realizadas</small><strong>{{ totalPracticas }}</strong></div></article>
-      <article><span class="stat-icon violet">★</span><div><small>Puntaje promedio</small><strong>{{ promedio }}<em>/100</em></strong></div></article>
-      <article><span class="stat-icon green">✓</span><div><small>Tasa de aprobación</small><strong>{{ tasaAprobacion }}<em>%</em></strong></div></article>
-      <article><span class="stat-icon orange">◇</span><div><small>Escenarios disponibles</small><strong>{{ totalEscenarios }}</strong></div></article>
-    </section>
-    <section class="dashboard-grid">
-      <article class="panel performance">
-        <div class="panel-title"><div><span class="target">◎</span><h2>Análisis de rendimiento</h2></div><a routerLink="/practicas">Ver historial</a></div>
-        <div class="progress-item"><div><span>Puntaje promedio</span><strong>{{ promedio }}%</strong></div><div class="track"><span class="blue-bar" [style.width.%]="promedio"></span></div></div>
-        <div class="progress-item"><div><span>Prácticas aprobadas</span><strong>{{ tasaAprobacion }}%</strong></div><div class="track"><span class="green-bar" [style.width.%]="tasaAprobacion"></span></div></div>
-        <div class="empty-tip" *ngIf="totalPracticas === 0">Tus indicadores aparecerán después de completar la primera práctica.</div>
-      </article>
-      <article class="panel insight"><div class="insight-heading"><span>✦</span><div><small>Recomendación personalizada</small><h2>Tu siguiente paso</h2></div></div><p>{{ recomendacion }}</p><a routerLink="/escenarios">Explorar escenarios →</a></article>
-    </section>
-    <section class="modules"><div class="section-title"><span class="eyebrow">Accesos rápidos</span><h2>Continúa tu entrenamiento</h2></div><div class="module-grid">
-      <button type="button" (click)="navigate('/escenarios')"><span class="module-icon blue">▣</span><div><strong>Escenarios viales</strong><small>Selecciona una situación y comienza a practicar.</small></div><b>→</b></button>
-      <button type="button" (click)="navigate('/practicas')"><span class="module-icon violet">▥</span><div><strong>Mi progreso</strong><small>Consulta resultados, promedios y prácticas.</small></div><b>→</b></button>
-      <button *ngIf="usuario?.rol === 'ROLE_ADMIN'" type="button" (click)="navigate('/usuarios')"><span class="module-icon green">♙</span><div><strong>Administrar usuarios</strong><small>Gestiona cuentas, accesos y roles.</small></div><b>→</b></button>
-    </div></section>
-  </main>
+<div class="dashboard-content">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Panel de control</span>
+      <h1>Hola, {{ usuario?.nombre }} 👋</h1>
+      <p>Entrena, analiza tu desempeño y mejora tus decisiones al conducir.</p>
+    </div>
+    <button type="button" (click)="navigate('/escenarios')">Iniciar nueva práctica <span>→</span></button>
+  </section>
+  <section class="stats" [class.loading]="cargandoMetricas">
+    <article>
+      <span class="stat-icon blue">◉</span>
+      <div><small>Prácticas realizadas</small><strong>{{ totalPracticas }}</strong></div>
+    </article>
+    <article>
+      <span class="stat-icon violet">★</span>
+      <div><small>Puntaje promedio</small><strong>{{ promedio }}<em>/100</em></strong></div>
+    </article>
+    <article>
+      <span class="stat-icon green">✓</span>
+      <div><small>Tasa de aprobación</small><strong>{{ tasaAprobacion }}<em>%</em></strong></div>
+    </article>
+    <article>
+      <span class="stat-icon orange">◇</span>
+      <div><small>Escenarios disponibles</small><strong>{{ totalEscenarios }}</strong></div>
+    </article>
+  </section>
+  <section class="dashboard-grid">
+    <article class="panel performance">
+      <div class="panel-title">
+        <div><span class="target">◎</span><h2>Análisis de rendimiento</h2></div>
+        <a routerLink="/practicas">Ver historial</a>
+      </div>
+      <div class="progress-item">
+        <div><span>Puntaje promedio</span><strong>{{ promedio }}%</strong></div>
+        <div class="track"><span class="blue-bar" [style.width.%]="promedio"></span></div>
+      </div>
+      <div class="progress-item">
+        <div><span>Prácticas aprobadas</span><strong>{{ tasaAprobacion }}%</strong></div>
+        <div class="track"><span class="green-bar" [style.width.%]="tasaAprobacion"></span></div>
+      </div>
+      <div class="empty-tip" *ngIf="totalPracticas === 0">Tus indicadores aparecerán después de completar la primera práctica.</div>
+    </article>
+    <article class="panel insight">
+      <div class="insight-heading"><span>✦</span><div><small>Recomendación personalizada</small><h2>Tu siguiente paso</h2></div></div>
+      <p>{{ recomendacion }}</p>
+      <a routerLink="/escenarios">Explorar escenarios →</a>
+    </article>
+  </section>
+  <section class="modules">
+    <div class="section-title"><span class="eyebrow">Accesos rápidos</span><h2>Continúa tu entrenamiento</h2></div>
+    <div class="module-grid">
+      <button type="button" (click)="navigate('/escenarios')">
+        <span class="module-icon blue">▣</span>
+        <div><strong>Escenarios viales</strong><small>Selecciona una situación y comienza a practicar.</small></div>
+        <b>→</b>
+      </button>
+      <button type="button" (click)="navigate('/practicas')">
+        <span class="module-icon violet">▥</span>
+        <div><strong>Mi progreso</strong><small>Consulta resultados, promedios y prácticas.</small></div>
+        <b>→</b>
+      </button>
+      <button *ngIf="usuario?.rol === 'ROLE_ADMIN'" type="button" (click)="navigate('/usuarios')">
+        <span class="module-icon green">♙</span>
+        <div><strong>Administrar usuarios</strong><small>Gestiona cuentas, accesos y roles.</small></div>
+        <b>→</b>
+      </button>
+    </div>
+  </section>
 </div>
