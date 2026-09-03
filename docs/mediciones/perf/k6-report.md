@@ -4,7 +4,7 @@
 **Entorno:** Docker (`docker compose up`) — backend en `http://host.docker.internal:8080`  
 **Herramienta:** k6 (grafana/k6, imagen Docker)  
 **Fecha:** 2026-09-02  
-**Carga:** 50 VUs concurrentes, duración 30 s, 3 corridas (replicabilidad)
+**Carga:** 50 VUs concurrentes, duración 30 s, 5 corridas independientes
 
 ---
 
@@ -15,7 +15,7 @@ export let options = {
     vus: 50,                // 50 usuarios virtuales concurrentes
     duration: '30s',
     thresholds: {
-        http_req_duration: ['p(95)<2000'],  // RNF-01: p95 < 2000 ms
+        http_req_duration: ['p(95)<200'],   // RNF-01: p95 < 200 ms
         http_req_failed:   ['rate<0.01'],   // tasa de errores < 1%
     },
 };
@@ -29,7 +29,7 @@ export let options = {
 
 ---
 
-## Resultados Obtenidos (3 corridas)
+## Resultados obtenidos (5 corridas)
 
 ### Métricas por corrida — GET /api/escenarios (cache caliente Redis)
 
@@ -38,24 +38,24 @@ export let options = {
 | 1 | 11.6 ms | 27.3 ms | **38.9 ms** | 67.1 ms | 15.7 ms | 11.7 ms | 1500 | 0% |
 | 2 | 13.7 ms | 48.8 ms | **68.7 ms** | 90.2 ms | 21.1 ms | 19.0 ms | 1500 | 0% |
 | 3 | 12.0 ms | 35.1 ms | **48.5 ms** | 87.1 ms | 17.6 ms | 15.0 ms | 1500 | 0% |
+| 4 | 19.4 ms | 53.6 ms | **126.4 ms** | 554.4 ms | 46.2 ms | 112.1 ms | 1450 | 0% |
+| 5 | 12.9 ms | 22.5 ms | **29.3 ms** | 102.4 ms | 16.1 ms | 17.0 ms | 1500 | 0% |
 
-**Resumen agregado:** p50 ≈ 11–14 ms, p95 ≈ 39–69 ms, 0 % de errores en las 3 corridas (4500 peticiones totales).
+**Resumen agregado:** p50 entre 11.6 y 19.4 ms, p95 entre 29.3 y 126.4 ms y 0 % de errores en las 5 corridas (7450 iteraciones medidas).
 
 ### Distribución de latencia
 
-- El 50 % de las respuestas se sirven en ~12 ms (Redis caché caliente).
-- El 95 % de las respuestas se sirven en menos de ~69 ms.
+- El p50 permaneció por debajo de 20 ms en las cinco corridas.
+- El p95 máximo fue 126.4 ms y permaneció bajo el umbral de 200 ms.
 - La mediana (11–14 ms) confirma que el listado se sirve desde caché Redis (`@Cacheable` en `EscenarioService`), no consultando PostgreSQL en cada request.
 
 ---
 
 ## Validación del Requisito RNF-01
 
-**RNF-01 (ISO 25010 — Eficiencia de Rendimiento):** El sistema debe responder al 95 % de las peticiones en menos de 2000 ms bajo una carga de 50 usuarios concurrentes.
+**RNF-01 (ISO 25010 — Eficiencia de Rendimiento):** El sistema debe responder al 95 % de las peticiones en menos de 200 ms bajo una carga de 50 usuarios concurrentes.
 
-**Resultado:** p95 máximo registrado = **68.7 ms** << 2000 ms → ✅ **RNF-01 CUMPLIDO** (margen ~29x respecto al umbral).
-
-![Boxplot de latencia k6](k6-boxplot.png)
+**Resultado:** p95 máximo registrado = **126.4 ms** < 200 ms → ✅ **RNF-01 CUMPLIDO**.
 
 ---
 
@@ -65,6 +65,8 @@ Los resultados crudos completos de cada corrida se encuentran en:
 - `docs/mediciones/perf/k6-run1.json`
 - `docs/mediciones/perf/k6-run2.json`
 - `docs/mediciones/perf/k6-run3.json`
+- `docs/mediciones/perf/k6-run4.json`
+- `docs/mediciones/perf/k6-run5.json`
 
 Resumen estructurado: `docs/mediciones/perf/k6-results-summary.csv`
 

@@ -55,7 +55,7 @@ S_p95      = T_miss / T_hit = 71.0 ms / 60.7 ms ≈ 1.2x
 
 1. **En entorno local y a baja carga, el speedup es modesto (~1.2x).** La consulta a PostgreSQL de una tabla pequeña de escenarios es rápida (~50 ms), por lo que el ahorro del caché es limitado en este escenario sin carga.
 
-2. **El valor real del caché aparece bajo carga:** en las pruebas de carga k6 (50 VUs, 30 s, 3 corridas) el `GET /api/escenarios` se sirve de forma **estable** desde Redis con p95 de 39–69 ms y 0 % de errores, sin saturar PostgreSQL (ver `k6-report.md`). Al liberar la base de datos de las lecturas repetidas, el backend mantiene latencias consistentes bajo concurrencia.
+2. **El valor real del caché aparece bajo carga:** en las pruebas de carga k6 (50 VUs, 30 s, 5 corridas) el `GET /api/escenarios` se sirve desde Redis con p95 de 29.3–126.4 ms y 0 % de errores (ver `k6-report.md`). Al liberar la base de datos de lecturas repetidas, el backend mantiene el p95 bajo el umbral de 200 ms.
 
 3. **Trade-off (cache-aside):** la mejora aplica a lecturas repetidas de datos estáticos (escenarios). Se contrarresta con `@CacheEvict` en las operaciones de escritura (`crear`, `actualizar`, `eliminar`), que invalidan la entrada y garantizan coherencia. El costo es una duplicación temporal en Redis y la gestión del TTL.
 

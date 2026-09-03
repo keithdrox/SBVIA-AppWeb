@@ -22,7 +22,7 @@ S_promedio = T_miss / T_hit = 50.1 / 41.1 ≈ 1.2x
 | 2 | 68.7 | 1500 | 0% |
 | 3 | 48.5 | 1500 | 0% |
 
-- **RNF-01** (p95 < 2000 ms): ✅ cumplido (p95 máx. 68.7 ms).
+- **RNF-01** (p95 < 200 ms): ✅ cumplido en 5 corridas (p95 máximo: 126.4 ms).
 - En entorno local a baja carga el speedup del caché es de ~1.2x; su beneficio principal es la **estabilidad bajo concurrencia** al liberar a PostgreSQL de lecturas repetidas (ver `SPEEDUP-CACHE.md`).
 
 **Evidencia cruda:** `docs/mediciones/perf/speedup-realtime.txt`, `docs/mediciones/perf/k6-run1.json` (y run2/run3).

@@ -7,7 +7,7 @@ RF-05,FUNC,Generación de reporte consolidado diario de actividad,Backend,Simula
 RF-06,FUNC,Actualización masiva de conductores inactivos,Backend,AuthControllerTest.java,VERIFIED,SP,db/procs/sp_actualizar_usuarios_inactivos.sql
 RF-07,FUNC,Validación cruzada de consistencia de reglas de escenario,Backend,EscenarioServiceTest.java,VERIFIED,SP,db/procs/sp_validar_escenario.sql
 RF-08,FUNC,Generación de código secuencial único para certificado,Backend,SimulacionServiceTest.java,VERIFIED,SP,db/procs/sp_generar_codigo_certificado.sql
-RNF-01,PERF,Latencia de lectura en caché caliente p95 <= 200ms,API,scripts/k6/load-test.js,PARTIAL-3-OF-5-RUNS,,
+RNF-01,PERF,Latencia de lectura en caché caliente p95 <= 200ms,API,scripts/k6/load-test.js,VERIFIED-5-RUNS,,
 RNF-02,PERF,Latencia de lectura en frío p95 <= 500ms,API,docs/mediciones/perf/speedup-realtime.txt,PARTIAL-SEQUENTIAL-SAMPLE,,
 RNF-03,SEC,Contraseñas hasheadas con BCrypt y factor de costo >= 10,Backend,AuthServiceTest.java,VERIFIED,,
 RNF-04,SEC,Cookie de token con HttpOnly + Secure + SameSite=Strict,Backend,AuthControllerTest.java,VERIFIED,,
