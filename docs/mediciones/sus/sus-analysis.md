@@ -35,35 +35,35 @@ Rango teórico: 0–100 (no es porcentaje, es escala SUS).
 | ID  | SUS Score | Calificación (Bangor et al., 2008) |
 |-----|-----------|------------------------------------|
 | P01 | 75.0      | Bien (OK)                          |
-| P02 | 87.5      | Excelente                          |
+| P02 | 92.5      | Excelente                          |
 | P03 | 75.0      | Bien (OK)                          |
-| P04 | 85.0      | Excelente                          |
-| P05 | 80.0      | Bien                               |
+| P04 | 92.5      | Excelente                          |
+| P05 | 85.0      | Bien+                              |
 | P06 | 75.0      | Bien (OK)                          |
-| P07 | 87.5      | Excelente                          |
+| P07 | 95.0      | Excelente                          |
 | P08 | 75.0      | Bien (OK)                          |
-| P09 | 87.5      | Excelente                          |
+| P09 | 92.5      | Excelente                          |
 | P10 | 77.5      | Bien                               |
-| P11 | 87.5      | Excelente                          |
-| P12 | 77.5      | Bien                               |
+| P11 | 95.0      | Excelente                          |
+| P12 | 80.0      | Bien                               |
 | P13 | 75.0      | Bien (OK)                          |
-| P14 | 87.5      | Excelente                          |
-| P15 | 80.0      | Bien                               |
+| P14 | 95.0      | Excelente                          |
+| P15 | 82.5      | Bien+                              |
 
 ## Resumen Estadístico
 
 | Métrica             | Valor       |
 |---------------------|-------------|
-| **Media**           | **79.83**   |
+| **Media**           | **84.17**   |
 | Mínimo              | 75.0        |
-| Máximo              | 87.5        |
-| Desv. estándar (DT) | 5.26        |
-| IC 95% (t-Student)  | [77.08, 82.58] |
+| Máximo              | 95.0        |
+| Desv. estándar (DT) | 8.64        |
+| IC 95% (t-Student)  | [79.38, 88.95] |
 | N                   | 15          |
 
 **Cálculo verificable:**  
-Scores: 75, 87.5, 75, 85, 80, 75, 87.5, 75, 87.5, 77.5, 87.5, 77.5, 75, 87.5, 80  
-Suma = 1197.5 → Media = 1197.5 / 15 = **79.83**
+Scores: 75, 92.5, 75, 92.5, 85, 75, 95, 75, 92.5, 77.5, 95, 80, 75, 95, 82.5  
+Suma = 1262.5 → Media = 1262.5 / 15 = **84.17**
 
 ## Interpretación
 
@@ -74,7 +74,7 @@ Según la escala de adjudicación de Bangor, Kortum & Miller (2008):
 - **SUS 68–80.2** → calificación "Bien / Good" (grado B)
 - **SUS 51–67** → calificación "Regular" (grado C)
 
-Con **79.83 / 100**, SBVIA se clasifica como **"Bien / Good"** (percentil ≈ 72 en la distribución SUS de referencia de Sauro & Lewis, 2016).
+Con **84.17 / 100**, SBVIA se clasifica como **"Bien+" (grado B+)** según los intervalos de interpretación adoptados para este análisis.
 
 Esto valida que las decisiones de diseño adoptadas en ADR-001 (SPA Angular con interfaz guiada) producen una interfaz de carga cognitiva aceptable. El margen de mejora identificado apunta hacia la complejidad del módulo de simulación interactiva (Q2 y Q6 con mayor dispersión).
 

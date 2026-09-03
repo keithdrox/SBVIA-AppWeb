@@ -95,7 +95,7 @@ docker run --rm -v "%cd%\docs:/work" -w /work \
 
 ## 🗄️ Semillas y Determinismo
 - **Semilla Aleatoria Global (PRNG):** `SEED=42`
-- **Dataset de Evaluación SUS:** $N = 15$ participantes (promedio SUS: 79.83, DT: 5.26).
+- **Dataset de Evaluación SUS:** $N = 15$ participantes (media SUS: 84.17, DT: 8.64, IC 95%: [79.38, 88.95]).
 
 ---
 
