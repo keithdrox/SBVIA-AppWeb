@@ -1,6 +1,7 @@
 package com.sbvia.backend.controller;
 
 import com.sbvia.backend.dto.SimulacionDTO;
+import com.sbvia.backend.dto.FinalizarSimulacionRequest;
 import com.sbvia.backend.service.SimulacionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -32,6 +35,16 @@ public class SimulacionController {
             @PathVariable Integer idEscenario,
             Authentication authentication) {
         return ResponseEntity.ok(simulacionService.iniciarSimulacion(authentication.getName(), idEscenario));
+    }
+
+    @PostMapping("/{idSimulacion}/finalizar")
+    @Operation(summary = "Finalizar simulación", description = "Registra el puntaje y genera el resultado de la práctica")
+    public ResponseEntity<SimulacionDTO> finalizar(
+            @PathVariable Integer idSimulacion,
+            @Valid @RequestBody FinalizarSimulacionRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(simulacionService.finalizarSimulacion(
+                authentication.getName(), idSimulacion, request.puntajeFinal()));
     }
 
     @GetMapping("/mis-practicas")

@@ -72,6 +72,48 @@ class SimulacionServiceTest {
     }
 
     @Test
+    void finalizaLaSimulacionYApruebaConSetentaPuntos() {
+        Usuario usuario = Usuario.builder().idUsuario(7).email("conductor@sbvia.test").build();
+        Simulacion simulacion = Simulacion.builder()
+                .idSimulacion(21).usuario(usuario).estado("EN_PROGRESO")
+                .puntajeFinal(BigDecimal.ZERO).build();
+        when(simulacionRepository.findById(21)).thenReturn(Optional.of(simulacion));
+        when(simulacionRepository.save(simulacion)).thenReturn(simulacion);
+
+        SimulacionDTO resultado = simulacionService.finalizarSimulacion(
+                usuario.getEmail(), 21, new BigDecimal("70"));
+
+        assertThat(resultado.getEstado()).isEqualTo("APROBADA");
+        assertThat(resultado.getPuntajeFinal()).isEqualByComparingTo("70");
+        assertThat(resultado.getFechaFin()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    void impideFinalizarLaPracticaDeOtroUsuario() {
+        Usuario propietario = Usuario.builder().email("propietario@sbvia.test").build();
+        Simulacion simulacion = Simulacion.builder()
+                .idSimulacion(21).usuario(propietario).estado("EN_PROGRESO").build();
+        when(simulacionRepository.findById(21)).thenReturn(Optional.of(simulacion));
+
+        assertThatThrownBy(() -> simulacionService.finalizarSimulacion(
+                "otro@sbvia.test", 21, new BigDecimal("80")))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+    }
+
+    @Test
+    void impideFinalizarDosVecesLaMismaPractica() {
+        Usuario usuario = Usuario.builder().email("conductor@sbvia.test").build();
+        Simulacion simulacion = Simulacion.builder()
+                .idSimulacion(21).usuario(usuario).estado("APROBADA").build();
+        when(simulacionRepository.findById(21)).thenReturn(Optional.of(simulacion));
+
+        assertThatThrownBy(() -> simulacionService.finalizarSimulacion(
+                usuario.getEmail(), 21, new BigDecimal("90")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("La simulación ya fue finalizada");
+    }
+
+    @Test
     void obtieneLasPracticasDelUsuarioConSuEscenario() {
         Usuario usuario = Usuario.builder().idUsuario(7).email("conductor@sbvia.test").build();
         Escenario escenario = Escenario.builder().idEscenario(3).nombre("Intersección urbana").build();

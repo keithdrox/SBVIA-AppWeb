@@ -10,6 +10,7 @@ import com.sbvia.backend.repository.SimulacionRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 import java.math.BigDecimal;
@@ -41,6 +42,22 @@ public class SimulacionService {
                 .usuario(usuario)
                 .escenario(escenario)
                 .build();
+        return mapToDTO(simulacionRepository.save(simulacion));
+    }
+
+    public SimulacionDTO finalizarSimulacion(String email, Integer idSimulacion, BigDecimal puntajeFinal) {
+        Simulacion simulacion = simulacionRepository.findById(idSimulacion)
+                .orElseThrow(() -> new ResourceNotFoundException("Simulación no encontrada"));
+        if (!simulacion.getUsuario().getEmail().equalsIgnoreCase(email)) {
+            throw new AccessDeniedException("La simulación pertenece a otro usuario");
+        }
+        if (!"EN_PROGRESO".equals(simulacion.getEstado())) {
+            throw new IllegalArgumentException("La simulación ya fue finalizada");
+        }
+
+        simulacion.setFechaFin(LocalDate.now());
+        simulacion.setPuntajeFinal(puntajeFinal);
+        simulacion.setEstado(puntajeFinal.compareTo(new BigDecimal("70")) >= 0 ? "APROBADA" : "REPROBADA");
         return mapToDTO(simulacionRepository.save(simulacion));
     }
 
