@@ -299,6 +299,16 @@ Las preguntas y métricas se relacionaron mediante Goal--Question--Metric \cite{
     \item \textbf{Cobertura:} JaCoCo 0.8.12 sobre capas de servicio, controlador y dominio.
 \end{itemize}
 
+\section{Población, muestra y estrategia de muestreo}
+La población objetivo de la evaluación de usabilidad corresponde a conductores en formación capaces de utilizar un navegador web moderno. La muestra disponible comprende 15 participantes, identificados exclusivamente mediante los códigos P01--P15. La selección fue no probabilística por conveniencia: se invitó a personas accesibles para el equipo dentro del contexto académico. Este procedimiento permite una evaluación formativa del prototipo, pero introduce sesgo de selección y no garantiza representatividad por edad, experiencia vial, ubicación geográfica o familiaridad tecnológica \cite{baltes2022sampling}.
+
+En consecuencia, los resultados SUS describen únicamente a la muestra observada. No se extrapolan a la población nacional de conductores ni se interpretan como evidencia de reducción de siniestros. Los archivos públicos no incluyen edad, género, dispositivo ni otros atributos demográficos; por ello, el informe tampoco afirma diversidad sobre variables que no fueron registradas.
+
+\section{Preguntas, hipótesis y análisis estadístico}
+La evaluación cuantitativa se organiza con un nivel de significación $\alpha=0.05$. Para rendimiento, la hipótesis nula es $H_{0R}$: la latencia $p95$ de lecturas frías no es mayor que la de lecturas calientes bajo el mismo perfil; la alternativa unilateral $H_{1R}$ establece que la latencia fría es mayor. Cuando existan cinco pares homogéneos se aplicará Wilcoxon de rangos con signo, se informará el valor $p$ en notación científica y se acompañará con $A_{12}$ de Vargha--Delaney o delta de Cliff \cite{arcuri2012hitchhiker,vargha2000critique,cliff1993dominance}. No se emitirá una conclusión inferencial mientras falten esos pares.
+
+Para usabilidad, $H_{0U}$ establece que la media poblacional SUS no supera el umbral de 68 y $H_{1U}$ que lo supera. Debido al tamaño y tipo de muestreo, la decisión se presenta mediante media, mediana, desviación típica e intervalo de confianza con $t$ de Student; la puntuación no se denomina porcentaje. Para cobertura, seguridad y Lighthouse se aplican criterios de aceptación previamente fijados y no pruebas de hipótesis retrospectivas.
+
 \section{Variables y criterios de aceptación}
 Para rendimiento, la variable principal es la duración de solicitudes HTTP y el estadístico de decisión es el percentil 95. Se selecciona $p95$ porque representa el límite experimentado por la mayoría de usuarios sin ocultar la cola de latencias tras una media. Las variables secundarias son $p50$, $p90$, $p99$, media, desviación y tasa de errores. Los criterios son $p95 \le 200$ ms con caché caliente y $p95 \le 500$ ms en frío.
 
@@ -308,6 +318,10 @@ Para cobertura, las unidades son líneas y ramas instrumentadas por JaCoCo. La c
 El protocolo comienza desde una copia limpia del repositorio. Se configuran las variables descritas en \texttt{.env.example}, se construyen los contenedores y se espera a que los chequeos de salud confirmen PostgreSQL, Redis, backend y frontend. Las pruebas unitarias se ejecutan antes de carga para evitar medir una versión funcionalmente defectuosa. Cada corrida de rendimiento conserva su salida cruda y un resumen tabular con identificador, carga, duración y percentiles.
 
 La condición fría requiere invalidar Redis antes de la lectura inicial; la condición caliente requiere precargar la misma clave y mantener constantes endpoint, conjunto de datos, número de usuarios virtuales y duración. Las corridas deben alternarse o parearse para reducir el sesgo temporal. El análisis estadístico solo se calcula cuando se dispone de al menos cinco pares comparables. Lighthouse se ejecuta sobre una compilación de producción, y los controles de seguridad se aplican contra servicios levantados con configuración equivalente a la documentada.
+
+Para SUS, cada participante completa una sesión guiada de aproximadamente 20 minutos y responde inmediatamente los diez ítems estándar en escala Likert de 1 a 5. Los ítems impares aportan $respuesta-1$ y los pares $5-respuesta$; la suma se multiplica por 2.5. El archivo crudo conserva respuestas y código anónimo, mientras el cuaderno recalcula puntuaciones, dispersión e intervalo. Cualquier aprobación institucional y consentimiento firmado se custodia fuera del repositorio público; su existencia debe comprobarse documentalmente antes de presentar el estudio como aprobado.
+
+Las herramientas declaradas corresponden a las configuraciones versionadas: JaCoCo 0.8.12, SpotBugs 4.8 con FindSecBugs, OWASP ZAP 2.14, Angular 17 y el JSON de Lighthouse conserva su propia versión y fecha. Los comandos exactos, entradas crudas y productos se relacionan en \texttt{DATA-PROVENANCE.md} para evitar atribuir a una herramienta resultados redactados manualmente.
 
 \section{Gestión de evidencia}
 Los archivos crudos no se reemplazan por capturas aisladas. Los JSON de k6 y Lighthouse permiten recalcular indicadores; los CSV facilitan inspección; y los documentos Markdown explican comandos, ambiente y decisiones. \texttt{DATA-PROVENANCE.md} relaciona datos con scripts, mientras \texttt{DATA-DICTIONARY.md} define columnas y unidades. Esta separación entre dato, transformación e interpretación sigue las recomendaciones para investigación reproducible \cite{sandve2013ten, ralph2021empirical}.
