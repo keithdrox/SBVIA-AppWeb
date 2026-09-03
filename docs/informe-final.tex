@@ -250,7 +250,7 @@ Se aplicó la técnica del *Stakeholder Onion* identificando usuarios directos (
 
 Los conductores necesitan registrarse, autenticarse, consultar escenarios y recibir retroalimentación comprensible. Los administradores requieren gestionar catálogos y usuarios sin acceder a funciones fuera de su rol. El equipo técnico necesita diagnóstico, configuración reproducible y procedimientos de recuperación. Finalmente, el tribunal académico requiere trazabilidad entre requisito, implementación, prueba y evidencia. Estas perspectivas se documentaron mediante historias de usuario, casos de uso, matriz de trazabilidad y criterios de aceptación.
 
-La elicitación combinó revisión del alcance académico, entrevistas semiestructuradas y análisis del sistema existente. Cada necesidad fue transformada en una declaración verificable, procurando que contuviera sujeto, obligación, acción, objeto y condición. La redacción normativa usa ``deberá'' para separar requisitos de explicaciones de diseño, de acuerdo con ISO/IEC/IEEE 29148 \cite{iso29148}. La prioridad Must indica que el requisito es indispensable para la versión final; no implica que esté automáticamente verificado.
+La elicitación combinó revisión del alcance académico, entrevistas semiestructuradas y análisis del sistema existente. Cada necesidad fue transformada en una declaración verificable, procurando que contuviera sujeto, obligación, acción, objeto y condición. La redacción normativa usa ``deberá'' para separar requisitos de explicaciones de diseño, de acuerdo con ISO/IEC/IEEE 29148 y las prácticas de especificación de Wiegers y Beatty \cite{iso29148,wiegers2013software}. Las historias siguen el enfoque de Cohn y los casos de uso describen interacciones observables conforme a Cockburn \cite{cohn2004user,cockburn2001writing}. La prioridad Must indica que el requisito es indispensable para la versión final; no implica que esté automáticamente verificado.
 
 \section{Requisitos Funcionales y No Funcionales}
 Los requisitos se redactaron según la plantilla sintáctica normativa de ISO/IEC/IEEE 29148:2018:
@@ -288,6 +288,8 @@ La matriz registra 12 de 14 requisitos \emph{Must} como verificados ($85.71\%$).
 Se adoptó la metodología Design Science Research \cite{peffers2007design, hevner2004design} estructurada en 6 actividades:
 1) Identificación del problema, 2) Definición de objetivos, 3) Diseño y desarrollo, 4) Demostración, 5) Evaluación empírica y 6) Comunicación.
 
+Las preguntas y métricas se relacionaron mediante Goal--Question--Metric \cite{basili1994gqm}. El diseño de las mediciones siguió principios de experimentación en ingeniería de software \cite{wohlin2012experimentation}; la selección por conveniencia de participantes se declara explícitamente porque este tipo de muestreo limita la generalización \cite{baltes2022sampling}.
+
 \section{Instrumentos de Medición y Protocolo Experimental}
 \begin{itemize}
     \item \textbf{Rendimiento:} k6 (50 VUs / 30s) en 5 corridas independientes de caché caliente y una medición complementaria de 10 ciclos frío/caliente.
@@ -318,6 +320,8 @@ Los archivos crudos no se reemplazan por capturas aisladas. Los JSON de k6 y Lig
 El sistema se modeló en niveles 1 (Contexto), 2 (Contenedores) y 3 (Componentes) utilizando Structurizr DSL. El backend en Spring Boot desacopla las responsabilidades en capas de Controlador, Servicio, Repositorio y Seguridad.
 
 En el nivel de contexto, el conductor y el administrador acceden mediante navegador, mientras los servicios de persistencia permanecen aislados de Internet. En el nivel de contenedores, Angular entrega la interfaz, Spring Boot expone la API, PostgreSQL conserva el estado durable y Redis almacena datos temporales. Docker Compose define red, dependencias y verificaciones de salud. En el nivel de componentes, los controladores traducen HTTP, los servicios aplican reglas, los repositorios abstraen persistencia y la configuración de seguridad forma la frontera de confianza.
+
+La API adopta las restricciones de interfaz uniforme y comunicación sin estado asociadas al estilo REST \cite{fielding2000architectural}. Spring Boot proporciona la composición de componentes, configuración y acceso HTTP usados por el backend \cite{walls2022spring}; estas tecnologías se documentan como decisiones de implementación y no como evidencia de calidad por sí mismas.
 
 El recorrido típico comienza con una petición HTTPS al frontend. La aplicación envía solicitudes a la API incluyendo credenciales según la política de cookies. El filtro de seguridad valida sesión y rol antes de invocar el controlador. Para una consulta de escenarios, el servicio intenta recuperar la representación serializada desde Redis; si no existe, consulta PostgreSQL, construye la respuesta y actualiza la caché. En una modificación, el servicio persiste y debe invalidar las entradas relacionadas para evitar servir datos obsoletos.
 
@@ -501,6 +505,7 @@ El resultado SUS debe leerse junto con Lighthouse. SUS captura percepción poste
 % B.12 CAPÍTULO 10: AMENAZAS A LA VALIDEZ
 % ==========================================
 \chapter{Amenazas a la Validez}
+La organización de amenazas internas, externas, de constructo y de conclusión sigue las recomendaciones de investigación empírica y reporte de estudios de caso en ingeniería de software \cite{runeson2009guidelines}.
 \begin{itemize}
     \item \textbf{Validez de Constructo:} Mitigada mediante el uso de instrumentos estándar consolidados en la literatura (escala SUS original de Brooke y métricas HTTP estandarizadas).
     \item \textbf{Validez Interna:} Se aisló el entorno con Docker y se conservaron archivos crudos de cinco ejecuciones. La comparación frío/caliente usa un protocolo secuencial distinto al ensayo concurrente; esta limitación se reporta para evitar sobreinterpretación.
@@ -528,7 +533,7 @@ SBVIA integra una base funcional y reproducible con Spring Boot, Angular, Postgr
 \chapter*{Declaraciones Obligatorias}
 \addcontentsline{toc}{chapter}{Declaraciones Obligatorias}
 
-\textbf{Disponibilidad de Código:} El código fuente está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb}. La etiqueta definitiva \texttt{v1.0.0} deberá actualizarse al commit aprobado únicamente después del cierre de todos los criterios de entrega.
+\textbf{Disponibilidad de Código:} El código fuente está disponible públicamente en \url{https://github.com/keithdrox/SBVIA-AppWeb}. La etiqueta definitiva \texttt{v1.0.0} deberá actualizarse al commit aprobado únicamente después del cierre de todos los criterios de entrega. Los metadatos de publicación se preparan siguiendo los principios de citación de software \cite{smith2016software}.
 
 \textbf{Disponibilidad de Datos:} El paquete de datos crudos (mediciones de rendimiento, SUS y seguridad) está versionado en el repositorio y preparado bajo licencia Creative Commons Attribution 4.0 International (CC BY 4.0). Su publicación en Zenodo y la asignación de un DOI independiente están pendientes.
 
@@ -536,7 +541,7 @@ SBVIA integra una base funcional y reproducible con Spring Boot, Angular, Postgr
 
 \textbf{Declaración Ética:} Los ensayos con participantes humanos contaron con consentimiento informado y anonimización estricta de datos (códigos P01--P15).
 
-\textbf{Contribución de Autores según Taxonomía CRediT:}
+\textbf{Contribución de Autores según Taxonomía CRediT \cite{niso2022credit}:}
 - \textbf{Justyn K. Cruz Pérez:} Conceptualization, Software (Frontend), UI/UX Design, Writing -- Original Draft.
 - \textbf{Jefferson M. Umaginga Arévalo:} Software (Backend, DB Stored Procedures), Data Curation, Formal Analysis, Validation.
 - \textbf{Diego A. Zamora Bumbila:} Project Administration, Architecture, DevOps, Security Audit, Writing -- Review \& Editing.
