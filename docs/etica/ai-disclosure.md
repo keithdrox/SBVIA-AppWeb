@@ -2,7 +2,8 @@
 
 De conformidad con las normas éticas internacionales y las políticas de integridad académica de la comunidad científica (ACM/IEEE):
 
-1. **Herramienta Utilizada:** Antigravity / Gemini 3.1 Pro & 3.7 Flash (Google DeepMind).
-2. **Propósito:** Asistencia en la estructuración de plantillas LaTeX, generación de scripts de automatización de pruebas (k6, bash), refactorización de consultas SQL y verificación de consistencia de la matriz de trazabilidad.
-3. **Fase de Aplicación:** Fase de integración continua, diseño de procedimientos almacenados y formateo de metadatos académicos.
-4. **Revisión Humana:** El 100% de los requisitos, código Java/TypeScript, esquemas relacionales y decisiones de arquitectura fueron diseñados, verificados y validados críticamente por los autores del proyecto (Cruz Pérez, Umaginga Arévalo, Zamora Bumbila).
+1. **Herramientas utilizadas:** Antigravity/Gemini (Google DeepMind) y Codex (OpenAI).
+2. **Propósito:** Apoyo para localizar defectos, proponer correcciones, estructurar documentación LaTeX, preparar scripts de pruebas, revisar consultas SQL, ejecutar verificaciones reproducibles y comprobar la consistencia de evidencias y trazabilidad.
+3. **Fases de aplicación:** Desarrollo e integración, depuración, seguridad, pruebas, análisis de resultados y redacción técnica.
+4. **Control humano:** Las propuestas generadas se revisaron antes de integrarse. Los integrantes son responsables de comprobar el código, comprender las decisiones, ejecutar las pruebas y defender la validez de los resultados; el uso de asistentes no sustituye la autoría ni la responsabilidad académica.
+5. **Trazabilidad:** Los cambios aceptados se conservan como commits identificables. No se fabricaron fechas, resultados de herramientas, aprobaciones, firmas ni identificadores de depósito.
