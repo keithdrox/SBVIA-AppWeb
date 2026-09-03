@@ -58,7 +58,7 @@ export class EscenarioFormComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Error al cargar los datos del escenario.';
+        this.errorMessage = err.error?.detail ?? 'Error al cargar los datos del escenario.';
         console.error(err);
         this.loading = false;
       }
@@ -81,7 +81,7 @@ export class EscenarioFormComponent implements OnInit {
           this.router.navigate(['/escenarios']);
         },
         error: (err) => {
-          this.errorMessage = 'Error al actualizar el escenario.';
+          this.errorMessage = this.obtenerMensajeError(err, 'Error al actualizar el escenario.');
           console.error(err);
           this.loading = false;
         }
@@ -92,11 +92,19 @@ export class EscenarioFormComponent implements OnInit {
           this.router.navigate(['/escenarios']);
         },
         error: (err) => {
-          this.errorMessage = 'Error al crear el escenario.';
+          this.errorMessage = this.obtenerMensajeError(err, 'Error al crear el escenario.');
           console.error(err);
           this.loading = false;
         }
       });
     }
+  }
+
+  private obtenerMensajeError(error: any, mensajePredeterminado: string): string {
+    const errores = error.error?.errores;
+    if (errores && typeof errores === 'object') {
+      return Object.values(errores).join(' ');
+    }
+    return error.error?.detail ?? mensajePredeterminado;
   }
 }

@@ -34,10 +34,10 @@
           <label for="tipoVia">Tipo de Vía</label>
           <select id="tipoVia" formControlName="tipoVia" [class.invalid]="escenarioForm.get('tipoVia')?.invalid && escenarioForm.get('tipoVia')?.touched">
             <option value="" disabled selected>Seleccione...</option>
-            <option value="Urbana">Urbana</option>
-            <option value="Carretera">Carretera</option>
-            <option value="Autopista">Autopista</option>
-            <option value="Rural">Rural</option>
+            <option value="URBANA">Urbana</option>
+            <option value="RURAL">Rural</option>
+            <option value="AUTOPISTA">Autopista</option>
+            <option value="MIXTA">Mixta</option>
           </select>
         </div>
 
@@ -58,11 +58,10 @@
           <label for="clima">Condición Climática</label>
           <select id="clima" formControlName="clima" [class.invalid]="escenarioForm.get('clima')?.invalid && escenarioForm.get('clima')?.touched">
             <option value="" disabled selected>Seleccione...</option>
-            <option value="Soleado">Soleado</option>
-            <option value="Lluvia">Lluvia</option>
-            <option value="Niebla">Niebla</option>
-            <option value="Nieve">Nieve</option>
-            <option value="Tormenta">Tormenta</option>
+            <option value="SOLEADO">Soleado</option>
+            <option value="LLUVIOSO">Lluvioso</option>
+            <option value="NUBLADO">Nublado</option>
+            <option value="NOCTURNO">Nocturno</option>
           </select>
         </div>
 
@@ -70,10 +69,9 @@
           <label for="densidadTrafico">Densidad de Tráfico</label>
           <select id="densidadTrafico" formControlName="densidadTrafico" [class.invalid]="escenarioForm.get('densidadTrafico')?.invalid && escenarioForm.get('densidadTrafico')?.touched">
             <option value="" disabled selected>Seleccione...</option>
-            <option value="Baja">Baja</option>
-            <option value="Media">Media</option>
-            <option value="Alta">Alta</option>
-            <option value="Congestionado">Congestionado</option>
+            <option value="BAJA">Baja</option>
+            <option value="MEDIA">Media</option>
+            <option value="ALTA">Alta</option>
           </select>
         </div>
       </div>
