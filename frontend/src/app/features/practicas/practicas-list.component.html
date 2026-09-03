@@ -7,6 +7,12 @@
   <div *ngIf="loading" class="loading">Cargando...</div>
   <div *ngIf="error" class="error-msg">{{ error }}</div>
 
+  <section *ngIf="!loading && !error && practicas.length" class="resumen" aria-label="Resumen de rendimiento">
+    <article><strong>{{ practicas.length }}</strong><span>Prácticas</span></article>
+    <article><strong>{{ promedio }}</strong><span>Promedio</span></article>
+    <article><strong>{{ aprobadas }}</strong><span>Aprobadas</span></article>
+  </section>
+
   <div *ngIf="!loading && !error" class="table-responsive">
     <table class="practicas-table" *ngIf="practicas.length > 0; else noPracticas">
       <thead>
@@ -19,10 +25,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let practica of practicas">
-          <td>{{ practica.fechaInicio }}</td>
+          <td>{{ practica.fechaInicio | date:'dd/MM/yyyy' }}</td>
           <td>{{ practica.nombreEscenario }}</td>
-          <td>{{ practica.estado }}</td>
-          <td>{{ practica.puntajeFinal }}</td>
+          <td><span class="estado" [class.aprobada]="practica.estado === 'APROBADA'" [class.reprobada]="practica.estado === 'REPROBADA'">{{ practica.estado }}</span></td>
+          <td><strong>{{ practica.puntajeFinal }}/100</strong></td>
         </tr>
       </tbody>
     </table>

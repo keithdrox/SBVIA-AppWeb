@@ -35,4 +35,18 @@ export class PracticasListComponent implements OnInit {
       }
     });
   }
+
+  get finalizadas(): Simulacion[] {
+    return this.practicas.filter(practica => practica.estado !== 'EN_PROGRESO');
+  }
+
+  get promedio(): number {
+    if (this.finalizadas.length === 0) return 0;
+    const total = this.finalizadas.reduce((suma, practica) => suma + Number(practica.puntajeFinal), 0);
+    return Math.round((total / this.finalizadas.length) * 10) / 10;
+  }
+
+  get aprobadas(): number {
+    return this.practicas.filter(practica => practica.estado === 'APROBADA').length;
+  }
 }

@@ -73,3 +73,31 @@
 .error-msg {
   color: #dc3545;
 }
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.resumen article {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  border-radius: 10px;
+  background: #eef5fd;
+  color: #18375a;
+}
+
+.resumen strong { font-size: 1.8rem; }
+.resumen span { color: #52677d; }
+.estado { display: inline-block; padding: .3rem .6rem; border-radius: 999px; background: #fff3cd; font-size: .8rem; font-weight: 700; }
+.estado.aprobada { color: #137333; background: #e6f4ea; }
+.estado.reprobada { color: #b3261e; background: #fce8e6; }
+
+@media (max-width: 600px) {
+  .practicas-container { padding: 1rem; }
+  .practicas-header { align-items: flex-start; gap: 1rem; }
+  .resumen { grid-template-columns: 1fr; }
+}
