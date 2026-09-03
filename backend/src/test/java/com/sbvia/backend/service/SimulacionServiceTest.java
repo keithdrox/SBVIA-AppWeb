@@ -5,6 +5,7 @@ import com.sbvia.backend.entity.Escenario;
 import com.sbvia.backend.entity.Simulacion;
 import com.sbvia.backend.entity.Usuario;
 import com.sbvia.backend.repository.SimulacionRepository;
+import com.sbvia.backend.repository.EscenarioRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +16,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class SimulacionServiceTest {
@@ -29,8 +32,44 @@ class SimulacionServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private EscenarioRepository escenarioRepository;
+
     @InjectMocks
     private SimulacionService simulacionService;
+
+    @Test
+    void iniciaUnaSimulacionParaElUsuarioAutenticado() {
+        Usuario usuario = Usuario.builder().idUsuario(7).email("conductor@sbvia.test").build();
+        Escenario escenario = Escenario.builder().idEscenario(3).nombre("Intersección urbana").activo(true).build();
+        when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        when(escenarioRepository.findById(3)).thenReturn(Optional.of(escenario));
+        when(simulacionRepository.save(any(Simulacion.class))).thenAnswer(invocacion -> {
+            Simulacion guardada = invocacion.getArgument(0);
+            guardada.setIdSimulacion(21);
+            return guardada;
+        });
+
+        SimulacionDTO resultado = simulacionService.iniciarSimulacion(usuario.getEmail(), 3);
+
+        assertThat(resultado.getIdSimulacion()).isEqualTo(21);
+        assertThat(resultado.getEstado()).isEqualTo("EN_PROGRESO");
+        assertThat(resultado.getPuntajeFinal()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(resultado.getFechaInicio()).isEqualTo(LocalDate.now());
+        assertThat(resultado.getIdEscenario()).isEqualTo(3);
+    }
+
+    @Test
+    void rechazaIniciarUnaSimulacionConEscenarioInactivo() {
+        Usuario usuario = Usuario.builder().idUsuario(7).email("conductor@sbvia.test").build();
+        Escenario escenario = Escenario.builder().idEscenario(3).activo(false).build();
+        when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        when(escenarioRepository.findById(3)).thenReturn(Optional.of(escenario));
+
+        assertThatThrownBy(() -> simulacionService.iniciarSimulacion(usuario.getEmail(), 3))
+                .isInstanceOf(com.sbvia.backend.exception.ResourceNotFoundException.class)
+                .hasMessage("Escenario activo no encontrado");
+    }
 
     @Test
     void obtieneLasPracticasDelUsuarioConSuEscenario() {

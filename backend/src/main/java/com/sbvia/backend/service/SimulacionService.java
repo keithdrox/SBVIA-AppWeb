@@ -1,14 +1,19 @@
 package com.sbvia.backend.service;
 
 import com.sbvia.backend.dto.SimulacionDTO;
+import com.sbvia.backend.entity.Escenario;
 import com.sbvia.backend.entity.Simulacion;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.exception.ResourceNotFoundException;
+import com.sbvia.backend.repository.EscenarioRepository;
 import com.sbvia.backend.repository.SimulacionRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -18,6 +23,26 @@ public class SimulacionService {
 
     private final SimulacionRepository simulacionRepository;
     private final UsuarioRepository usuarioRepository;
+    private final EscenarioRepository escenarioRepository;
+
+    public SimulacionDTO iniciarSimulacion(String email, Integer idEscenario) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        Escenario escenario = escenarioRepository.findById(idEscenario)
+                .filter(Escenario::isActivo)
+                .orElseThrow(() -> new ResourceNotFoundException("Escenario activo no encontrado"));
+
+        LocalDate hoy = LocalDate.now();
+        Simulacion simulacion = Simulacion.builder()
+                .fechaInicio(hoy)
+                .fechaFin(hoy)
+                .estado("EN_PROGRESO")
+                .puntajeFinal(BigDecimal.ZERO)
+                .usuario(usuario)
+                .escenario(escenario)
+                .build();
+        return mapToDTO(simulacionRepository.save(simulacion));
+    }
 
     public List<SimulacionDTO> obtenerMisPracticas(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +25,14 @@ import java.util.List;
 public class SimulacionController {
 
     private final SimulacionService simulacionService;
+
+    @PostMapping("/iniciar/{idEscenario}")
+    @Operation(summary = "Iniciar simulación", description = "Crea una práctica en progreso para el usuario autenticado")
+    public ResponseEntity<SimulacionDTO> iniciar(
+            @PathVariable Integer idEscenario,
+            Authentication authentication) {
+        return ResponseEntity.ok(simulacionService.iniciarSimulacion(authentication.getName(), idEscenario));
+    }
 
     @GetMapping("/mis-practicas")
     @Operation(summary = "Obtener mis prácticas", description = "Devuelve el historial de simulaciones del usuario autenticado")
