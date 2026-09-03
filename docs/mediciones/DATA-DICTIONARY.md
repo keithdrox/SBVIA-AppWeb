@@ -9,10 +9,6 @@ Este documento describe el 100% de las variables presentes en los archivos de da
 | Variable | Tipo | Unidad | Rango | Significado |
 |:---|:---:|:---:|:---:|:---|
 | `participant_id` | String | Identificador | `P01` – `P15` | Código anónimo único asignado a cada participante del estudio. |
-| `age` | Integer | Años | $18 – 45$ | Edad cronológica del participante. |
-| `gender` | Categorical | N/A | `M`, `F`, `Other` | Género autopercibido del participante. |
-| `device` | Categorical | N/A | `Desktop`, `Laptop`, `Mobile` | Dispositivo empleado durante la prueba de usabilidad. |
-| `web_experience` | Integer | Escala Likert | $1 – 5$ | Nivel de experiencia previa con plataformas web (1 = Principiante, 5 = Experto). |
 | `q1` a `q10` | Integer | Escala Likert | $1 – 5$ | Respuestas individuales a los 10 ítems estándar de la escala SUS de Brooke (1996). |
 | `sus_score` | Float | Puntos | $0 – 100$ | Puntuación compuesta estandarizada calculada según el algoritmo SUS. |
 
