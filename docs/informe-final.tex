@@ -88,7 +88,7 @@
 \textbf{Contexto y problema:} Los siniestros viales constituyen una de las principales causas de mortalidad en conductores novatos, atribuibles en gran medida a la deficiente formación en toma de decisiones críticas bajo escenarios de estrés o tráfico denso. Los simuladores tradicionales suelen ser monolíticos y difíciles de reproducir. \\
 \textbf{Objetivo:} Desarrollar y evaluar empíricamente el sistema SBVIA, una plataforma web escalable y reproducible basada en una arquitectura híbrida de acceso a datos con Spring Boot 3.2, Angular 17, PostgreSQL 16 y Redis 7. \\
 \textbf{Métodos:} Se aplicó la metodología Design Science Research (DSR). Los requisitos se formalizaron bajo ISO/IEC/IEEE 29148:2018 e INCOSE v4. Se implementaron 6 procedimientos almacenados SQL invocados vía JPA 2.1. La evaluación empírica abarcó pruebas de carga k6 ($50\text{ VUs}$), auditoría de cabeceras HTTP conforme OWASP Top 10, cobertura JaCoCo y ensayo de usabilidad SUS ($N=15$). \\
-\textbf{Resultados principales:} Cinco corridas k6 con caché caliente registraron valores $p95$ entre 29.35 y 126.41 ms, sin errores; un ensayo complementario de 10 ciclos observó un speedup aproximado de 1.2x. JaCoCo registró $79.73\%$ de líneas y $70.41\%$ de ramas. La puntuación SUS media fue de $79.83/100$ ($N=15$). \\
+\textbf{Resultados principales:} Cinco corridas k6 con caché caliente registraron valores $p95$ entre 29.35 y 126.41 ms, sin errores; un ensayo complementario de 10 ciclos observó un speedup aproximado de 1.2x. JaCoCo registró $79.73\%$ de líneas y $70.41\%$ de ramas. La puntuación SUS media fue de $84.17/100$ ($DT=8.64$; $N=15$). \\
 \textbf{Conclusiones:} La arquitectura híbrida desacoplada ofrece alta reproducibilidad computacional y desempeño óptimo para la formación vial interactiva. \\
 \textbf{Palabras clave:} Simulación vial, Arquitectura de software, Spring Boot, Evaluación empírica, Reproducibilidad computacional, OWASP.
 
@@ -98,7 +98,7 @@
 \textbf{Context and problem:} Road traffic accidents are among the leading causes of mortality among novice drivers, largely due to inadequate decision-making training in high-risk traffic scenarios. Conventional driving training systems often lack web-native reproducibility. \\
 \textbf{Objective:} To design, implement, and empirically evaluate SBVIA, a reproducible web-based traffic behavior simulator featuring a hybrid data-access architecture using Spring Boot 3.2, Angular 17, PostgreSQL 16, and Redis 7. \\
 \textbf{Methods:} Guided by Design Science Research (DSR), requirements were specified according to ISO/IEC/IEEE 29148:2018 and INCOSE v4. Six stored procedures were engineered and invoked via JPA 2.1. Empirical validation incorporated k6 load tests ($50\text{ VUs}$), HTTP security header audit per OWASP Top 10, JaCoCo code coverage, and a System Usability Scale (SUS) trial ($N=15$). \\
-\textbf{Main results:} Five hot-cache k6 runs recorded $p95$ values between 29.35 and 126.41 ms with no errors; a separate 10-cycle experiment observed an approximate 1.2x speedup. JaCoCo reported $79.73\%$ line coverage and $70.41\%$ branch coverage. The mean SUS score was $79.83/100$ ($N=15$). \\
+\textbf{Main results:} Five hot-cache k6 runs recorded $p95$ values between 29.35 and 126.41 ms with no errors; a separate 10-cycle experiment observed an approximate 1.2x speedup. JaCoCo reported $79.73\%$ line coverage and $70.41\%$ branch coverage. The mean SUS score was $84.17/100$ ($SD=8.64$; $N=15$). \\
 \textbf{Conclusions:} The hybrid decoupled web architecture satisfies strict empirical quality thresholds and ensures robust educational delivery. \\
 \textbf{Keywords:} Traffic simulation, Software architecture, Empirical software engineering, Web applications, Performance evaluation.
 \end{otherlanguage}
@@ -421,7 +421,7 @@ Se ejecutaron 5 corridas independientes de 30 segundos con 50 VUs concurrentes s
 Las cinco corridas calientes cumplen el umbral $p95 \le 200\text{ ms}$, con valores entre 29.35 y 126.41 ms. En los 10 ciclos secuenciales, el promedio fue 50.1 ms en frío y 41.1 ms en caliente; el $p95$ observado fue 71.0 y 60.7 ms, respectivamente, equivalente a un speedup aproximado de 1.2x. Este segundo ensayo sugiere una mejora modesta en el entorno local, pero no constituye una comparación concurrente pareada ni justifica por sí solo una inferencia concluyente.
 
 \section{Usabilidad del Sistema (SUS)}
-En la prueba con $N = 15$ participantes se obtuvo una media SUS de $79.83$ ($DT = 5.26$, $IC\ 95\% = [77.08, 82.58]$), lo cual posiciona al sistema en la categoría adjetival ``Bien / Good'' (Grado B, percentil $\approx$72) según la escala de Bangor, Kortum \& Miller (2008).
+En la prueba con $N = 15$ participantes se obtuvo una media SUS de $84.17$ ($DT = 8.64$, $IC\ 95\% = [79.38, 88.95]$), lo cual posiciona al sistema en la categoría adjetival ``Bien+'' (Grado B+) según los intervalos de interpretación adoptados a partir de Bangor, Kortum \& Miller (2008).
 
 SUS mide percepción de usabilidad y no porcentaje de tareas completadas \cite{brooke1996sus}. El resultado sugiere una recepción favorable en la muestra observada, pero no demuestra eficacia pedagógica ni representa automáticamente a todos los conductores. La muestra es pequeña y localizada; por tanto, se informa tamaño, dispersión e intervalo de confianza. Los registros se conservan anonimizados mediante códigos P01--P15.
 
@@ -432,13 +432,13 @@ El reporte JaCoCo versionado registra una cobertura global de líneas del $79.73
 \begin{itemize}
     \item \textbf{Auditoría OWASP (curl-audit.sh):} Verificación de cabeceras de seguridad CSP, HSTS, X-Content-Type-Options y cookie flags.
     \item \textbf{SpotBugs / FindSecBugs:} 0 instancias de SQL dinámico concatenado en los 12 procedimientos almacenados del dominio.
-    \item \textbf{Lighthouse:} Rendimiento: $84\%$, Accesibilidad: $89\%$, Buenas Prácticas: $96\%$, SEO: $91\%$, según \texttt{report-realtime.json}.
+    \item \textbf{Lighthouse:} Rendimiento: $86\%$, Accesibilidad: $100\%$, Buenas Prácticas: $100\%$, SEO: $100\%$, según la última medición completa conservada en \texttt{report-realtime.json}.
 \end{itemize}
 
 La evidencia funcional cubre diferencias entre 400, 401, 403 y 429, atributos de cookie y cabeceras. El análisis dinámico automatizado es una ayuda de detección y puede producir falsos positivos o no alcanzar rutas autenticadas. Por ello, los resultados de ZAP se complementan con pruebas dirigidas y revisión de configuración. Del mismo modo, la ausencia de hallazgos en SpotBugs no equivale a ausencia absoluta de vulnerabilidades; expresa únicamente que las reglas ejecutadas no identificaron defectos bloqueantes en esa versión.
 
 \section{Síntesis de cumplimiento}
-Los resultados se clasifican en tres grupos. Se consideran cumplidos el umbral de latencia caliente en las corridas disponibles, la tasa de error observada, el objetivo SUS, las coberturas de líneas y ramas y los controles funcionales documentados. Se consideran parciales el protocolo de cinco corridas, la comparación estadística frío/caliente, la descarga completa de certificado y los objetivos de Lighthouse. Permanecen externos al código la firma de aprobación, el despliegue HTTPS verificable, el video, la defensa y los DOI.
+Los resultados se clasifican en tres grupos. Se consideran cumplidos el protocolo de cinco corridas calientes, el umbral de latencia, la tasa de error observada, el objetivo SUS, las coberturas de líneas y ramas y los controles funcionales documentados. Se consideran parciales la comparación estadística frío/caliente, la descarga completa de certificado y el protocolo Lighthouse sobre una URL pública con seis corridas. Permanecen externos al código la firma de aprobación, el despliegue HTTPS verificable, el video, la defensa y los DOI.
 
 Esta clasificación es deliberadamente conservadora. Un requisito parcial no invalida el avance técnico, pero impide declarar finalización total. La matriz de trazabilidad funciona como fuente operativa para cerrar cada brecha y actualizar el informe solo después de producir nueva evidencia.
 
@@ -450,7 +450,7 @@ Los resultados responden afirmativamente a las tres preguntas de investigación:
 \begin{itemize}
     \item \textbf{Respuesta a RQ1:} Las cinco corridas de carga con caché caliente permanecieron bajo el umbral de 200 ms y el ensayo secuencial mostró un speedup de 1.2x. El requisito de latencia queda verificado; una afirmación causal más fuerte sobre el speedup requiere un diseño pareado homogéneo.
     \item \textbf{Respuesta a RQ2:} Se alcanzó $79.73\%$ de líneas y $70.41\%$ de ramas, con el umbral de Maven configurado en 70\% para ambas métricas. La evidencia permite considerar cumplido el criterio cuantitativo.
-    \item \textbf{Respuesta a RQ3:} La media SUS de $79.83$ (Grado B, ``Bien'') confirma una usabilidad aceptable para conductores en formación, con amplio margen de mejora en el diseño de interfaz.
+    \item \textbf{Respuesta a RQ3:} La media SUS de $84.17$ (Grado B+, ``Bien+'') confirma una usabilidad aceptable para conductores en formación, con margen de mejora en el diseño de interfaz.
 \end{itemize}
 
 La latencia caliente observada es suficientemente baja para el umbral académico, pero el speedup 1.2x del ensayo secuencial es menor que el declarado en versiones anteriores del informe. La diferencia demuestra por qué es necesario versionar datos crudos y separar protocolos. El beneficio de caché depende del tamaño de datos, proximidad del motor, costo de serialización y proporción de aciertos; en un entorno local con PostgreSQL y Redis cercanos, el margen puede ser reducido.
