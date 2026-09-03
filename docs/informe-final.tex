@@ -317,6 +317,15 @@ En el nivel de contexto, el conductor y el administrador acceden mediante navega
 
 El recorrido típico comienza con una petición HTTPS al frontend. La aplicación envía solicitudes a la API incluyendo credenciales según la política de cookies. El filtro de seguridad valida sesión y rol antes de invocar el controlador. Para una consulta de escenarios, el servicio intenta recuperar la representación serializada desde Redis; si no existe, consulta PostgreSQL, construye la respuesta y actualiza la caché. En una modificación, el servicio persiste y debe invalidar las entradas relacionadas para evitar servir datos obsoletos.
 
+La Figura~\ref{fig:flujo-mvc} resume el recorrido de una solicitud a través de las capas implementadas. La separación mostrada permite ubicar la validación HTTP en el controlador, las reglas en el servicio y el acceso durable en los repositorios, evitando que la interfaz dependa directamente del motor de datos.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{diagramas/flujo-mvc-springboot.png}
+    \caption{Flujo MVC implementado entre Angular, Spring Boot, Redis y PostgreSQL. Fuente: elaboración propia a partir de la arquitectura versionada de SBVIA.}
+    \label{fig:flujo-mvc}
+\end{figure}
+
 \section{Atributos arquitectónicos}
 La seguridad se favorece mediante mínimo privilegio, separación de roles y secretos externos a la imagen. La mantenibilidad se apoya en dependencias dirigidas y responsabilidades diferenciadas. La portabilidad proviene de imágenes reproducibles y configuración por variables. La observabilidad usa endpoints de salud y registros de eventos. La escalabilidad horizontal es viable para el backend si el estado compartido permanece en PostgreSQL y Redis; cualquier dato de sesión almacenado solo en memoria de una instancia limitaría esa propiedad \cite{bass2021software, richards2020fundamentals}.
 
@@ -377,7 +386,14 @@ La protección incluye limitación de intentos de login y registro de eventos re
 \section{Frontend y experiencia de uso}
 Angular organiza vistas de autenticación, dashboard, escenarios, usuarios y prácticas. Las rutas sensibles incorporan guardas y la administración se presenta únicamente al rol correspondiente. El diseño busca consistencia visual, navegación mediante teclado y contraste legible. Lighthouse complementa, pero no sustituye, una revisión manual: una puntuación agregada puede ocultar controles sin etiqueta, orden de foco incorrecto o mensajes que dependen exclusivamente del color.
 
-Las mejoras recientes añadieron el landmark \texttt{main} y ajustaron contraste en el login. El reporte actual muestra avances, aunque rendimiento y accesibilidad permanecen por debajo de una meta ideal de 90. La siguiente iteración debe atender las auditorías individuales del JSON y repetir la medición en las mismas condiciones.
+La Figura~\ref{fig:dashboard} presenta el dashboard que concentra las rutas principales del conductor. Las mejoras recientes añadieron el landmark \texttt{main}, ajustaron el contraste del login y eliminaron dependencias tipográficas externas. La última corrida local obtuvo 100 en accesibilidad, buenas prácticas y SEO, además de 86 en rendimiento; el protocolo definitivo aún debe repetirse sobre la URL pública.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.94\textwidth]{capturas/dashboard.png}
+    \caption{Dashboard principal de SBVIA con accesos a escenarios, prácticas y perfil. Fuente: captura propia del sistema en ejecución.}
+    \label{fig:dashboard}
+\end{figure}
 
 \section{Configuración y operación}
 El repositorio incluye Dockerfiles, Compose, guía de despliegue, runbook y procedimiento de respaldo. Los secretos se inyectan mediante variables y no deben versionarse. Los chequeos de salud ordenan el arranque y permiten distinguir un contenedor iniciado de un servicio disponible. Para recuperación, el runbook debe probarse restaurando un respaldo en una base aislada; conservar solo el comando de creación no demuestra recuperabilidad.
@@ -420,10 +436,28 @@ Se ejecutaron 5 corridas independientes de 30 segundos con 50 VUs concurrentes s
 
 Las cinco corridas calientes cumplen el umbral $p95 \le 200\text{ ms}$, con valores entre 29.35 y 126.41 ms. En los 10 ciclos secuenciales, el promedio fue 50.1 ms en frío y 41.1 ms en caliente; el $p95$ observado fue 71.0 y 60.7 ms, respectivamente, equivalente a un speedup aproximado de 1.2x. Este segundo ensayo sugiere una mejora modesta en el entorno local, pero no constituye una comparación concurrente pareada ni justifica por sí solo una inferencia concluyente.
 
+La Figura~\ref{fig:k6-boxplot} conserva la distribución observada en las corridas crudas y permite detectar dispersión que una única media ocultaría. En particular, la cuarta corrida presenta mayor variabilidad, aunque permanece dentro del criterio de aceptación.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.88\textwidth]{mediciones/perf/k6-boxplot.png}
+    \caption{Distribución de latencias de las corridas k6 versionadas. Fuente: elaboración propia mediante \texttt{scripts/gen-k6-boxplot.py}.}
+    \label{fig:k6-boxplot}
+\end{figure}
+
 \section{Usabilidad del Sistema (SUS)}
 En la prueba con $N = 15$ participantes se obtuvo una media SUS de $84.17$ ($DT = 8.64$, $IC\ 95\% = [79.38, 88.95]$), lo cual posiciona al sistema en la categoría adjetival ``Bien+'' (Grado B+) según los intervalos de interpretación adoptados a partir de Bangor, Kortum \& Miller (2008).
 
 SUS mide percepción de usabilidad y no porcentaje de tareas completadas \cite{brooke1996sus}. El resultado sugiere una recepción favorable en la muestra observada, pero no demuestra eficacia pedagógica ni representa automáticamente a todos los conductores. La muestra es pequeña y localizada; por tanto, se informa tamaño, dispersión e intervalo de confianza. Los registros se conservan anonimizados mediante códigos P01--P15.
+
+La Figura~\ref{fig:sus-distribution} muestra tanto la distribución como los valores individuales recalculados. La línea de media coincide con 84.17 y permite comprobar visualmente que todos los participantes superaron el umbral de aceptación de 68 puntos.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.96\textwidth]{mediciones/sus/sus-distribution.png}
+    \caption{Distribución y puntuaciones individuales de la escala SUS para 15 participantes. Fuente: elaboración propia mediante \texttt{scripts/sus-analysis.ipynb}.}
+    \label{fig:sus-distribution}
+\end{figure}
 
 \section{Cobertura de Código (JaCoCo)}
 El reporte JaCoCo versionado registra una cobertura global de líneas del $79.73\%$ (421 de 528) y de ramas del $70.41\%$ (69 de 98). Ambos criterios superan el umbral del $70\%$. La mejora se obtuvo con pruebas de filtros JPA y decisiones de usuario activo o inactivo; el control automático de Maven volvió a exigir 70\% de ramas.
