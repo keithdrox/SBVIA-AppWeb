@@ -9,7 +9,7 @@
   --gray-card: #ffffff;
   --gray-text: #4a5568;
   --gray-light: #e2e8f0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 /* ============================
@@ -18,7 +18,7 @@
 .dashboard-container {
   min-height: 100vh;
   background-color: var(--gray-bg);
-  font-family: 'Montserrat', sans-serif;
+  font-family: inherit;
 }
 
 /* ============================
@@ -117,7 +117,7 @@
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
-  font-family: 'Montserrat', sans-serif;
+  font-family: inherit;
   transition: all 0.2s ease;
 }
 
@@ -308,7 +308,7 @@
   border-radius: 10px;
   font-size: 0.9rem;
   font-weight: 600;
-  font-family: 'Montserrat', sans-serif;
+  font-family: inherit;
   cursor: pointer;
   border: none;
   transition: all 0.2s ease;
