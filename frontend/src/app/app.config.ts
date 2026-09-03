@@ -12,7 +12,7 @@ import { AuthService } from './auth/auth.service';
  * y ejecutar los guards — eliminando la race condition en F5.
  */
 function initializeApp(authService: AuthService) {
-  return () => authService.refreshSession();
+  return () => authService.initializeSession();
 }
 
 export const appConfig: ApplicationConfig = {

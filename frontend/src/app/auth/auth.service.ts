@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private readonly API_URL = '/api/auth';
+  private readonly SESSION_MARKER = 'sbvia_session_active';
 
   // El token de acceso se almacena en memoria, no en localStorage (Regla de seguridad Entrega 1B)
   private accessToken = signal<string | null>(null);
@@ -30,6 +31,7 @@ export class AuthService {
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
+        localStorage.setItem(this.SESSION_MARKER, 'true');
         // Tras un login manual también marcamos la sesión como lista
         this.sessionReadySubject.next(true);
       })
@@ -41,9 +43,23 @@ export class AuthService {
       tap((response: any) => {
         this.accessToken.set(response.accessToken);
         this.currentUser.set(response.usuario);
+        localStorage.setItem(this.SESSION_MARKER, 'true');
         this.sessionReadySubject.next(true);
       })
     );
+  }
+
+  /**
+   * Restaura la sesión únicamente cuando el navegador registra un inicio previo.
+   * La marca no contiene credenciales; el refresh token permanece en su cookie HttpOnly.
+   */
+  initializeSession(): Observable<boolean> {
+    if (localStorage.getItem(this.SESSION_MARKER) !== 'true') {
+      this.sessionReadySubject.next(true);
+      return of(false);
+    }
+
+    return this.refreshSession();
   }
 
   /**
@@ -62,6 +78,7 @@ export class AuthService {
         // No hay cookie válida: el usuario no estaba logueado. Es normal.
         this.accessToken.set(null);
         this.currentUser.set(null);
+        localStorage.removeItem(this.SESSION_MARKER);
         return of(false);
       }),
       tap(() => {
@@ -90,6 +107,7 @@ export class AuthService {
   private clearSession(navigate = true): void {
     this.accessToken.set(null);
     this.currentUser.set(null);
+    localStorage.removeItem(this.SESSION_MARKER);
     // Al cerrar sesión, reseteamos la señal de ready para el próximo ciclo
     this.sessionReadySubject.next(false);
     if (navigate) {
