@@ -1,0 +1,23 @@
+.simulacion-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+.panel { background: #fff; border-radius: 16px; padding: 2rem; box-shadow: 0 8px 30px rgba(24, 55, 90, .12); }
+header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+h1 { margin: .2rem 0 1rem; color: #18375a; }
+.eyebrow { color: #1a73e8; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin: 0; }
+.timer { background: #e8f0fe; color: #1558a6; border-radius: 12px; padding: .8rem 1.2rem; font-size: 1.5rem; font-weight: 700; }
+.score { background: #f4f8fc; border-left: 4px solid #1a73e8; padding: 1rem; font-size: 1.15rem; }
+.infracciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.infracciones button { position: relative; min-height: 110px; padding: 1rem; border: 1px solid #d7e2ee; border-radius: 12px; background: #fff; cursor: pointer; text-align: left; }
+.infracciones button:hover { border-color: #e44b4b; background: #fff8f8; }
+.infracciones span, .infracciones small { display: block; }
+.infracciones small { color: #8a4b4b; margin-top: .35rem; }
+.infracciones strong { position: absolute; right: .8rem; bottom: .7rem; background: #e44b4b; color: white; border-radius: 50%; min-width: 28px; height: 28px; display: grid; place-items: center; }
+.btn-finalizar { width: 100%; border: 0; border-radius: 9px; padding: .9rem; background: #1558a6; color: white; font-size: 1rem; font-weight: 700; cursor: pointer; }
+.btn-finalizar:disabled { opacity: .65; }
+.resultado { text-align: center; }
+.nota { width: 130px; height: 130px; margin: 1.5rem auto; border-radius: 50%; display: grid; place-items: center; font-size: 2.5rem; font-weight: 800; color: #b3261e; background: #fce8e6; }
+.nota.aprobada { color: #137333; background: #e6f4ea; }
+.acciones { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+.acciones a, .error a { color: #1558a6; font-weight: 700; }
+.estado, .error { text-align: center; }
+.error { color: #b3261e; }
+@media (max-width: 600px) { header { align-items: flex-start; } .panel { padding: 1.25rem; } }

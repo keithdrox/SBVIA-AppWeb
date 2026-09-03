@@ -1,0 +1,42 @@
+<main class="simulacion-container">
+  <div *ngIf="cargando" class="panel estado">Preparando la práctica...</div>
+  <div *ngIf="error" class="panel error">{{ error }} <a routerLink="/escenarios">Volver</a></div>
+
+  <section *ngIf="practica && !resultado" class="panel">
+    <header>
+      <div>
+        <p class="eyebrow">Práctica en progreso</p>
+        <h1>{{ practica.nombreEscenario }}</h1>
+      </div>
+      <div class="timer">{{ tiempo }}</div>
+    </header>
+
+    <div class="score">Puntaje actual: <strong>{{ puntaje }}/100</strong></div>
+    <p>Registra las incidencias observadas durante el recorrido. Cada una descuenta puntos automáticamente.</p>
+
+    <div class="infracciones">
+      <button *ngFor="let infraccion of infracciones" type="button" (click)="registrar(infraccion)">
+        <span>{{ infraccion.nombre }}</span>
+        <small>-{{ infraccion.penalizacion }} puntos</small>
+        <strong>{{ infraccion.cantidad }}</strong>
+      </button>
+    </div>
+
+    <button class="btn-finalizar" type="button" (click)="finalizar()" [disabled]="finalizando">
+      {{ finalizando ? 'Guardando resultado...' : 'Finalizar práctica' }}
+    </button>
+  </section>
+
+  <section *ngIf="resultado" class="panel resultado">
+    <p class="eyebrow">Reporte final</p>
+    <h1>{{ resultado.nombreEscenario }}</h1>
+    <div class="nota" [class.aprobada]="resultado.estado === 'APROBADA'">{{ resultado.puntajeFinal }}</div>
+    <h2>{{ resultado.estado }}</h2>
+    <p *ngIf="resultado.estado === 'APROBADA'">Buen trabajo. Continúa practicando para mantener una conducción segura.</p>
+    <p *ngIf="resultado.estado === 'REPROBADA'">Revisa las infracciones registradas y vuelve a practicar este escenario.</p>
+    <div class="acciones">
+      <a routerLink="/practicas">Ver historial</a>
+      <a routerLink="/escenarios">Elegir otro escenario</a>
+    </div>
+  </section>
+</main>

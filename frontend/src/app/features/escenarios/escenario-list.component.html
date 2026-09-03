@@ -17,7 +17,8 @@
           <th>Dificultad</th>
           <th>Clima</th>
           <th>Tráfico</th>
-          <th *ngIf="isAdmin">Acciones</th>
+          <th>Práctica</th>
+          <th *ngIf="isAdmin">Administración</th>
         </tr>
       </thead>
       <tbody>
@@ -32,13 +33,14 @@
           </td>
           <td>{{ esc.clima }}</td>
           <td>{{ esc.densidadTrafico }}</td>
+          <td><a class="btn-practicar" [routerLink]="['/simulacion', esc.id]">Iniciar</a></td>
           <td *ngIf="isAdmin" class="actions-cell">
             <a class="btn-icon btn-edit" title="Editar" [routerLink]="['/escenarios/editar', esc.id]" style="text-decoration:none; cursor:pointer;">✏️</a>
             <button class="btn-icon btn-delete" title="Eliminar" (click)="eliminar(esc.id)">🗑️</button>
           </td>
         </tr>
         <tr *ngIf="escenarios.length === 0">
-          <td [attr.colspan]="isAdmin ? 7 : 6" class="text-center">No hay escenarios registrados.</td>
+          <td [attr.colspan]="isAdmin ? 8 : 7" class="text-center">No hay escenarios registrados.</td>
         </tr>
       </tbody>
     </table>
