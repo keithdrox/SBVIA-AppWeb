@@ -1,0 +1,21 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+
+.actions a {
+  padding: .45rem .65rem;
+  border: 1px solid #bfd0f5;
+  border-radius: 8px;
+  color: #1d4ed8;
+  background: #f5f8ff;
+  font-size: .76rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.actions a:hover {
+  background: #e8f0ff;
+}

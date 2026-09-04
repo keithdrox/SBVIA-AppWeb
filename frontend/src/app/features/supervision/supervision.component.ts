@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { Simulacion } from '../practicas/simulacion.model';
 import { SimulacionService } from '../practicas/simulacion.service';
@@ -8,9 +9,9 @@ import { SimulacionService } from '../practicas/simulacion.service';
 @Component({
   selector: 'app-supervision',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './supervision.component.html',
-  styleUrl: './supervision.component.css'
+  styleUrls: ['./supervision.component.css', './supervision-admin-actions.component.css']
 })
 export class SupervisionComponent implements OnInit {
   practicas: Simulacion[] = [];
@@ -19,11 +20,14 @@ export class SupervisionComponent implements OnInit {
   cargando = true;
   error = '';
   esAuditor = false;
+  esAdmin = false;
 
   constructor(private auth: AuthService, private simulaciones: SimulacionService) {}
 
   ngOnInit(): void {
-    this.esAuditor = this.auth.currentUser()?.rol === 'ROLE_AUDITOR';
+    const rol = this.auth.currentUser()?.rol;
+    this.esAuditor = rol === 'ROLE_AUDITOR';
+    this.esAdmin = rol === 'ROLE_ADMIN';
     this.simulaciones.getTodas().subscribe({
       next: practicas => { this.practicas = practicas; this.cargando = false; },
       error: error => { this.error = error.error?.detail ?? 'No se pudo cargar la supervisión.'; this.cargando = false; }
