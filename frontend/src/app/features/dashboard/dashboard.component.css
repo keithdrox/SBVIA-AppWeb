@@ -49,3 +49,4 @@
 .module-grid small{color:var(--muted);font-size:.78rem}
 .module-grid b{margin-left:auto;color:var(--blue);font-size:1rem}
 @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.module-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.hero{align-items:stretch;flex-direction:column}.hero h1{font-size:1.65rem}.hero button{width:100%}.stats{grid-template-columns:1fr}.stats article,.panel,.module-grid button{padding:16px}.panel-title{gap:12px}.panel-title a{white-space:nowrap}}
