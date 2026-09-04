@@ -1,7 +1,11 @@
 package com.sbvia.backend.controller;
 
+import com.sbvia.backend.dto.MetricasConduccionRequest;
+import com.sbvia.backend.dto.ResultadoConduccionDTO;
+import com.sbvia.backend.dto.RetroalimentacionIaResponse;
 import com.sbvia.backend.dto.SimulacionDTO;
 import com.sbvia.backend.dto.FinalizarSimulacionRequest;
+import com.sbvia.backend.service.RetroalimentacionService;
 import com.sbvia.backend.service.SimulacionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,6 +32,7 @@ import java.util.List;
 public class SimulacionController {
 
     private final SimulacionService simulacionService;
+    private final RetroalimentacionService retroalimentacionService;
 
     @PostMapping("/iniciar/{idEscenario}")
     @Operation(summary = "Iniciar simulación", description = "Crea una práctica en progreso para el usuario autenticado")
@@ -47,6 +52,25 @@ public class SimulacionController {
                 authentication.getName(), idSimulacion, request.puntajeFinal()));
     }
 
+    @PostMapping("/{idSimulacion}/conduccion/finalizar")
+    @Operation(summary = "Finalizar conducción 2D", description = "Registra las métricas del simulador, calcula el puntaje en el servidor y persiste los resultados")
+    public ResponseEntity<ResultadoConduccionDTO> finalizarConduccion(
+            @PathVariable Integer idSimulacion,
+            @Valid @RequestBody MetricasConduccionRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(simulacionService.finalizarConduccion(
+                authentication.getName(), idSimulacion, request));
+    }
+
+    @GetMapping("/{idSimulacion}/retroalimentacion")
+    @Operation(summary = "Obtener retroalimentación", description = "Devuelve el informe de desempeño de una simulación propia (motor local o IA externa)")
+    public ResponseEntity<RetroalimentacionIaResponse> retroalimentacion(
+            @PathVariable Integer idSimulacion,
+            Authentication authentication) {
+        return ResponseEntity.ok(retroalimentacionService.generarInforme(
+                authentication.getName(), idSimulacion));
+    }
+
     @GetMapping("/mis-practicas")
     @Operation(summary = "Obtener mis prácticas", description = "Devuelve el historial de simulaciones del usuario autenticado")
     public ResponseEntity<List<SimulacionDTO>> obtenerMisPracticas(Authentication authentication) {
@@ -56,7 +80,7 @@ public class SimulacionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_INSTRUCTOR', 'ROLE_AUDITOR')")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'INSTRUCTOR')")
     @Operation(summary = "Obtener todas las simulaciones", description = "Devuelve todas las simulaciones para supervisión de administradores, instructores y auditores")
     public ResponseEntity<List<SimulacionDTO>> obtenerTodas() {
         List<SimulacionDTO> practicas = simulacionService.obtenerTodas();

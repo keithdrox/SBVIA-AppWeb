@@ -42,18 +42,18 @@ export class DashboardComponent implements OnInit {
     this.simulacionService.getMisPracticas().subscribe({
       next: practicas => {
         this.totalPracticas = practicas.length;
-        const finalizadas = practicas.filter(p => p.estado !== 'EN_PROGRESO');
+        const finalizadas = practicas.filter(p => p.completada || p.fechaFin);
         this.promedio = finalizadas.length
           ? Math.round(finalizadas.reduce((total, p) => total + Number(p.puntajeFinal), 0) / finalizadas.length)
           : 0;
         this.tasaAprobacion = finalizadas.length
-          ? Math.round(finalizadas.filter(p => p.estado === 'APROBADA').length * 100 / finalizadas.length)
+          ? Math.round(finalizadas.filter(p => Number(p.puntajeFinal) >= 70).length * 100 / finalizadas.length)
           : 0;
         this.cargandoMetricas = false;
       },
       error: () => this.cargandoMetricas = false
     });
-    if (this.usuario?.rol === 'ROLE_ADMIN') {
+    if (this.usuario?.rol === 'ADMINISTRADOR') {
       this.usuarioService.listar(0, 1).subscribe({
         next: pagina => this.totalUsuarios = pagina.totalElements ?? pagina.content?.length ?? 0
       });

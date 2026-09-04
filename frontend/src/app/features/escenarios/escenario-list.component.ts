@@ -28,7 +28,7 @@ export class EscenarioListComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.currentUser();
-    this.isAdmin = user?.rol === 'ROLE_ADMIN';
+    this.isAdmin = user?.rol === 'ADMINISTRADOR';
     this.cargarEscenarios();
   }
 

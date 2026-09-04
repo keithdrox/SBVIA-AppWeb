@@ -13,12 +13,11 @@ import { AuthService } from './auth.service';
 })
 export class RegisterComponent {
   data = {
-    nombre: '',
-    apellido: '',
-    email: '',
+    nombres: '',
+    apellidos: '',
+    correo: '',
     password: '',
-    telefono: '',
-    tipoLicencia: ''
+    telefono: ''
   };
   errorMessage = '';
   loading = false;
@@ -26,7 +25,7 @@ export class RegisterComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    if (!this.data.nombre || !this.data.apellido || !this.data.email || !this.data.password) {
+    if (!this.data.nombres || !this.data.apellidos || !this.data.correo || !this.data.password) {
       this.errorMessage = 'Todos los campos son obligatorios';
       return;
     }

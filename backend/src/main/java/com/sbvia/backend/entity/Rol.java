@@ -2,12 +2,10 @@ package com.sbvia.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.Instant;
 
-/**
- * Entidad Rol mapeada a la tabla "Rol" de PostgreSQL.
- */
 @Entity
-@Table(name = "\"Rol\"")
+@Table(name = "rol")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,12 +14,20 @@ public class Rol {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id_Rol\"")
+    @Column(name = "id_rol")
     private Integer idRol;
 
-    @Column(name = "nombre", nullable = false, length = 255)
+    @Column(name = "nombre", nullable = false, unique = true, length = 50)
     private String nombre;
 
-    @Column(name = "descripcion", nullable = false, length = 255)
+    @Column(name = "descripcion", length = 255)
     private String descripcion;
+
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    @Builder.Default
+    private Instant fechaCreacion = Instant.now();
+
+    @Column(name = "activo", nullable = false)
+    @Builder.Default
+    private boolean activo = true;
 }

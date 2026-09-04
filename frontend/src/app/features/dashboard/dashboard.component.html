@@ -2,7 +2,7 @@
   <section class="hero">
     <div>
       <span class="eyebrow">Panel de control</span>
-      <h1>Hola, {{ usuario?.nombre }} 👋</h1>
+      <h1>Hola, {{ usuario?.nombres }} 👋</h1>
       <p>Entrena, analiza tu desempeño y mejora tus decisiones al conducir.</p>
     </div>
     <button type="button" (click)="navigate('/escenarios')">Iniciar nueva práctica <span>→</span></button>
@@ -60,7 +60,7 @@
         <div><strong>Mi progreso</strong><small>Consulta resultados, promedios y prácticas.</small></div>
         <b>→</b>
       </button>
-      <button *ngIf="usuario?.rol === 'ROLE_ADMIN'" type="button" (click)="navigate('/usuarios')">
+      <button *ngIf="usuario?.rol === 'ADMINISTRADOR'" type="button" (click)="navigate('/usuarios')">
         <span class="module-icon green">♙</span>
         <div><strong>Administrar usuarios</strong><small>Gestiona cuentas, accesos y roles.</small></div>
         <b>→</b>

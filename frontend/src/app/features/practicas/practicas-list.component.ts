@@ -50,7 +50,7 @@ export class PracticasListComponent implements OnInit {
   }
 
   get finalizadas(): Simulacion[] {
-    return this.practicas.filter(practica => practica.estado !== 'EN_PROGRESO');
+    return this.practicas.filter(practica => practica.completada || !!practica.fechaFin);
   }
 
   get promedio(): number {
@@ -60,7 +60,7 @@ export class PracticasListComponent implements OnInit {
   }
 
   get aprobadas(): number {
-    return this.practicas.filter(practica => practica.estado === 'APROBADA').length;
+    return this.finalizadas.filter(practica => Number(practica.puntajeFinal) >= 70).length;
   }
 
   get escenarioSeleccionado(): Escenario | undefined {

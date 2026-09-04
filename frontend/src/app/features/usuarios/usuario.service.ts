@@ -4,17 +4,13 @@ import { Observable } from 'rxjs';
 
 export interface Usuario {
   id?: number;
-  nombre: string;
-  apellido: string;
-  email: string;
+  nombres: string;
+  apellidos: string;
+  nombreUsuario?: string;
+  correo: string;
   telefono?: string;
-  tipoLicencia?: string;
-  cedula?: string;
-  tipoSangre?: string;
-  discapacidad?: string;
   rol: string;
-  activo: boolean;
-  creadoEn?: string;
+  cuentaBloqueada: boolean;
 }
 
 @Injectable({
@@ -33,8 +29,8 @@ export class UsuarioService {
     return this.http.get(this.API_URL, { params });
   }
 
-  cambiarRol(id: number, rol: string): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.API_URL}/${id}/rol`, { rol });
+  cambiarRol(id: number, nombreRol: string): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.API_URL}/${id}/rol`, { nombreRol });
   }
 
   eliminar(id: number): Observable<void> {

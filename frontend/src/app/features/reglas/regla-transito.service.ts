@@ -4,11 +4,12 @@ import { Observable } from 'rxjs';
 
 export interface ReglaTransito {
   id?: number;
+  codigo: string;
   nombre: string;
-  descripcion: string;
+  descripcion?: string;
   categoria: string;
-  idEscenario: number | null;
-  nombreEscenario?: string;
+  penalizacionBase: number;
+  activa?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

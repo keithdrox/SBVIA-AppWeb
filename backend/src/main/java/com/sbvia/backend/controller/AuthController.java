@@ -92,12 +92,12 @@ public class AuthController {
         } catch (org.springframework.security.core.AuthenticationException ex) {
             loginRateLimiter.recordFailure(ip);
             log.warn("EVENTO_SEGURIDAD: login-fallido email={} ip={} motivo=credenciales_invalidas",
-                    request.getEmail(), ip);
+                    request.getCorreo(), ip);
             throw ex;
         }
 
         loginRateLimiter.reset(ip);
-        log.info("EVENTO_SEGURIDAD: login-exitoso email={} ip={}", request.getEmail(), ip);
+        log.info("EVENTO_SEGURIDAD: login-exitoso email={} ip={}", request.getCorreo(), ip);
 
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
                 response.getExpiresIn(), "/");

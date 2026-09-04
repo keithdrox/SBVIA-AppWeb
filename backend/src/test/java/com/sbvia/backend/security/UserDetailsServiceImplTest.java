@@ -27,12 +27,12 @@ class UserDetailsServiceImplTest {
 
     @Test
     void cargaUsuarioActivoConSuRol() {
-        Usuario usuario = usuario(true);
-        when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        Usuario usuario = usuario(false);
+        when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
 
-        var resultado = userDetailsService.loadUserByUsername(usuario.getEmail());
+        var resultado = userDetailsService.loadUserByUsername(usuario.getCorreo());
 
-        assertThat(resultado.getUsername()).isEqualTo(usuario.getEmail());
+        assertThat(resultado.getUsername()).isEqualTo(usuario.getCorreo());
         assertThat(resultado.getAuthorities())
                 .extracting(Object::toString)
                 .containsExactly("ROLE_USER");
@@ -40,28 +40,28 @@ class UserDetailsServiceImplTest {
 
     @Test
     void rechazaUsuarioInactivo() {
-        Usuario usuario = usuario(false);
-        when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        Usuario usuario = usuario(true);
+        when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
 
-        assertThatThrownBy(() -> userDetailsService.loadUserByUsername(usuario.getEmail()))
+        assertThatThrownBy(() -> userDetailsService.loadUserByUsername(usuario.getCorreo()))
                 .isInstanceOf(UsernameNotFoundException.class)
-                .hasMessageContaining("desactivada");
+                .hasMessageContaining("bloqueada");
     }
 
     @Test
     void rechazaCorreoNoRegistrado() {
-        when(usuarioRepository.findByEmail("ausente@sbvia.test")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByCorreo("ausente@sbvia.test")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userDetailsService.loadUserByUsername("ausente@sbvia.test"))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("ausente@sbvia.test");
     }
 
-    private Usuario usuario(boolean activo) {
+    private Usuario usuario(boolean cuentaBloqueada) {
         return Usuario.builder()
-                .email("conductor@sbvia.test")
-                .passwordHash("hash-seguro")
-                .activo(activo)
+                .correo("conductor@sbvia.test")
+                .contrasenaHash("hash-seguro")
+                .cuentaBloqueada(cuentaBloqueada)
                 .rol(Rol.builder().nombre("ROLE_USER").build())
                 .build();
     }

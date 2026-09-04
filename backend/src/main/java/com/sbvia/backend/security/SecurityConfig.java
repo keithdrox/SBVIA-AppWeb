@@ -17,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
@@ -37,6 +37,8 @@ import org.springframework.security.web.header.writers.XXssProtectionHeaderWrite
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final CsrfTokenIssuerFilter csrfTokenIssuerFilter;
+    private final CsrfTokenRepository csrfTokenRepository;
     private final UserDetailsService userDetailsService;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
@@ -49,7 +51,7 @@ public class SecurityConfig {
                 // La autenticación viaja en cookies, por lo que las operaciones mutables
                 // requieren el patrón double-submit cookie compatible con Angular.
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfTokenRepository)
                         .csrfTokenRequestHandler(requestHandler)
                         .ignoringRequestMatchers("/api/auth/login", "/api/auth/registro", "/api/auth/refresh"))
 
@@ -73,7 +75,9 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
 
-                // Sesiones stateless (JWT)
+                // Sesiones stateless (JWT). La rotación del token CSRF por
+                // autenticación se neutraliza en StatelessCsrfTokenRepository.
+                // Ver ADR-009.
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -87,9 +91,9 @@ public class SecurityConfig {
                         // CRUD de escenarios: GET es público para usuarios autenticados,
                         // POST/PUT/DELETE requiere ADMIN
                         .requestMatchers(HttpMethod.GET, "/api/escenarios/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/escenarios/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/escenarios/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/escenarios/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/escenarios/**").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/escenarios/**").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/escenarios/**").hasAuthority("ADMINISTRADOR")
                         // Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
@@ -99,7 +103,7 @@ public class SecurityConfig {
 
                 // Agregar filtro JWT antes del filtro de autenticación estándar
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new CsrfCookieFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAfter(csrfTokenIssuerFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

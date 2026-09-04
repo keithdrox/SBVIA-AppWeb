@@ -2,32 +2,10 @@ package com.sbvia.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDate;
 import java.math.BigDecimal;
 
-/**
- * Entidad Simulacion mapeada a la tabla "Simulacion" de PostgreSQL.
- */
 @Entity
-@Table(name = "\"Simulacion\"")
-@NamedStoredProcedureQueries({
-    @NamedStoredProcedureQuery(
-        name = "Simulacion.calcularPromedio",
-        procedureName = "sp_calcular_promedio_usuario",
-        parameters = {
-            @StoredProcedureParameter(mode = ParameterMode.IN, name = "p_id_usuario", type = Integer.class),
-            @StoredProcedureParameter(mode = ParameterMode.OUT, name = "promedio", type = BigDecimal.class)
-        }
-    ),
-    @NamedStoredProcedureQuery(
-        name = "Simulacion.generarCodigo",
-        procedureName = "sp_generar_codigo_certificado",
-        parameters = {
-            @StoredProcedureParameter(mode = ParameterMode.IN, name = "p_id_simulacion", type = Integer.class),
-            @StoredProcedureParameter(mode = ParameterMode.OUT, name = "codigo_certificado", type = String.class)
-        }
-    )
-})
+@Table(name = "simulacion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,26 +14,49 @@ public class Simulacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id_Simulacion\"")
+    @Column(name = "id_simulacion")
     private Integer idSimulacion;
 
-    @Column(name = "fecha_inicio", nullable = false)
-    private LocalDate fechaInicio;
+    @Column(name = "fecha_inicio")
+    private java.time.LocalDate fechaInicio;
 
-    @Column(name = "fecha_fin", nullable = false)
-    private LocalDate fechaFin;
+    @Column(name = "fecha_fin")
+    private java.time.LocalDate fechaFin;
 
-    @Column(name = "estado", nullable = false, length = 255)
-    private String estado;
-
-    @Column(name = "puntaje_final", nullable = false)
+    @Column(name = "puntaje_final", precision = 5, scale = 2)
     private BigDecimal puntajeFinal;
 
+    @Column(name = "numero_intento")
+    @Builder.Default
+    private Integer numeroIntento = 1;
+
+    @Column(name = "porcentaje_progreso", precision = 5, scale = 2)
+    @Builder.Default
+    private BigDecimal porcentajeProgreso = BigDecimal.ZERO;
+
+    @Column(name = "duracion_segundos")
+    private Integer duracionSegundos;
+
+    @Column(name = "completada", nullable = false)
+    @Builder.Default
+    private boolean completada = false;
+
+    @Column(name = "observaciones", length = 1000)
+    private String observaciones;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"id_Usuario\"", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"id_Escenario\"", nullable = false)
+    @JoinColumn(name = "id_escenario", nullable = false)
     private Escenario escenario;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_estado_simulacion")
+    private EstadoSimulacion estadoSimulacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sesion")
+    private SesionEntrenamiento sesionEntrenamiento;
 }

@@ -14,7 +14,7 @@
     <article class="escenario-card" *ngFor="let esc of escenarios">
       <div class="card-header">
         <span class="card-badge">{{ esc.tipoVia }}</span>
-        <div class="card-dificultad">{{ '★'.repeat(esc.nivelDificultad) }}{{ '☆'.repeat(5 - esc.nivelDificultad) }}</div>
+        <div class="card-dificultad">{{ esc.nivelDificultad }}</div>
       </div>
       <h3>{{ esc.nombre }}</h3>
       <div class="card-meta">

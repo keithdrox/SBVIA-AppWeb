@@ -6,10 +6,13 @@ export interface Escenario {
   id?: number;
   nombre: string;
   descripcion: string;
+  longitudKm?: number;
+  tiempoEstimadoMinutos?: number;
   tipoVia: string;
-  nivelDificultad: number;
+  nivelDificultad: string;
   clima: string;
   densidadTrafico: string;
+  activo?: boolean;
 }
 
 @Injectable({

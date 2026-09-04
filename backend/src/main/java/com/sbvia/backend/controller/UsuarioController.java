@@ -50,7 +50,7 @@ public class UsuarioController {
      * GET /api/usuarios — Lista todos los usuarios con paginación (Solo Admin).
      */
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @Operation(summary = "Listar usuarios", description = "Lista todos los usuarios (Solo Admin)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista devuelta exitosamente"),
@@ -64,7 +64,7 @@ public class UsuarioController {
      * PUT /api/usuarios/{id}/rol — Cambia el rol de un usuario (Solo Admin).
      */
     @PutMapping("/{id}/rol")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @Operation(summary = "Cambiar rol de usuario", description = "Asigna un nuevo rol a un usuario (Solo Admin)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Rol actualizado exitosamente"),
@@ -73,7 +73,7 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> cambiarRol(
             @PathVariable Integer id,
             @Valid @RequestBody CambiarRolRequest request) {
-        UsuarioDTO actualizado = authService.cambiarRol(id, request.getRol());
+        UsuarioDTO actualizado = authService.cambiarRol(id, request.getNombreRol());
         return ResponseEntity.ok(actualizado);
     }
 
@@ -81,7 +81,7 @@ public class UsuarioController {
      * PUT /api/usuarios/{id} — Actualiza los datos de un usuario (Solo Admin).
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @Operation(summary = "Actualizar datos de usuario", description = "Modifica los datos de un usuario (Solo Admin)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
@@ -99,7 +99,7 @@ public class UsuarioController {
      * DELETE /api/usuarios/{id} — Desactiva un usuario (Solo Admin).
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @Operation(summary = "Eliminar (desactivar) usuario", description = "Soft delete de un usuario (Solo Admin)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Usuario desactivado"),

@@ -1,12 +1,12 @@
 export interface Simulacion {
   idSimulacion: number;
   fechaInicio: string;
-  fechaFin: string;
-  estado: string;
+  fechaFin: string | null;
   puntajeFinal: number;
+  completada: boolean;
   idEscenario?: number;
   nombreEscenario: string;
   idUsuario?: number;
   nombreUsuario?: string;
-  emailUsuario?: string;
+  correoUsuario?: string;
 }

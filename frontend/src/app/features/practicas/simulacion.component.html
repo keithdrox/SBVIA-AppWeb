@@ -30,10 +30,10 @@
   <section *ngIf="resultado" class="panel resultado">
     <p class="eyebrow">Reporte final</p>
     <h1>{{ resultado.nombreEscenario }}</h1>
-    <div class="nota" [class.aprobada]="resultado.estado === 'APROBADA'">{{ resultado.puntajeFinal }}</div>
-    <h2>{{ resultado.estado }}</h2>
-    <p *ngIf="resultado.estado === 'APROBADA'">Buen trabajo. Continúa practicando para mantener una conducción segura.</p>
-    <p *ngIf="resultado.estado === 'REPROBADA'">Revisa las infracciones registradas y vuelve a practicar este escenario.</p>
+    <div class="nota" [class.aprobada]="resultado.puntajeFinal >= 70">{{ resultado.puntajeFinal }}</div>
+    <h2>{{ resultado.puntajeFinal >= 70 ? 'Aprobada' : 'Reprobada' }}</h2>
+    <p *ngIf="resultado.puntajeFinal >= 70">Buen trabajo. Continúa practicando para mantener una conducción segura.</p>
+    <p *ngIf="resultado.puntajeFinal < 70">Revisa las infracciones registradas y vuelve a practicar este escenario.</p>
     <div class="acciones">
       <a routerLink="/practicas">Ver historial</a>
       <a routerLink="/escenarios">Elegir otro escenario</a>

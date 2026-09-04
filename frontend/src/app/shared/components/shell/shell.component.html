@@ -17,13 +17,17 @@
         <span class="nav-icon">▣</span>
         <span class="nav-label" *ngIf="sidebarAbierto">Prácticas</span>
       </a>
-      <a *ngIf="usuario?.rol === 'ROLE_ADMIN'" routerLink="/usuarios" routerLinkActive="active" class="nav-item">
+      <a routerLink="/simulador" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">▶</span>
+        <span class="nav-label" *ngIf="sidebarAbierto">Simulador</span>
+      </a>
+      <a *ngIf="usuario?.rol === 'ADMINISTRADOR'" routerLink="/usuarios" routerLinkActive="active" class="nav-item">
         <span class="nav-icon">★</span>
         <span class="nav-label" *ngIf="sidebarAbierto">Usuarios</span>
       </a>
-      <a *ngIf="usuario?.rol === 'ROLE_ADMIN'" routerLink="/reglas-transito" routerLinkActive="active" class="nav-item"><span class="nav-icon">⚑</span><span class="nav-label" *ngIf="sidebarAbierto">Reglas de tránsito</span></a>
-      <a *ngIf="usuario?.rol === 'ROLE_INSTRUCTOR' || usuario?.rol === 'ROLE_ADMIN'" routerLink="/instructor" routerLinkActive="active" class="nav-item"><span class="nav-icon">♙</span><span class="nav-label" *ngIf="sidebarAbierto">Instructor</span></a>
-      <a *ngIf="usuario?.rol === 'ROLE_AUDITOR' || usuario?.rol === 'ROLE_ADMIN'" routerLink="/auditoria" routerLinkActive="active" class="nav-item"><span class="nav-icon">◎</span><span class="nav-label" *ngIf="sidebarAbierto">Auditoría</span></a>
+      <a *ngIf="usuario?.rol === 'ADMINISTRADOR'" routerLink="/reglas-transito" routerLinkActive="active" class="nav-item"><span class="nav-icon">⚑</span><span class="nav-label" *ngIf="sidebarAbierto">Reglas de tránsito</span></a>
+      <a *ngIf="usuario?.rol === 'INSTRUCTOR' || usuario?.rol === 'ADMINISTRADOR'" routerLink="/instructor" routerLinkActive="active" class="nav-item"><span class="nav-icon">♙</span><span class="nav-label" *ngIf="sidebarAbierto">Instructor</span></a>
+      <a *ngIf="usuario?.rol === 'ADMINISTRADOR'" routerLink="/auditoria" routerLinkActive="active" class="nav-item"><span class="nav-icon">◎</span><span class="nav-label" *ngIf="sidebarAbierto">Auditoría</span></a>
     </nav>
     <div class="sidebar-footer">
       <button type="button" class="nav-item" (click)="logout()">
@@ -38,10 +42,10 @@
       <div class="topbar-spacer"></div>
       <div class="account">
         <div class="account-info">
-          <strong>{{ usuario?.nombre }}</strong>
-          <small>{{ usuario?.rol === 'ROLE_ADMIN' ? 'Administrador' : usuario?.rol === 'ROLE_INSTRUCTOR' ? 'Instructor' : usuario?.rol === 'ROLE_AUDITOR' ? 'Auditor' : 'Conductor' }}</small>
+          <strong>{{ usuario?.nombres }}</strong>
+          <small>{{ usuario?.rol === 'ADMINISTRADOR' ? 'Administrador' : usuario?.rol === 'INSTRUCTOR' ? 'Instructor' : 'Conductor' }}</small>
         </div>
-        <span class="avatar">{{ usuario?.nombre?.charAt(0) || 'U' }}</span>
+        <span class="avatar">{{ usuario?.nombres?.charAt(0) || 'U' }}</span>
       </div>
     </header>
     <main class="content">

@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Reglas de tránsito", description = "Administración de normativas del motor de evaluación")
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 public class ReglaTransitoController {
     private final ReglaTransitoService reglaService;
 

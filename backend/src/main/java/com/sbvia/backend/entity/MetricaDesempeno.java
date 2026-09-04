@@ -3,12 +3,10 @@ package com.sbvia.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.Instant;
 
-/**
- * Entidad MetricaDesempeno mapeada a la tabla "MetricaDesempeno" de PostgreSQL.
- */
 @Entity
-@Table(name = "\"MetricaDesempeno\"")
+@Table(name = "metrica_desempeno")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,25 +15,24 @@ public class MetricaDesempeno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id_MetricaDesempeno\"")
-    private Integer idMetricaDesempeno;
+    @Column(name = "id_metrica")
+    private Integer idMetrica;
 
-    @Column(name = "puntaje", nullable = false)
-    private BigDecimal puntaje;
+    @Column(name = "valor", nullable = false, precision = 10, scale = 2)
+    private BigDecimal valor;
 
-    @Column(name = "tiempo_reaccion", nullable = false)
-    private BigDecimal tiempoReaccion;
+    @Column(name = "fecha_hora", nullable = false)
+    @Builder.Default
+    private Instant fechaHora = Instant.now();
 
-    @Column(name = "errores", nullable = false)
-    private Integer errores;
-
-    @Column(name = "aciertos", nullable = false)
-    private Integer aciertos;
-
-    @Column(name = "nivel_desempeno", nullable = false, length = 255)
-    private String nivelDesempeno;
+    @Column(name = "observacion", length = 255)
+    private String observacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"id_Simulacion\"", nullable = false)
+    @JoinColumn(name = "id_simulacion", nullable = false)
     private Simulacion simulacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_metrica", nullable = false)
+    private TipoMetrica tipoMetrica;
 }

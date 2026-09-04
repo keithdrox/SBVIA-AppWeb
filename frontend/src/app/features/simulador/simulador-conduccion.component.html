@@ -1,0 +1,109 @@
+<main class="simulador-container">
+  <section class="panel">
+    <header>
+      <div>
+        <p class="eyebrow">Simulador de conducción</p>
+        <h1>{{ nombreEscenario }}</h1>
+        <p class="ayuda">Usa <strong>← → ↑ ↓</strong> o <strong>W A S D</strong> para dirigir y acelerar. Tecla <strong>P</strong> para pausar.</p>
+      </div>
+      <div class="timer">{{ tiempo }}</div>
+    </header>
+
+    <div *ngIf="aviso" class="aviso">{{ aviso }}</div>
+
+    <div class="hud">
+      <div class="hud-item velocimetro">
+        <small>Velocidad</small>
+        <strong>{{ velocidadKmh | number:'1.0-0' }} <span>km/h</span></strong>
+        <div class="barra"><div class="relleno" [style.width.%]="(velocidadKmh / VEL_MAX_KMH) * 100"></div></div>
+      </div>
+      <div class="hud-item puntaje" [class.bajo]="puntaje < 70">
+        <small>Puntaje</small>
+        <strong>{{ puntaje }} <span>/ 100</span></strong>
+      </div>
+      <div class="hud-item">
+        <small>Límite</small>
+        <strong>{{ LIMITE_KMH }} <span>km/h</span></strong>
+      </div>
+      <div class="hud-item">
+        <small>Distancia</small>
+        <strong>{{ distanciaKm | number:'1.2-2' }} <span>km</span></strong>
+      </div>
+      <div class="hud-item">
+        <small>Estado</small>
+        <strong class="estado" [class.activo]="estado === 'corriendo'">{{ estado }}</strong>
+      </div>
+    </div>
+
+    <div class="chips">
+      <span class="chip" [class.marca]="colisiones > 0">💥 {{ colisiones }}</span>
+      <span class="chip" [class.marca]="salidasCarril > 0">🛣️ {{ salidasCarril }}</span>
+      <span class="chip" [class.marca]="excesosVelocidad > 0">🚀 {{ excesosVelocidad }}</span>
+      <span class="chip" [class.marca]="semaforosIgnorados > 0">🚦 {{ semaforosIgnorados }}</span>
+      <span class="chip" [class.marca]="distanciaInsegura > 0">🚗 {{ distanciaInsegura }}</span>
+      <span class="chip ok">✅ {{ semaforosRespetados }}</span>
+    </div>
+
+    <div class="lienzo-wrapper">
+      <canvas #lienzo [attr.width]="ANCHO" [attr.height]="ALTO" aria-label="Simulador de conducción 2D"></canvas>
+    </div>
+
+    <div class="controles">
+      <button type="button" class="btn primario" (click)="iniciar()" [disabled]="estado === 'corriendo'">▶ Iniciar</button>
+      <button type="button" class="btn" (click)="estado === 'pausado' ? reanudar() : pausar()" [disabled]="estado !== 'corriendo' && estado !== 'pausado'">
+        {{ estado === 'pausado' ? '⏵ Reanudar' : '⏸ Pausar' }}
+      </button>
+      <button type="button" class="btn" (click)="reiniciar()">↺ Reiniciar</button>
+      <button type="button" class="btn exito" (click)="finalizar()" [disabled]="estado !== 'corriendo' && estado !== 'pausado' || guardando">
+        {{ guardando ? 'Guardando...' : '■ Finalizar' }}
+      </button>
+    </div>
+  </section>
+
+  <section *ngIf="estado === 'finalizado'" class="panel resultado">
+    <p class="eyebrow">Recorrido terminado</p>
+    <h2>{{ nombreEscenario }}</h2>
+    <div class="nota" [class.aprobada]="(puntajeServidor ?? puntaje) >= 70">{{ puntajeServidor ?? puntaje }}</div>
+    <p *ngIf="puntajeServidor !== null" class="origen-puntaje">Puntaje calculado por el servidor</p>
+    <p *ngIf="puntajeServidor === null" class="origen-puntaje">Puntaje local (no guardado en el servidor)</p>
+    <div class="resumen">
+      <div><small>Tiempo</small><strong>{{ tiempo }}</strong></div>
+      <div><small>Distancia</small><strong>{{ distanciaKm | number:'1.2-2' }} km</strong></div>
+      <div><small>Vel. promedio</small><strong>{{ velocidadPromedio | number:'1.0-0' }} km/h</strong></div>
+      <div><small>Vel. máxima</small><strong>{{ velocidadMax | number:'1.0-0' }} km/h</strong></div>
+      <div><small>Colisiones</small><strong>{{ colisiones }}</strong></div>
+      <div><small>Salidas</small><strong>{{ salidasCarril }}</strong></div>
+      <div><small>Excesos</small><strong>{{ excesosVelocidad }}</strong></div>
+      <div><small>Semáforos</small><strong>{{ semaforosIgnorados }}</strong></div>
+      <div><small>Distancia</small><strong>{{ distanciaInsegura }}</strong></div>
+    </div>
+    <div *ngIf="informe" class="informe">
+      <div class="informe-head">
+        <h3>Informe de desempeño</h3>
+        <span class="origen">{{ informe.origen === 'IA_EXTERNA' ? 'IA externa' : 'IA local' }}</span>
+        <span class="riesgo" [ngClass]="informe.nivelRiesgo.toLowerCase()">Riesgo {{ informe.nivelRiesgo }}</span>
+      </div>
+      <p class="resumen-ia">{{ informe.resumen }}</p>
+      <div class="columnas">
+        <div>
+          <h4>✅ Aciertos</h4>
+          <ul><li *ngFor="let a of informe.aciertos">{{ a }}</li></ul>
+        </div>
+        <div>
+          <h4>⚠️ Errores</h4>
+          <ul *ngIf="informe.errores.length > 0"><li *ngFor="let e of informe.errores">{{ e }}</li></ul>
+          <p *ngIf="informe.errores.length === 0" class="sin-errores">Sin errores registrados.</p>
+        </div>
+      </div>
+      <h4>💡 Recomendaciones</h4>
+      <ol><li *ngFor="let r of informe.recomendaciones">{{ r }}</li></ol>
+      <p *ngIf="informe.comparacion" class="comparacion">📊 {{ informe.comparacion }}</p>
+      <p class="motivador">“{{ informe.mensajeMotivador }}”</p>
+    </div>
+    <p *ngIf="!informe" class="nota-etapa">Informe no disponible en modo local.</p>
+    <div class="acciones">
+      <button type="button" class="btn primario" (click)="reiniciar()">Conducir de nuevo</button>
+      <a routerLink="/practicas">Ver mis prácticas</a>
+    </div>
+  </section>
+</main>

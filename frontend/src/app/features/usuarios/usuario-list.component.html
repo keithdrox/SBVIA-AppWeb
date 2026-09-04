@@ -15,26 +15,25 @@
   <div class="card-grid">
     <article class="usuario-card" *ngFor="let u of usuarios">
       <div class="card-top">
-        <div class="avatar-lg" [class.inactive]="!u.activo">{{ u.nombre?.charAt(0) || '?' }}</div>
+        <div class="avatar-lg" [class.inactive]="u.cuentaBloqueada">{{ u.nombres?.charAt(0) || '?' }}</div>
         <div class="card-status">
-          <span class="badge" [ngClass]="u.activo ? 'badge-active' : 'badge-inactive'">{{ u.activo ? 'Activo' : 'Inactivo' }}</span>
+          <span class="badge" [ngClass]="u.cuentaBloqueada ? 'badge-inactive' : 'badge-active'">{{ u.cuentaBloqueada ? 'Bloqueado' : 'Activo' }}</span>
         </div>
       </div>
-      <h3>{{ u.nombre }} {{ u.apellido }}</h3>
-      <p class="card-email">{{ u.email }}</p>
+      <h3>{{ u.nombres }} {{ u.apellidos }}</h3>
+      <p class="card-email">{{ u.correo }}</p>
       <div class="card-details">
-        <span *ngIf="u.cedula">📍 {{ u.cedula }}</span>
+        <span *ngIf="u.nombreUsuario">👤 {{ u.nombreUsuario }}</span>
         <span *ngIf="u.telefono">📞 {{ u.telefono }}</span>
-        <span *ngIf="u.tipoLicencia" class="badge badge-licencia">{{ u.tipoLicencia }}</span>
       </div>
       <div class="card-role">
-        <select [ngModel]="u.rol" (ngModelChange)="cambiarRol(u, $event)" class="role-select" [disabled]="!u.activo">
+        <select [ngModel]="u.rol" (ngModelChange)="cambiarRol(u, $event)" class="role-select" [disabled]="u.cuentaBloqueada">
           <option *ngFor="let rol of rolesDisponibles" [value]="rol">{{ rol }}</option>
         </select>
       </div>
       <div class="card-actions">
-        <button class="btn-edit" title="Editar" (click)="abrirModalEditar(u)" [disabled]="!u.activo">✏️ Editar</button>
-        <button class="btn-delete" title="Desactivar" (click)="desactivarUsuario(u.id, u.nombre)" [disabled]="!u.activo">🚫 Desactivar</button>
+        <button class="btn-edit" title="Editar" (click)="abrirModalEditar(u)" [disabled]="u.cuentaBloqueada">✏️ Editar</button>
+        <button class="btn-delete" title="Desactivar" (click)="desactivarUsuario(u.id, u.nombres)" [disabled]="u.cuentaBloqueada">🚫 Desactivar</button>
       </div>
     </article>
 
@@ -62,53 +61,20 @@
       <form (ngSubmit)="guardarCambiosUsuario()" #editForm="ngForm">
         <div class="form-grid">
           <div class="form-group">
-            <label>Nombre *</label>
-            <input type="text" name="nombre" [(ngModel)]="usuarioEditando.nombre" required class="form-control">
+            <label>Nombres *</label>
+            <input type="text" name="nombres" [(ngModel)]="usuarioEditando.nombres" required class="form-control">
           </div>
           <div class="form-group">
-            <label>Apellido *</label>
-            <input type="text" name="apellido" [(ngModel)]="usuarioEditando.apellido" required class="form-control">
+            <label>Apellidos *</label>
+            <input type="text" name="apellidos" [(ngModel)]="usuarioEditando.apellidos" required class="form-control">
           </div>
           <div class="form-group">
-            <label>Email *</label>
-            <input type="email" name="email" [(ngModel)]="usuarioEditando.email" required email class="form-control">
+            <label>Correo *</label>
+            <input type="email" name="correo" [(ngModel)]="usuarioEditando.correo" required email class="form-control">
           </div>
           <div class="form-group">
             <label>Teléfono</label>
             <input type="text" name="telefono" [(ngModel)]="usuarioEditando.telefono" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>Tipo de Licencia</label>
-            <select name="tipoLicencia" [(ngModel)]="usuarioEditando.tipoLicencia" class="form-control">
-              <option [ngValue]="null">Ninguna / N/A</option>
-              <option value="A">Tipo A (Motos)</option>
-              <option value="B">Tipo B (Autos)</option>
-              <option value="C">Tipo C (Taxis/Pesados)</option>
-              <option value="D">Tipo D (Buses)</option>
-              <option value="E">Tipo E (Camiones)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Cédula</label>
-            <input type="text" name="cedula" [(ngModel)]="usuarioEditando.cedula" class="form-control" maxlength="20">
-          </div>
-          <div class="form-group">
-            <label>Tipo de Sangre</label>
-            <select name="tipoSangre" [(ngModel)]="usuarioEditando.tipoSangre" class="form-control">
-              <option [ngValue]="null">Desconocido</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Discapacidad</label>
-            <input type="text" name="discapacidad" [(ngModel)]="usuarioEditando.discapacidad" class="form-control" placeholder="Ej. Visual, Auditiva, Ninguna...">
           </div>
         </div>
         <div class="modal-footer">

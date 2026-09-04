@@ -118,7 +118,7 @@ class AuthControllerUnitTest {
                 .when(loginRateLimiter).check("10.0.0.7");
 
         LoginRequest body = new LoginRequest();
-        body.setEmail("admin@sbvia.com");
+        body.setCorreo("admin@sbvia.com");
         body.setPassword("password123");
 
         assertThatThrownBy(() -> authController.login(body, request))
@@ -135,7 +135,7 @@ class AuthControllerUnitTest {
                 .thenThrow(new org.springframework.security.authentication.BadCredentialsException("bad"));
 
         LoginRequest body = new LoginRequest();
-        body.setEmail("admin@sbvia.com");
+        body.setCorreo("admin@sbvia.com");
         body.setPassword("incorrecta");
 
         assertThatThrownBy(() -> authController.login(body, request))

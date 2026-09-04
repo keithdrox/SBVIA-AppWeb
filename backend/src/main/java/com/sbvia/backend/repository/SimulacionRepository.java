@@ -1,21 +1,15 @@
 package com.sbvia.backend.repository;
 
-import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 import com.sbvia.backend.entity.Simulacion;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
-public interface SimulacionRepository extends CrudRepository<Simulacion, Integer> {
+public interface SimulacionRepository extends JpaRepository<Simulacion, Integer> {
 
-    @Procedure(name = "Simulacion.calcularPromedio")
-    java.math.BigDecimal calcularPromedioUsuario(@Param("p_id_usuario") Integer idUsuario);
+    List<Simulacion> findByUsuario_IdUsuarioOrderByIdSimulacionDesc(Integer idUsuario);
 
-    @Procedure(name = "Simulacion.generarCodigo")
-    String generarCodigoCertificado(@Param("p_id_simulacion") Integer idSimulacion);
-
-    java.util.List<Simulacion> findByUsuario_IdUsuarioOrderByIdSimulacionDesc(Integer idUsuario);
-
-    java.util.List<Simulacion> findAllByOrderByIdSimulacionDesc();
+    List<Simulacion> findAllByOrderByIdSimulacionDesc();
 }

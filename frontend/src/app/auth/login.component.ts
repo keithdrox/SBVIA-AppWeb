@@ -12,14 +12,14 @@ import { AuthService } from './auth.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  credentials = { email: '', password: '' };
+  credentials = { correo: '', password: '' };
   errorMessage = '';
   loading = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    if (!this.credentials.email || !this.credentials.password) {
+    if (!this.credentials.correo || !this.credentials.password) {
       this.errorMessage = 'Por favor complete todos los campos';
       return;
     }

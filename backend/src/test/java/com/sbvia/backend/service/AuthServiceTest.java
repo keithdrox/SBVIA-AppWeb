@@ -30,6 +30,7 @@ class AuthServiceTest {
 
     @Mock UsuarioRepository usuarioRepository;
     @Mock RolRepository rolRepository;
+    @Mock com.sbvia.backend.repository.EstadoUsuarioRepository estadoUsuarioRepository;
     @Mock PasswordEncoder passwordEncoder;
     @Mock JwtService jwtService;
     @Mock AuthenticationManager authenticationManager;
@@ -44,36 +45,35 @@ class AuthServiceTest {
         rol = Rol.builder().idRol(1).nombre("ROLE_USER").build();
         usuario = Usuario.builder()
                 .idUsuario(9)
-                .nombre("Ana")
-                .apellido("Pérez")
-                .email("ana@sbvia.test")
-                .passwordHash("hash")
+                .nombres("Ana")
+                .apellidos("Pérez")
+                .correo("ana@sbvia.test")
+                .contrasenaHash("hash")
                 .rol(rol)
-                .estado("Activo")
-                .activo(true)
+                .cuentaBloqueada(false)
                 .build();
     }
 
     @Test
     void rechazaUnRegistroConCorreoDuplicado() {
         RegisterRequest request = registro();
-        when(usuarioRepository.existsByEmail(request.getEmail())).thenReturn(true);
+        when(usuarioRepository.existsByCorreo(request.getCorreo())).thenReturn(true);
 
         assertThatThrownBy(() -> authService.registro(request))
                 .isInstanceOf(DuplicateEmailException.class)
-                .hasMessageContaining(request.getEmail());
+                .hasMessageContaining(request.getCorreo());
         verify(usuarioRepository, never()).save(any());
     }
 
     @Test
     void rechazaUnRegistroSiFaltaElRolPredeterminado() {
         RegisterRequest request = registro();
-        when(usuarioRepository.existsByEmail(request.getEmail())).thenReturn(false);
-        when(rolRepository.findByNombre("ROLE_USER")).thenReturn(Optional.empty());
+        when(usuarioRepository.existsByCorreo(request.getCorreo())).thenReturn(false);
+        when(rolRepository.findByNombre("PARTICIPANTE")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> authService.registro(request))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("ROLE_USER");
+                .hasMessageContaining("PARTICIPANTE");
     }
 
     @Test
@@ -118,9 +118,9 @@ class AuthServiceTest {
 
     @Test
     void obtieneElUsuarioActual() {
-        when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
 
-        assertThat(authService.getUsuarioActual(usuario.getEmail()).getRol()).isEqualTo("ROLE_USER");
+        assertThat(authService.getUsuarioActual(usuario.getCorreo()).getRol()).isEqualTo("ROLE_USER");
     }
 
     @Test
@@ -139,16 +139,15 @@ class AuthServiceTest {
 
         authService.eliminarUsuario(9);
 
-        assertThat(usuario.isActivo()).isFalse();
-        assertThat(usuario.getEstado()).isEqualTo("Inactivo");
+        assertThat(usuario.isCuentaBloqueada()).isTrue();
         verify(usuarioRepository).save(usuario);
     }
 
     private RegisterRequest registro() {
         RegisterRequest request = new RegisterRequest();
-        request.setNombre("Ana");
-        request.setApellido("Pérez");
-        request.setEmail("ana@sbvia.test");
+        request.setNombres("Ana");
+        request.setApellidos("Pérez");
+        request.setCorreo("ana@sbvia.test");
         request.setPassword("Password123!");
         return request;
     }

@@ -70,8 +70,8 @@ public class EscenarioController {
      * Solo accesible por administradores.
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Crear escenario", description = "Crea un nuevo escenario. Requiere ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @Operation(summary = "Crear escenario", description = "Crea un nuevo escenario. Requiere ADMINISTRADOR")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Escenario creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
@@ -87,8 +87,8 @@ public class EscenarioController {
      * Solo accesible por administradores.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Actualizar escenario", description = "Actualiza un escenario existente. Requiere ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @Operation(summary = "Actualizar escenario", description = "Actualiza un escenario existente. Requiere ADMINISTRADOR")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Escenario actualizado"),
         @ApiResponse(responseCode = "404", description = "Escenario no encontrado"),
@@ -106,8 +106,8 @@ public class EscenarioController {
      * Solo accesible por administradores.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Eliminar escenario", description = "Soft delete de un escenario. Requiere ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @Operation(summary = "Eliminar escenario", description = "Soft delete de un escenario. Requiere ADMINISTRADOR")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Escenario eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Escenario no encontrado"),

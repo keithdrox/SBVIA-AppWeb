@@ -28,7 +28,7 @@ export class EscenarioFormComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
       descripcion: ['', [Validators.maxLength(500)]],
       tipoVia: ['', Validators.required],
-      nivelDificultad: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+      nivelDificultad: ['', Validators.required],
       clima: ['', Validators.required],
       densidadTrafico: ['', Validators.required]
     });

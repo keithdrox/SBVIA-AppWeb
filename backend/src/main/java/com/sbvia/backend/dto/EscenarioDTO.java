@@ -1,15 +1,12 @@
 package com.sbvia.backend.dto;
 
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para crear/actualizar escenarios de simulación.
- * No tiene anotaciones @Entity — separa la capa HTTP de las entidades JPA.
- */
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,30 +14,13 @@ import lombok.NoArgsConstructor;
 public class EscenarioDTO {
 
     private Integer id;
-
-    @NotBlank(message = "El nombre del escenario es obligatorio")
-    @Size(max = 255, message = "El nombre no puede exceder 255 caracteres")
     private String nombre;
-
     private String descripcion;
-
-    @NotBlank(message = "El tipo de vía es obligatorio")
-    @Pattern(regexp = "URBANA|RURAL|AUTOPISTA|MIXTA",
-             message = "El tipo de vía debe ser: URBANA, RURAL, AUTOPISTA o MIXTA")
-    private String tipoVia;
-
-    @NotNull(message = "El nivel de dificultad es obligatorio")
-    @Min(value = 1, message = "El nivel de dificultad mínimo es 1")
-    @Max(value = 5, message = "El nivel de dificultad máximo es 5")
-    private Integer nivelDificultad;
-
-    @NotBlank(message = "El clima es obligatorio")
-    @Pattern(regexp = "SOLEADO|LLUVIOSO|NUBLADO|NOCTURNO",
-             message = "El clima debe ser: SOLEADO, LLUVIOSO, NUBLADO o NOCTURNO")
-    private String clima;
-
-    @NotBlank(message = "La densidad de tráfico es obligatoria")
-    @Pattern(regexp = "BAJA|MEDIA|ALTA",
-             message = "La densidad de tráfico debe ser: BAJA, MEDIA o ALTA")
+    private BigDecimal longitudKm;
+    private Integer tiempoEstimadoMinutos;
     private String densidadTrafico;
+    private String tipoVia;
+    private String nivelDificultad;
+    private String tipoClima;
+    private boolean activo;
 }

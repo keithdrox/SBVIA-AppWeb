@@ -1,9 +1,11 @@
 package com.sbvia.backend.service;
 
 import com.sbvia.backend.dto.*;
+import com.sbvia.backend.entity.EstadoUsuario;
 import com.sbvia.backend.entity.Rol;
 import com.sbvia.backend.entity.Usuario;
 import com.sbvia.backend.exception.DuplicateEmailException;
+import com.sbvia.backend.repository.EstadoUsuarioRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
 import com.sbvia.backend.repository.RolRepository;
 import com.sbvia.backend.security.JwtService;
@@ -16,55 +18,47 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Servicio de autenticación que gestiona registro, login, logout y refresh.
- * Delega la verificación de credenciales a Spring Security AuthenticationManager
- * y la emisión de tokens a JwtService.
- */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
+    private final EstadoUsuarioRepository estadoUsuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenBlacklistService tokenBlacklistService;
 
-    /**
-     * Registra un nuevo usuario en el sistema.
-     * Verifica que el email no exista, hashea la contraseña con BCrypt
-     * y persiste en PostgreSQL via JPA.
-     */
     @Transactional
     public AuthResponse registro(RegisterRequest request) {
-        // Verificar email duplicado
-        if (usuarioRepository.existsByEmail(request.getEmail())) {
+        if (usuarioRepository.existsByCorreo(request.getCorreo())) {
             throw new DuplicateEmailException(
-                    "Ya existe un usuario registrado con el email: " + request.getEmail());
+                    "Ya existe un usuario registrado con el correo: " + request.getCorreo());
         }
 
-        // Usar el nombre canónico reconocido por las reglas de Spring Security.
-        Rol rolPorDefecto = rolRepository.findByNombre("ROLE_USER")
-                .orElseThrow(() -> new IllegalStateException("No se encontró el rol ROLE_USER"));
+        Rol rolPorDefecto = rolRepository.findByNombre("PARTICIPANTE")
+                .orElseGet(() -> rolRepository.findAll().stream()
+                        .filter(r -> r.getNombre().contains("PARTICIPANTE") || r.getNombre().contains("USER"))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("No se encontró el rol PARTICIPANTE")));
 
-        // Crear usuario con contraseña hasheada (BCrypt)
+        // id_estado_usuario es NOT NULL: toda cuenta nueva nace en estado ACTIVO.
+        EstadoUsuario estadoActivo = estadoUsuarioRepository.findByNombre("ACTIVO")
+                .orElseThrow(() -> new IllegalStateException("No se encontró el estado ACTIVO"));
+
         Usuario usuario = Usuario.builder()
-                .nombre(request.getNombre())
-                .apellido(request.getApellido())
-                .email(request.getEmail())
+                .nombres(request.getNombres())
+                .apellidos(request.getApellidos())
+                .correo(request.getCorreo())
                 .telefono(request.getTelefono())
-                .tipoLicencia(request.getTipoLicencia())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .contrasenaHash(passwordEncoder.encode(request.getPassword()))
                 .rol(rolPorDefecto)
-                .estado("Activo")
-                .activo(true)
+                .estadoUsuario(estadoActivo)
                 .build();
 
         usuario = usuarioRepository.save(usuario);
 
-        // Generar tokens
         UserDetails userDetails = buildUserDetails(usuario);
         String rolNombre = usuario.getRol().getNombre();
         String accessToken = jwtService.generateAccessToken(userDetails, usuario.getIdUsuario().longValue(), rolNombre);
@@ -79,19 +73,16 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Autentica un usuario existente.
-     */
     public AuthResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getCorreo(),
                         request.getPassword()
                 )
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+        Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo())
                 .orElseThrow();
 
         String rolNombre = usuario.getRol().getNombre();
@@ -107,9 +98,6 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Cierra sesión revocando el JTI del token en Redis.
-     */
     public void logout(String token) {
         String jti = jwtService.extractJti(token);
         long remainingMs = jwtService.getExpirationRemainingMs(token);
@@ -118,9 +106,6 @@ public class AuthService {
         }
     }
 
-    /**
-     * Emite un nuevo accessToken usando el refreshToken válido.
-     */
     public AuthResponse refresh(String refreshToken) {
         String tokenType = jwtService.extractTokenType(refreshToken);
         if (!"refresh".equals(tokenType)) {
@@ -149,25 +134,16 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Obtiene los datos del usuario autenticado.
-     */
-    public UsuarioDTO getUsuarioActual(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+    public UsuarioDTO getUsuarioActual(String correo) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         return mapToDTO(usuario);
     }
 
-    /**
-     * Lista todos los usuarios con paginación.
-     */
     public org.springframework.data.domain.Page<UsuarioDTO> listarUsuarios(org.springframework.data.domain.Pageable pageable) {
         return usuarioRepository.findAll(pageable).map(this::mapToDTO);
     }
 
-    /**
-     * Cambia el rol de un usuario existente.
-     */
     @Transactional
     public UsuarioDTO cambiarRol(Integer id, String nombreRol) {
         Usuario usuario = usuarioRepository.findById(id)
@@ -181,43 +157,31 @@ public class AuthService {
         return mapToDTO(usuario);
     }
 
-    /**
-     * Actualiza los datos de un usuario existente.
-     */
     @Transactional
     public UsuarioDTO actualizarUsuario(Integer id, ActualizarUsuarioRequest request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
 
-        // Verificar email duplicado solo si cambió
-        if (!usuario.getEmail().equalsIgnoreCase(request.getEmail())) {
-            if (usuarioRepository.existsByEmail(request.getEmail())) {
-                throw new DuplicateEmailException("Ya existe un usuario registrado con el email: " + request.getEmail());
+        if (!usuario.getCorreo().equalsIgnoreCase(request.getCorreo())) {
+            if (usuarioRepository.existsByCorreo(request.getCorreo())) {
+                throw new DuplicateEmailException("Ya existe un usuario registrado con el correo: " + request.getCorreo());
             }
-            usuario.setEmail(request.getEmail());
+            usuario.setCorreo(request.getCorreo());
         }
 
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
+        usuario.setNombres(request.getNombres());
+        usuario.setApellidos(request.getApellidos());
         usuario.setTelefono(request.getTelefono());
-        usuario.setTipoLicencia(request.getTipoLicencia());
-        usuario.setCedula(request.getCedula());
-        usuario.setTipoSangre(request.getTipoSangre());
-        usuario.setDiscapacidad(request.getDiscapacidad());
 
         usuario = usuarioRepository.save(usuario);
         return mapToDTO(usuario);
     }
 
-    /**
-     * Elimina un usuario (soft delete).
-     */
     @Transactional
     public void eliminarUsuario(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
-        usuario.setActivo(false);
-        usuario.setEstado("Inactivo");
+        usuario.setCuentaBloqueada(true);
         usuarioRepository.save(usuario);
     }
 
@@ -227,8 +191,8 @@ public class AuthService {
 
     private UserDetails buildUserDetails(Usuario usuario) {
         return new org.springframework.security.core.userdetails.User(
-                usuario.getEmail(),
-                usuario.getPasswordHash(),
+                usuario.getCorreo(),
+                usuario.getContrasenaHash(),
                 java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(
                         usuario.getRol().getNombre()))
         );
@@ -237,17 +201,13 @@ public class AuthService {
     private UsuarioDTO mapToDTO(Usuario usuario) {
         return UsuarioDTO.builder()
                 .id(usuario.getIdUsuario())
-                .nombre(usuario.getNombre())
-                .apellido(usuario.getApellido())
-                .email(usuario.getEmail())
-                .telefono(usuario.getTelefono())
-                .tipoLicencia(usuario.getTipoLicencia())
-                .cedula(usuario.getCedula())
-                .tipoSangre(usuario.getTipoSangre())
-                .discapacidad(usuario.getDiscapacidad())
+                .nombres(usuario.getNombres())
+                .apellidos(usuario.getApellidos())
+                .nombreUsuario(usuario.getNombreUsuario())
+                .correo(usuario.getCorreo())
                 .rol(usuario.getRol().getNombre())
-                .activo(usuario.isActivo())
-                .creadoEn(usuario.getCreadoEn())
+                .telefono(usuario.getTelefono())
+                .cuentaBloqueada(usuario.isCuentaBloqueada())
                 .build();
     }
 }

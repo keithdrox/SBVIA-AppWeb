@@ -12,33 +12,25 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Implementación de UserDetailsService que carga usuarios desde PostgreSQL
- * a través de UsuarioRepository (Spring Data JPA).
- * Spring Security usa este servicio para autenticar usuarios.
- */
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
 
-    /**
-     * Carga un usuario por email (usado como username en el sistema).
-     */
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        "Usuario no encontrado con email: " + email));
+                        "Usuario no encontrado con correo: " + correo));
 
-        if (!usuario.isActivo()) {
-            throw new UsernameNotFoundException("La cuenta del usuario está desactivada");
+        if (usuario.isCuentaBloqueada()) {
+            throw new UsernameNotFoundException("La cuenta del usuario está bloqueada");
         }
 
         return new User(
-                usuario.getEmail(),
-                usuario.getPasswordHash(),
+                usuario.getCorreo(),
+                usuario.getContrasenaHash(),
                 List.of(new SimpleGrantedAuthority(usuario.getRol().getNombre()))
         );
     }

@@ -37,18 +37,18 @@
             <option value="URBANA">Urbana</option>
             <option value="RURAL">Rural</option>
             <option value="AUTOPISTA">Autopista</option>
-            <option value="MIXTA">Mixta</option>
+            <option value="INTERSECCION">Intersección</option>
           </select>
         </div>
 
         <div class="form-group half-width">
-          <label for="nivelDificultad">Nivel de Dificultad (1-5)</label>
+          <label for="nivelDificultad">Nivel de Dificultad</label>
           <select id="nivelDificultad" formControlName="nivelDificultad">
-            <option [ngValue]="1">1 - Muy Fácil</option>
-            <option [ngValue]="2">2 - Fácil</option>
-            <option [ngValue]="3">3 - Intermedio</option>
-            <option [ngValue]="4">4 - Difícil</option>
-            <option [ngValue]="5">5 - Muy Difícil / Extremo</option>
+            <option value="" disabled selected>Seleccione...</option>
+            <option value="BASICO">Básico</option>
+            <option value="INTERMEDIO">Intermedio</option>
+            <option value="AVANZADO">Avanzado</option>
+            <option value="EXPERTO">Experto</option>
           </select>
         </div>
       </div>
@@ -58,10 +58,10 @@
           <label for="clima">Condición Climática</label>
           <select id="clima" formControlName="clima" [class.invalid]="escenarioForm.get('clima')?.invalid && escenarioForm.get('clima')?.touched">
             <option value="" disabled selected>Seleccione...</option>
-            <option value="SOLEADO">Soleado</option>
-            <option value="LLUVIOSO">Lluvioso</option>
-            <option value="NUBLADO">Nublado</option>
-            <option value="NOCTURNO">Nocturno</option>
+            <option value="DESPEJADO">Despejado</option>
+            <option value="LLUVIA">Lluvia</option>
+            <option value="NIEBLA">Niebla</option>
+            <option value="TORMENTA">Tormenta</option>
           </select>
         </div>
 
@@ -72,6 +72,7 @@
             <option value="BAJA">Baja</option>
             <option value="MEDIA">Media</option>
             <option value="ALTA">Alta</option>
+            <option value="MUY_ALTA">Muy alta</option>
           </select>
         </div>
       </div>

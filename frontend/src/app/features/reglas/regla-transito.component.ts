@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Escenario, EscenarioService } from '../escenarios/escenario.service';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { ReglaTransito, ReglaTransitoService } from './regla-transito.service';
 
@@ -11,27 +10,22 @@ import { ReglaTransito, ReglaTransitoService } from './regla-transito.service';
 })
 export class ReglaTransitoComponent implements OnInit {
   reglas: ReglaTransito[] = [];
-  escenarios: Escenario[] = [];
   filtro = '';
   cargando = true;
   guardando = false;
   confirmarEliminacion?: ReglaTransito;
   formulario: ReglaTransito = this.vacio();
 
-  constructor(private reglasService: ReglaTransitoService, private escenariosService: EscenarioService,
+  constructor(private reglasService: ReglaTransitoService,
               private toast: ToastService) {}
 
   ngOnInit(): void {
     this.cargar();
-    this.escenariosService.listar(0, 100).subscribe({
-      next: respuesta => this.escenarios = respuesta.content,
-      error: () => this.toast.showError('No se pudieron cargar los escenarios')
-    });
   }
 
   get filtradas(): ReglaTransito[] {
     const texto = this.filtro.trim().toLowerCase();
-    return this.reglas.filter(r => !texto || [r.nombre, r.categoria, r.nombreEscenario]
+    return this.reglas.filter(r => !texto || [r.codigo, r.nombre, r.categoria]
       .some(valor => valor?.toLowerCase().includes(texto)));
   }
 
@@ -46,7 +40,8 @@ export class ReglaTransitoComponent implements OnInit {
   cancelar(): void { this.formulario = this.vacio(); }
 
   guardar(): void {
-    if (!this.formulario.nombre.trim() || !this.formulario.categoria.trim() || !this.formulario.idEscenario) return;
+    if (!this.formulario.codigo.trim() || !this.formulario.nombre.trim()
+      || !this.formulario.categoria.trim() || this.formulario.penalizacionBase < 0) return;
     this.guardando = true;
     const operacion = this.formulario.id
       ? this.reglasService.actualizar(this.formulario.id, this.formulario)
@@ -66,5 +61,7 @@ export class ReglaTransitoComponent implements OnInit {
     });
   }
 
-  private vacio(): ReglaTransito { return { nombre: '', descripcion: '', categoria: '', idEscenario: null }; }
+  private vacio(): ReglaTransito {
+    return { codigo: '', nombre: '', descripcion: '', categoria: '', penalizacionBase: 0, activa: true };
+  }
 }

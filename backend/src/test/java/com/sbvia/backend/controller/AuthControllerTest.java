@@ -2,8 +2,10 @@ package com.sbvia.backend.controller;
 
 import com.sbvia.backend.dto.LoginRequest;
 import com.sbvia.backend.dto.RegisterRequest;
+import com.sbvia.backend.entity.EstadoUsuario;
 import com.sbvia.backend.entity.Rol;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.repository.EstadoUsuarioRepository;
 import com.sbvia.backend.repository.RolRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +46,9 @@ class AuthControllerTest {
     private RolRepository rolRepository;
 
     @Autowired
+    private EstadoUsuarioRepository estadoUsuarioRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -61,21 +66,25 @@ class AuthControllerTest {
     void setUp() {
         usuarioRepository.deleteAll();
         rolRepository.deleteAll();
-        // Persistir el Rol antes que el Usuario (relación FK)
         Rol rolTest = Rol.builder()
                 .nombre("ROLE_USER")
                 .descripcion("Alumno o conductor en práctica")
                 .build();
         rolTest = rolRepository.save(rolTest);
 
+        EstadoUsuario estadoActivo = estadoUsuarioRepository.save(EstadoUsuario.builder()
+                .nombre("ACTIVO")
+                .descripcion("Cuenta habilitada")
+                .permiteAcceso(true)
+                .build());
         testUser = Usuario.builder()
-                .nombre("Test")
-                .apellido("User")
-                .email("test@example.com")
-                .passwordHash(passwordEncoder.encode("password123"))
+                .nombres("Test")
+                .apellidos("User")
+                .correo("test@example.com")
+                .contrasenaHash(passwordEncoder.encode("password123"))
                 .rol(rolTest)
-                .estado("Activo")
-                .activo(true)
+                .estadoUsuario(estadoActivo)
+                .cuentaBloqueada(false)
                 .build();
         usuarioRepository.save(testUser);
     }
@@ -84,7 +93,7 @@ class AuthControllerTest {
     @DisplayName("Login exitoso retorna access token y oculta refresh token")
     void loginExitoso() throws Exception {
         LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
+        request.setCorreo("test@example.com");
         request.setPassword("password123");
 
         MvcResult result = mockMvc.perform(post("/api/auth/login")
@@ -102,19 +111,11 @@ class AuthControllerTest {
         assertThat(jwtService.extractNotBefore(token)).isNotNull();
     }
 
-    /**
-     * Verifica que la cookie del accessToken incluya las flags de seguridad:
-     * - HttpOnly: impide lectura desde JavaScript (mitigación XSS)
-     * - SameSite=Strict: impide que se envíe en peticiones cross-site (mitigación CSRF)
-     *
-     * Este test valida la corrección del problema señalado en la evaluación:
-     * "La cookie del JWT no es segura: solo tiene HttpOnly, sin Secure ni SameSite"
-     */
     @Test
     @DisplayName("Login: cookie accessToken tiene HttpOnly y SameSite=Strict")
     void loginCookieTieneHttpOnlyYSameSite() throws Exception {
         LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
+        request.setCorreo("test@example.com");
         request.setPassword("password123");
 
         MvcResult result = mockMvc.perform(post("/api/auth/login")
@@ -146,16 +147,14 @@ class AuthControllerTest {
     @Test
     @DisplayName("Registro: cookie accessToken tiene HttpOnly y SameSite=Strict")
     void registroCookieTieneHttpOnlyYSameSite() throws Exception {
-        // Limpiar el usuario de setUp para registrar email nuevo
         usuarioRepository.deleteAll();
 
         RegisterRequest request = new RegisterRequest();
-        request.setNombre("Nuevo");
-        request.setApellido("Conductor");
-        request.setEmail("nuevo@sbvia.com");
+        request.setNombres("Nuevo");
+        request.setApellidos("Conductor");
+        request.setCorreo("nuevo@sbvia.com");
         request.setPassword("password123");
         request.setTelefono("0999999999");
-        request.setTipoLicencia("B");
 
         MvcResult result = mockMvc.perform(post("/api/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +182,7 @@ class AuthControllerTest {
     @DisplayName("Login con clave incorrecta retorna 401")
     void loginClaveIncorrecta() throws Exception {
         LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
+        request.setCorreo("test@example.com");
         request.setPassword("wrongpassword");
 
         mockMvc.perform(post("/api/auth/login")
@@ -196,12 +195,11 @@ class AuthControllerTest {
     @DisplayName("Registro con email duplicado retorna 409 Conflict")
     void registroEmailDuplicado() throws Exception {
         RegisterRequest request = new RegisterRequest();
-        request.setNombre("Nuevo");
-        request.setApellido("User");
-        request.setEmail("test@example.com"); // Email ya existe
+        request.setNombres("Nuevo");
+        request.setApellidos("User");
+        request.setCorreo("test@example.com");
         request.setPassword("password123");
         request.setTelefono("0999999999");
-        request.setTipoLicencia("B");
 
         mockMvc.perform(post("/api/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -223,9 +221,8 @@ class AuthControllerTest {
     @Test
     @DisplayName("Acceso con token válido retorna datos del usuario")
     void accesoConTokenValido() throws Exception {
-        // 1. Obtener token
         LoginRequest loginReq = new LoginRequest();
-        loginReq.setEmail("test@example.com");
+        loginReq.setCorreo("test@example.com");
         loginReq.setPassword("password123");
 
         MvcResult result = mockMvc.perform(post("/api/auth/login")
@@ -236,18 +233,17 @@ class AuthControllerTest {
         String response = result.getResponse().getContentAsString();
         String token = objectMapper.readTree(response).get("accessToken").asText();
 
-        // 2. Acceder a endpoint protegido
         mockMvc.perform(get("/api/usuarios/me")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("test@example.com"));
+                .andExpect(jsonPath("$.correo").value("test@example.com"));
     }
 
     @Test
     @DisplayName("Usuario autenticado sin rol administrativo recibe Problem Details 403")
     void accesoSinRolAdministrativo() throws Exception {
         LoginRequest loginReq = new LoginRequest();
-        loginReq.setEmail("test@example.com");
+        loginReq.setCorreo("test@example.com");
         loginReq.setPassword("password123");
 
         MvcResult login = mockMvc.perform(post("/api/auth/login")

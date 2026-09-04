@@ -17,10 +17,10 @@ export class UsuarioListComponent implements OnInit {
   page = 0;
   size = 10;
   totalPages = 0;
-  rolesDisponibles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_INSTRUCTOR', 'ROLE_AUDITOR'];
+  rolesDisponibles = ['PARTICIPANTE', 'INSTRUCTOR', 'ADMINISTRADOR'];
 
   get usuariosActivos(): number {
-    return this.usuarios.filter(usuario => usuario.activo).length;
+    return this.usuarios.filter(usuario => !usuario.cuentaBloqueada).length;
   }
 
   // Modal de edición
@@ -63,7 +63,7 @@ export class UsuarioListComponent implements OnInit {
     if (usuario.rol === nuevoRol) return;
     
     this.abrirConfirmacion(
-      `¿Estás seguro de cambiar el rol de ${usuario.nombre} a ${nuevoRol}?`,
+      `¿Estás seguro de cambiar el rol de ${usuario.nombres} a ${nuevoRol}?`,
       () => {
         if (usuario.id !== undefined) {
           this.usuarioService.cambiarRol(usuario.id, nuevoRol).subscribe({

@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-/**
- * DTO de respuesta para datos de usuario (sin hash de contraseña).
- */
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,15 +14,11 @@ import java.time.Instant;
 public class UsuarioDTO {
 
     private Integer id;
-    private String nombre;
-    private String apellido;
-    private String email;
+    private String nombres;
+    private String apellidos;
+    private String nombreUsuario;
+    private String correo;
     private String rol;
     private String telefono;
-    private String tipoLicencia;
-    private String cedula;
-    private String tipoSangre;
-    private String discapacidad;
-    private boolean activo;
-    private Instant creadoEn;
+    private boolean cuentaBloqueada;
 }

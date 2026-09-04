@@ -1,0 +1,13 @@
+package com.sbvia.backend.repository;
+
+import com.sbvia.backend.entity.Retroalimentacion;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface RetroalimentacionRepository extends JpaRepository<Retroalimentacion, Integer> {
+
+    List<Retroalimentacion> findBySimulacion_IdSimulacion(Integer idSimulacion);
+}

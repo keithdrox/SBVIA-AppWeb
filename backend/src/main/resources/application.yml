@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: false
@@ -16,9 +16,7 @@ spring:
         format_sql: true
         default_schema: public
   flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
+    enabled: false
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -38,6 +36,16 @@ security:
     # OWASP A07: m�ximo de intentos fallidos y duraci�n del bloqueo (segundos)
     max-attempts: ${LOGIN_MAX_ATTEMPTS:5}
     lock-duration-seconds: ${LOGIN_LOCK_SECONDS:60}
+
+ia:
+  # Proveedor de retroalimentación: local (motor de reglas, por defecto) u openai
+  # (API compatible con chat completions). La clave SOLO vive en variables de
+  # entorno del backend; jamás en el frontend ni en el repositorio.
+  proveedor: ${AI_PROVEEDOR:local}
+  api-url: ${AI_API_URL:}
+  api-key: ${AI_API_KEY:}
+  modelo: ${AI_MODELO:gpt-4o-mini}
+  timeout-segundos: ${AI_TIMEOUT_SEGUNDOS:15}
 
 springdoc:
   api-docs:
