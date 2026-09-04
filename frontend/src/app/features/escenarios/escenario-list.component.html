@@ -25,7 +25,7 @@
         <a class="btn-practicar" [routerLink]="['/simulacion', esc.id]">Iniciar práctica →</a>
         <div class="admin-actions" *ngIf="isAdmin">
           <a class="btn-icon" title="Editar" [routerLink]="['/escenarios/editar', esc.id]">✏️</a>
-          <button class="btn-icon" title="Eliminar" (click)="eliminar(esc.id)">🗑️</button>
+          <button class="btn-icon" title="Eliminar" (click)="solicitarEliminacion(esc)">🗑️</button>
         </div>
       </div>
     </article>
@@ -39,5 +39,17 @@
     <button [disabled]="page === 0" (click)="cambiarPagina(page - 1)">← Anterior</button>
     <span>Página {{ page + 1 }} de {{ totalPages }}</span>
     <button [disabled]="page === totalPages - 1" (click)="cambiarPagina(page + 1)">Siguiente →</button>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="escenarioAEliminar" (click)="cancelarEliminacion()">
+    <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="titulo-confirmacion" (click)="$event.stopPropagation()">
+      <div class="warning-icon">!</div>
+      <h2 id="titulo-confirmacion">Eliminar escenario</h2>
+      <p>¿Deseas eliminar <strong>{{ escenarioAEliminar.nombre }}</strong>? Dejará de aparecer para los conductores, pero su historial se conservará.</p>
+      <div class="dialog-actions">
+        <button type="button" class="btn-cancel" (click)="cancelarEliminacion()" [disabled]="eliminando">Cancelar</button>
+        <button type="button" class="btn-delete" (click)="confirmarEliminacion()" [disabled]="eliminando">{{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}</button>
+      </div>
+    </section>
   </div>
 </div>
