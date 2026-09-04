@@ -28,7 +28,8 @@ export class UsuarioService {
   listar(page: number = 0, size: number = 10): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
-      .set('size', size.toString());
+      .set('size', size.toString())
+      .set('sort', 'idUsuario,desc');
     return this.http.get(this.API_URL, { params });
   }
 
