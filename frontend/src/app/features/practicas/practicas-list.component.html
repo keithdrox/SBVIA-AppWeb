@@ -1,12 +1,27 @@
 <div class="practicas-container">
   <header class="practicas-header">
-    <h2>Mis Prácticas</h2>
+    <div><span class="eyebrow">Entrenamiento vial</span><h2>Centro de prácticas</h2><p>Selecciona un escenario, realiza el recorrido y guarda tu evaluación.</p></div>
     <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
   </header>
+
+  <section class="iniciar-panel">
+    <div class="pasos">
+      <span class="paso activo">1</span><div><strong>Elige un escenario</strong><small>Selecciona el entorno y su dificultad</small></div>
+      <span class="separador"></span><span class="paso">2</span><div><strong>Realiza la práctica</strong><small>Registra las decisiones del recorrido</small></div>
+      <span class="separador"></span><span class="paso">3</span><div><strong>Consulta el resultado</strong><small>Recibe puntaje y retroalimentación</small></div>
+    </div>
+    <div class="selector-practica">
+      <label>Escenario disponible<select [(ngModel)]="idEscenarioSeleccionado" [disabled]="cargandoEscenarios"><option [ngValue]="null">Selecciona un escenario</option><option *ngFor="let escenario of escenarios" [ngValue]="escenario.id">{{ escenario.nombre }}</option></select></label>
+      <div class="detalle" *ngIf="escenarioSeleccionado as escenario"><span>{{ escenario.tipoVia }}</span><span>Nivel {{ escenario.nivelDificultad }}/5</span><span>{{ escenario.clima }}</span><span>Tráfico {{ escenario.densidadTrafico }}</span><p>{{ escenario.descripcion }}</p></div>
+      <a class="btn-iniciar" [class.disabled]="!idEscenarioSeleccionado" [attr.aria-disabled]="!idEscenarioSeleccionado" [routerLink]="idEscenarioSeleccionado ? ['/simulacion', idEscenarioSeleccionado] : null"><span>▶</span> Iniciar práctica ahora</a>
+    </div>
+    <p class="sin-escenarios" *ngIf="!cargandoEscenarios && escenarios.length === 0">No existen escenarios activos para comenzar una práctica.</p>
+  </section>
 
   <div *ngIf="loading" class="loading">Cargando...</div>
   <div *ngIf="error" class="error-msg">{{ error }}</div>
 
+  <h3 class="historial-title">Historial y progreso</h3>
   <section *ngIf="!loading && !error && practicas.length" class="resumen" aria-label="Resumen de rendimiento">
     <article><strong>{{ practicas.length }}</strong><span>Prácticas</span></article>
     <article><strong>{{ promedio }}</strong><span>Promedio</span></article>

@@ -15,7 +15,10 @@
 .practicas-header h2 {
   font-size: 1.8rem;
   color: #333;
+  margin: .3rem 0;
 }
+.practicas-header p{margin:0;color:#68758a}.eyebrow{color:#2563eb;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.iniciar-panel{padding:1.4rem;margin-bottom:2rem;border-radius:16px;background:linear-gradient(135deg,#102a56,#174a92);color:#fff;box-shadow:0 14px 35px #173f7a2b}.pasos{display:flex;align-items:center;gap:.65rem;margin-bottom:1.3rem}.pasos div{display:flex;flex-direction:column}.pasos small{color:#c6d7f2}.paso{width:30px;height:30px;display:grid;place-items:center;border:1px solid #8eb4ec;border-radius:50%;font-weight:800}.paso.activo{background:#fff;color:#174a92}.separador{height:1px;min-width:25px;flex:1;background:#6f94c8}.selector-practica{display:grid;grid-template-columns:1.2fr 2fr auto;gap:1rem;align-items:end;padding:1rem;border-radius:12px;background:#ffffff12}.selector-practica label{display:flex;flex-direction:column;gap:.4rem;font-size:.8rem;font-weight:700}.selector-practica select{padding:.75rem;border:0;border-radius:8px;background:#fff;color:#172033}.detalle{display:flex;gap:.45rem;flex-wrap:wrap}.detalle span{padding:.3rem .5rem;border-radius:999px;background:#ffffff22;font-size:.72rem;font-weight:700}.detalle p{width:100%;margin:.25rem 0 0;color:#dbe8fb;font-size:.85rem}.btn-iniciar{display:flex;align-items:center;gap:.45rem;padding:.8rem 1rem;border-radius:9px;background:#22c55e;color:#082b16;text-decoration:none;font-weight:800;white-space:nowrap}.btn-iniciar.disabled{opacity:.5;pointer-events:none}.sin-escenarios{margin:1rem 0 0;color:#ffe0e0}.historial-title{margin:0 0 1rem;color:#27364b}
 
 .btn-secondary {
   padding: 0.6rem 1.2rem;
@@ -101,3 +104,4 @@
   .practicas-header { align-items: flex-start; gap: 1rem; }
   .resumen { grid-template-columns: 1fr; }
 }
+@media(max-width:900px){.pasos{align-items:flex-start;flex-direction:column}.separador{display:none}.selector-practica{grid-template-columns:1fr}.btn-iniciar{justify-content:center}}
