@@ -15,5 +15,7 @@ public interface SimulacionRepository extends CrudRepository<Simulacion, Integer
     @Procedure(name = "Simulacion.generarCodigo")
     String generarCodigoCertificado(@Param("p_id_simulacion") Integer idSimulacion);
 
-    java.util.List<Simulacion> findByUsuario_IdUsuario(Integer idUsuario);
+    java.util.List<Simulacion> findByUsuario_IdUsuarioOrderByIdSimulacionDesc(Integer idUsuario);
+
+    java.util.List<Simulacion> findAllByOrderByIdSimulacionDesc();
 }

@@ -17,7 +17,6 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +66,8 @@ public class SimulacionService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        List<Simulacion> simulaciones = simulacionRepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
+        List<Simulacion> simulaciones = simulacionRepository
+                .findByUsuario_IdUsuarioOrderByIdSimulacionDesc(usuario.getIdUsuario());
 
         return simulaciones.stream()
                 .map(this::mapToDTO)
@@ -75,7 +75,7 @@ public class SimulacionService {
     }
 
     public List<SimulacionDTO> obtenerTodas() {
-        return StreamSupport.stream(simulacionRepository.findAll().spliterator(), false)
+        return simulacionRepository.findAllByOrderByIdSimulacionDesc().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }

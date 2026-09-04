@@ -126,7 +126,7 @@ class SimulacionServiceTest {
                 .build();
 
         when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
-        when(simulacionRepository.findByUsuario_IdUsuario(7)).thenReturn(List.of(simulacion));
+        when(simulacionRepository.findByUsuario_IdUsuarioOrderByIdSimulacionDesc(7)).thenReturn(List.of(simulacion));
 
         List<SimulacionDTO> resultado = simulacionService.obtenerMisPracticas(usuario.getEmail());
 
@@ -155,7 +155,7 @@ class SimulacionServiceTest {
                 .idSimulacion(15)
                 .estado("Pendiente")
                 .build();
-        when(simulacionRepository.findAll()).thenReturn(List.of(simulacion));
+        when(simulacionRepository.findAllByOrderByIdSimulacionDesc()).thenReturn(List.of(simulacion));
 
         List<SimulacionDTO> resultado = simulacionService.obtenerTodas();
 

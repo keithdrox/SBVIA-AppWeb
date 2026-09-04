@@ -260,7 +260,8 @@ class RepositoryIntegrationTest {
                 .escenario(escenario)
                 .build());
 
-        List<Simulacion> simulaciones = simulacionRepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
+        List<Simulacion> simulaciones = simulacionRepository
+                .findByUsuario_IdUsuarioOrderByIdSimulacionDesc(usuario.getIdUsuario());
 
         assertThat(simulaciones).hasSize(2);
         assertThat(simulaciones)
