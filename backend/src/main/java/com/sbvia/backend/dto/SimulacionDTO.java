@@ -20,4 +20,7 @@ public class SimulacionDTO {
     private BigDecimal puntajeFinal;
     private Integer idEscenario;
     private String nombreEscenario;
+    private Integer idUsuario;
+    private String nombreUsuario;
+    private String emailUsuario;
 }

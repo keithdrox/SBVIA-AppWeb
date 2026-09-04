@@ -135,6 +135,8 @@ class SimulacionServiceTest {
             assertThat(dto.getIdEscenario()).isEqualTo(3);
             assertThat(dto.getNombreEscenario()).isEqualTo("Intersección urbana");
             assertThat(dto.getPuntajeFinal()).isEqualByComparingTo("92.50");
+            assertThat(dto.getIdUsuario()).isEqualTo(7);
+            assertThat(dto.getEmailUsuario()).isEqualTo("conductor@sbvia.test");
         });
     }
 

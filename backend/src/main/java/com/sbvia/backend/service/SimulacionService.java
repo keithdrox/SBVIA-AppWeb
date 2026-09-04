@@ -89,6 +89,11 @@ public class SimulacionService {
                 .puntajeFinal(simulacion.getPuntajeFinal())
                 .idEscenario(simulacion.getEscenario() != null ? simulacion.getEscenario().getIdEscenario() : null)
                 .nombreEscenario(simulacion.getEscenario() != null ? simulacion.getEscenario().getNombre() : "N/A")
+                .idUsuario(simulacion.getUsuario() != null ? simulacion.getUsuario().getIdUsuario() : null)
+                .nombreUsuario(simulacion.getUsuario() != null
+                        ? simulacion.getUsuario().getNombre() + " " + simulacion.getUsuario().getApellido()
+                        : "N/A")
+                .emailUsuario(simulacion.getUsuario() != null ? simulacion.getUsuario().getEmail() : null)
                 .build();
     }
 }

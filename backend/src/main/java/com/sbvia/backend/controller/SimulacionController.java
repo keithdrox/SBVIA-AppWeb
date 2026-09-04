@@ -56,8 +56,8 @@ public class SimulacionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Obtener todas las simulaciones", description = "Devuelve todas las simulaciones (requiere ROLE_ADMIN)")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_INSTRUCTOR', 'ROLE_AUDITOR')")
+    @Operation(summary = "Obtener todas las simulaciones", description = "Devuelve todas las simulaciones para supervisión de administradores, instructores y auditores")
     public ResponseEntity<List<SimulacionDTO>> obtenerTodas() {
         List<SimulacionDTO> practicas = simulacionService.obtenerTodas();
         return ResponseEntity.ok(practicas);
