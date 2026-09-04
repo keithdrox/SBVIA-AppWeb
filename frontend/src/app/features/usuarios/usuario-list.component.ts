@@ -19,6 +19,10 @@ export class UsuarioListComponent implements OnInit {
   totalPages = 0;
   rolesDisponibles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_INSTRUCTOR', 'ROLE_AUDITOR'];
 
+  get usuariosActivos(): number {
+    return this.usuarios.filter(usuario => usuario.activo).length;
+  }
+
   // Modal de edición
   mostrarModal = false;
   usuarioEditando: Partial<Usuario> = {};
