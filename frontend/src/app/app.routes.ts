@@ -20,6 +20,8 @@ export const routes: Routes = [
       { path: 'usuarios', loadComponent: () => import('./features/usuarios/usuario-list.component').then(m => m.UsuarioListComponent), canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN'] } },
       { path: 'practicas', loadComponent: () => import('./features/practicas/practicas-list.component').then(m => m.PracticasListComponent) },
       { path: 'simulacion/:idEscenario', loadComponent: () => import('./features/practicas/simulacion.component').then(m => m.SimulacionComponent) },
+      { path: 'instructor', loadComponent: () => import('./features/supervision/supervision.component').then(m => m.SupervisionComponent), canActivate: [roleGuard], data: { roles: ['ROLE_INSTRUCTOR', 'ROLE_ADMIN'] } },
+      { path: 'auditoria', loadComponent: () => import('./features/supervision/supervision.component').then(m => m.SupervisionComponent), canActivate: [roleGuard], data: { roles: ['ROLE_AUDITOR', 'ROLE_ADMIN'] } },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
     ]
   },

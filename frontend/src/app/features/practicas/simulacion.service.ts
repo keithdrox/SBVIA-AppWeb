@@ -15,6 +15,10 @@ export class SimulacionService {
     return this.http.get<Simulacion[]>(`${this.apiUrl}/mis-practicas`);
   }
 
+  getTodas(): Observable<Simulacion[]> {
+    return this.http.get<Simulacion[]>(this.apiUrl);
+  }
+
   iniciar(idEscenario: number): Observable<Simulacion> {
     return this.http.post<Simulacion>(`${this.apiUrl}/iniciar/${idEscenario}`, {});
   }

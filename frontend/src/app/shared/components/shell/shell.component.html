@@ -21,6 +21,8 @@
         <span class="nav-icon">★</span>
         <span class="nav-label" *ngIf="sidebarAbierto">Usuarios</span>
       </a>
+      <a *ngIf="usuario?.rol === 'ROLE_INSTRUCTOR' || usuario?.rol === 'ROLE_ADMIN'" routerLink="/instructor" routerLinkActive="active" class="nav-item"><span class="nav-icon">♙</span><span class="nav-label" *ngIf="sidebarAbierto">Instructor</span></a>
+      <a *ngIf="usuario?.rol === 'ROLE_AUDITOR' || usuario?.rol === 'ROLE_ADMIN'" routerLink="/auditoria" routerLinkActive="active" class="nav-item"><span class="nav-icon">◎</span><span class="nav-label" *ngIf="sidebarAbierto">Auditoría</span></a>
     </nav>
     <div class="sidebar-footer">
       <button type="button" class="nav-item" (click)="logout()">
@@ -36,7 +38,7 @@
       <div class="account">
         <div class="account-info">
           <strong>{{ usuario?.nombre }}</strong>
-          <small>{{ usuario?.rol === 'ROLE_ADMIN' ? 'Administrador' : 'Conductor' }}</small>
+          <small>{{ usuario?.rol === 'ROLE_ADMIN' ? 'Administrador' : usuario?.rol === 'ROLE_INSTRUCTOR' ? 'Instructor' : usuario?.rol === 'ROLE_AUDITOR' ? 'Auditor' : 'Conductor' }}</small>
         </div>
         <span class="avatar">{{ usuario?.nombre?.charAt(0) || 'U' }}</span>
       </div>

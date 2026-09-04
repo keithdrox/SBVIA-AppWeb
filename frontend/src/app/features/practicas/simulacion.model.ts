@@ -6,4 +6,7 @@ export interface Simulacion {
   puntajeFinal: number;
   idEscenario?: number;
   nombreEscenario: string;
+  idUsuario?: number;
+  nombreUsuario?: string;
+  emailUsuario?: string;
 }

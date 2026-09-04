@@ -1,0 +1,23 @@
+<div class="supervision-page">
+  <header class="page-header">
+    <div><span class="eyebrow">{{ esAuditor ? 'Control y cumplimiento' : 'Seguimiento académico' }}</span><h1>{{ esAuditor ? 'Auditoría de prácticas' : 'Panel del instructor' }}</h1><p>{{ esAuditor ? 'Consulta los resultados registrados sin modificar la información.' : 'Supervisa el desempeño de los conductores y detecta oportunidades de mejora.' }}</p></div>
+    <span *ngIf="esAuditor" class="readonly">Solo lectura</span>
+  </header>
+
+  <section class="stats">
+    <article><span>▣</span><div><small>Prácticas</small><strong>{{ practicas.length }}</strong></div></article>
+    <article><span>♙</span><div><small>Conductores</small><strong>{{ conductores }}</strong></div></article>
+    <article><span>★</span><div><small>Promedio</small><strong>{{ promedio }}/100</strong></div></article>
+    <article><span>✓</span><div><small>Aprobadas</small><strong>{{ aprobadas }}</strong></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="filters"><label><span>Buscar</span><input [(ngModel)]="filtro" placeholder="Conductor, correo o escenario"></label><label><span>Estado</span><select [(ngModel)]="estado"><option value="">Todos</option><option value="EN_PROGRESO">En progreso</option><option value="APROBADA">Aprobada</option><option value="REPROBADA">Reprobada</option></select></label></div>
+    <div *ngIf="cargando" class="message">Cargando prácticas...</div>
+    <div *ngIf="error" class="message error">{{ error }}</div>
+    <div class="table-wrap" *ngIf="!cargando && !error">
+      <table><thead><tr><th>Conductor</th><th>Escenario</th><th>Inicio</th><th>Estado</th><th>Puntaje</th></tr></thead>
+      <tbody><tr *ngFor="let practica of filtradas"><td><strong>{{ practica.nombreUsuario || 'Sin nombre' }}</strong><small>{{ practica.emailUsuario }}</small></td><td>{{ practica.nombreEscenario }}</td><td>{{ practica.fechaInicio | date:'dd/MM/yyyy' }}</td><td><span class="badge" [class.success]="practica.estado === 'APROBADA'" [class.danger]="practica.estado === 'REPROBADA'">{{ practica.estado }}</span></td><td><strong>{{ practica.puntajeFinal }}/100</strong></td></tr><tr *ngIf="filtradas.length === 0"><td colspan="5" class="empty">No existen prácticas que coincidan con los filtros.</td></tr></tbody></table>
+    </div>
+  </section>
+</div>
