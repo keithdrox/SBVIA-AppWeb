@@ -18,6 +18,7 @@ export const routes: Routes = [
       { path: 'escenarios/nuevo', loadComponent: () => import('./features/escenarios/escenario-form.component').then(m => m.EscenarioFormComponent), canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN'] } },
       { path: 'escenarios/editar/:id', loadComponent: () => import('./features/escenarios/escenario-form.component').then(m => m.EscenarioFormComponent), canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN'] } },
       { path: 'usuarios', loadComponent: () => import('./features/usuarios/usuario-list.component').then(m => m.UsuarioListComponent), canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN'] } },
+      { path: 'reglas-transito', loadComponent: () => import('./features/reglas/regla-transito.component').then(m => m.ReglaTransitoComponent), canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN'] } },
       { path: 'practicas', loadComponent: () => import('./features/practicas/practicas-list.component').then(m => m.PracticasListComponent) },
       { path: 'simulacion/:idEscenario', loadComponent: () => import('./features/practicas/simulacion.component').then(m => m.SimulacionComponent) },
       { path: 'instructor', loadComponent: () => import('./features/supervision/supervision.component').then(m => m.SupervisionComponent), canActivate: [roleGuard], data: { roles: ['ROLE_INSTRUCTOR', 'ROLE_ADMIN'] } },

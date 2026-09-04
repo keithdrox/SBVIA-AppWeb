@@ -21,6 +21,7 @@
         <span class="nav-icon">★</span>
         <span class="nav-label" *ngIf="sidebarAbierto">Usuarios</span>
       </a>
+      <a *ngIf="usuario?.rol === 'ROLE_ADMIN'" routerLink="/reglas-transito" routerLinkActive="active" class="nav-item"><span class="nav-icon">⚑</span><span class="nav-label" *ngIf="sidebarAbierto">Reglas de tránsito</span></a>
       <a *ngIf="usuario?.rol === 'ROLE_INSTRUCTOR' || usuario?.rol === 'ROLE_ADMIN'" routerLink="/instructor" routerLinkActive="active" class="nav-item"><span class="nav-icon">♙</span><span class="nav-label" *ngIf="sidebarAbierto">Instructor</span></a>
       <a *ngIf="usuario?.rol === 'ROLE_AUDITOR' || usuario?.rol === 'ROLE_ADMIN'" routerLink="/auditoria" routerLinkActive="active" class="nav-item"><span class="nav-icon">◎</span><span class="nav-label" *ngIf="sidebarAbierto">Auditoría</span></a>
     </nav>
