@@ -13,7 +13,9 @@ import com.sbvia.backend.entity.Simulacion;
 import com.sbvia.backend.entity.TipoClima;
 import com.sbvia.backend.entity.TipoMetrica;
 import com.sbvia.backend.entity.TipoVia;
+import com.sbvia.backend.entity.TipoVehiculo;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.entity.Vehiculo;
 import com.sbvia.backend.repository.InfraccionRepository;
 import com.sbvia.backend.repository.MetricaDesempenoRepository;
 import jakarta.persistence.EntityManager;
@@ -69,8 +71,16 @@ class SimulacionConduccionIntegracionTest {
                 .nombre("Pista IT").densidadTrafico("MEDIA")
                 .tipoVia(via).nivelDificultad(nivel).tipoClima(clima).build();
         entityManager.persist(escenario);
+        TipoVehiculo tipoVehiculo = TipoVehiculo.builder()
+                .nombre("AUTOMOVIL").licenciaRequerida("B").build();
+        entityManager.persist(tipoVehiculo);
+        Vehiculo vehiculo = Vehiculo.builder()
+                .nombre("Vehículo IT").transmision("MANUAL")
+                .tipoVehiculo(tipoVehiculo).build();
+        entityManager.persist(vehiculo);
         Simulacion simulacion = Simulacion.builder()
-                .usuario(usuario).escenario(escenario).puntajeFinal(BigDecimal.ZERO).build();
+                .usuario(usuario).escenario(escenario).vehiculo(vehiculo)
+                .puntajeFinal(BigDecimal.ZERO).build();
         entityManager.persist(simulacion);
         entityManager.persist(EstadoSimulacion.builder().nombre("COMPLETADA").build());
         entityManager.persist(TipoMetrica.builder().nombre("VELOCIDAD_PROMEDIO").build());

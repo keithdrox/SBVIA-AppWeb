@@ -8,6 +8,8 @@ import com.sbvia.backend.entity.TipoVia;
 import com.sbvia.backend.entity.NivelDificultad;
 import com.sbvia.backend.entity.TipoClima;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.entity.TipoVehiculo;
+import com.sbvia.backend.entity.Vehiculo;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -160,6 +162,13 @@ class RepositoryIntegrationTest {
                 .densidadTrafico("Baja")
                 .activo(true)
                 .build());
+        TipoVehiculo tipoVehiculo = TipoVehiculo.builder()
+                .nombre("AUTOMOVIL").licenciaRequerida("B").build();
+        entityManager.persist(tipoVehiculo);
+        Vehiculo vehiculo = Vehiculo.builder()
+                .nombre("Vehículo de prueba").transmision("MANUAL")
+                .tipoVehiculo(tipoVehiculo).build();
+        entityManager.persist(vehiculo);
 
         simulacionRepository.save(Simulacion.builder()
                 .fechaInicio(LocalDate.now())
@@ -168,6 +177,7 @@ class RepositoryIntegrationTest {
                 .puntajeFinal(new BigDecimal("8.5"))
                 .usuario(usuario)
                 .escenario(escenario)
+                .vehiculo(vehiculo)
                 .build());
         simulacionRepository.save(Simulacion.builder()
                 .fechaInicio(LocalDate.now())
@@ -175,6 +185,7 @@ class RepositoryIntegrationTest {
                 .puntajeFinal(new BigDecimal("0.0"))
                 .usuario(usuario)
                 .escenario(escenario)
+                .vehiculo(vehiculo)
                 .build());
 
         List<Simulacion> simulaciones = simulacionRepository

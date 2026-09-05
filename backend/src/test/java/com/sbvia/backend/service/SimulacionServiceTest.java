@@ -14,6 +14,7 @@ import com.sbvia.backend.entity.ReglaTransito;
 import com.sbvia.backend.entity.Simulacion;
 import com.sbvia.backend.entity.TipoMetrica;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.entity.Vehiculo;
 import com.sbvia.backend.repository.EstadoSimulacionRepository;
 import com.sbvia.backend.repository.InfraccionRepository;
 import com.sbvia.backend.repository.MetricaDesempenoRepository;
@@ -24,6 +25,7 @@ import com.sbvia.backend.repository.SimulacionRepository;
 import com.sbvia.backend.repository.EscenarioRepository;
 import com.sbvia.backend.repository.TipoMetricaRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
+import com.sbvia.backend.repository.VehiculoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -74,6 +76,9 @@ class SimulacionServiceTest {
     private SesionEntrenamientoRepository sesionEntrenamientoRepository;
 
     @Mock
+    private VehiculoRepository vehiculoRepository;
+
+    @Mock
     private RetroalimentacionService retroalimentacionService;
 
     @InjectMocks
@@ -83,8 +88,13 @@ class SimulacionServiceTest {
     void iniciaUnaSimulacionParaElUsuarioAutenticado() {
         Usuario usuario = Usuario.builder().idUsuario(7).correo("conductor@sbvia.test").build();
         Escenario escenario = Escenario.builder().idEscenario(3).nombre("Intersección urbana").activo(true).build();
+        EstadoSimulacion enProgreso = EstadoSimulacion.builder()
+                .idEstadoSimulacion(2).nombre("EN_PROGRESO").build();
+        Vehiculo vehiculo = Vehiculo.builder().idVehiculo(1).nombre("Vehículo de práctica").activo(true).build();
         when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
         when(escenarioRepository.findById(3)).thenReturn(Optional.of(escenario));
+        when(estadoSimulacionRepository.findByNombre("EN_PROGRESO")).thenReturn(Optional.of(enProgreso));
+        when(vehiculoRepository.findFirstByActivoTrueOrderByIdVehiculoAsc()).thenReturn(Optional.of(vehiculo));
         when(sesionEntrenamientoRepository.save(any(SesionEntrenamiento.class)))
                 .thenAnswer(invocacion -> invocacion.getArgument(0));
         when(simulacionRepository.save(any(Simulacion.class))).thenAnswer(invocacion -> {
@@ -99,6 +109,8 @@ class SimulacionServiceTest {
         assertThat(resultado.getPuntajeFinal()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(resultado.getFechaInicio()).isEqualTo(LocalDate.now());
         assertThat(resultado.getIdEscenario()).isEqualTo(3);
+        org.mockito.Mockito.verify(simulacionRepository).save(org.mockito.ArgumentMatchers.argThat(simulacion ->
+                simulacion.getEstadoSimulacion() == enProgreso && simulacion.getVehiculo() == vehiculo));
     }
 
     @Test
