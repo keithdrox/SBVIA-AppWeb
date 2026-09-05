@@ -6,7 +6,7 @@ module.exports = {
     collect: {
       url: [`${baseUrl}/login`, `${baseUrl}/registro`],
       numberOfRuns: 3,
-      settings: { preset },
+      settings: preset === 'desktop' ? { preset: 'desktop' } : {},
     },
     assert: {
       assertions: {
