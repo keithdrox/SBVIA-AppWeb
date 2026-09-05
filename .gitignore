@@ -31,3 +31,5 @@ frontend/.angular/
 # Herramientas y resultados temporales locales
 .tmp-tools/
 zap-results/
+# Archivos temporales generados durante validaciones locales
+/tmp/

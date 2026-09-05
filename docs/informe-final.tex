@@ -604,4 +604,249 @@ OBS-12 & 3 & R1 & Reproducibilidad make all & Automatización end-to-end con Doc
 \end{tabularx}
 \end{table}
 
+\chapter{Protocolo de Verificación Técnica Final}
+\label{anexo:verificacion-final}
+
+Este anexo define un procedimiento repetible para decidir si una versión de SBVIA
+puede entregarse. Su propósito es evitar que la aceptación dependa de una captura
+aislada o de una instalación que ya contenga datos preparados manualmente. La
+reproducibilidad exige conservar código, configuración, entradas y resultados
+suficientes para repetir cada conclusión \cite{peng2011reproducible,sandve2013ten}.
+Por ello, cada ejecución debe registrar fecha UTC, sistema operativo, versiones de
+Docker, Java y Node, hash completo del commit y resultado de cada comprobación.
+
+\section{Instalación desde una base vacía}
+
+La prueba comienza con una base PostgreSQL 16 sin tablas. Al iniciar el backend,
+Flyway debe validar y aplicar dos migraciones: V1 construye el modelo relacional
+actual y V2 carga únicamente catálogos operativos. La primera migración incluye
+claves primarias, claves foráneas, restricciones, índices, vistas y funciones de
+integridad. La segunda incorpora roles, estados, tipos de vía, dificultad, clima,
+vehículo, reglas de tránsito, niveles de gravedad y tipos de métrica. Esta separación
+permite distinguir la estructura estable de los datos mínimos necesarios para que
+una persona pueda registrarse e iniciar una simulación.
+
+La aceptación requiere observar dos filas exitosas en
+\texttt{flyway\_schema\_history}, el arranque completo del contexto de Spring y una
+respuesta saludable en \texttt{/actuator/health}. Después se registra una cuenta de
+participante y se verifica que el rol y el estado se resuelvan desde los catálogos,
+sin enviar identificadores internos desde el navegador. Finalmente se consulta el
+listado de escenarios y se inicia una práctica. Estas operaciones comprueban que la
+base recién creada no solo contiene tablas, sino que satisface las relaciones que
+usa el código.
+
+\section{Actualización de una instalación existente}
+
+Una instalación con tablas anteriores al uso de Flyway no debe volver a ejecutar
+la creación del esquema. La configuración utiliza una línea base en la versión 2:
+Flyway crea su historial, reconoce el estado existente y reserva las versiones
+posteriores para cambios incrementales. La comprobación se realiza sobre una copia
+temporal de la base y nunca sobre el único volumen con datos. El backend debe iniciar
+sin alterar la cantidad de usuarios, escenarios, simulaciones ni retroalimentaciones.
+Este control reduce el riesgo de una actualización destructiva y aplica el principio
+de cambios pequeños y reversibles recomendado para sistemas de datos
+\cite{kleppmann2017designing}.
+
+\begin{table}[htbp]
+\centering
+\caption{Criterios de aceptación de instalación y actualización}
+\begin{tabularx}{\textwidth}{p{3.1cm}X p{3.2cm}}
+\toprule
+\textbf{Prueba} & \textbf{Evidencia esperada} & \textbf{Criterio} \\
+\midrule
+Base vacía & V1 y V2 registradas por Flyway & Dos migraciones exitosas \\
+Modelo JPA & Inicio del EntityManagerFactory & Sin error de validación \\
+Catálogos & Roles, estados, escenario y vehículo & Registros disponibles \\
+Base existente & Línea base V2 sobre copia temporal & Datos conservados \\
+Salud & Respuesta del Actuator & Estado UP \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Flujo funcional de extremo a extremo}
+
+El flujo de aceptación representa el uso principal del sistema. El participante
+inicia sesión, recibe un token de acceso y una cookie de renovación protegida, carga
+los escenarios, obtiene el token CSRF, inicia una simulación, conduce y envía las
+métricas finales. El servidor identifica al usuario mediante el JWT y calcula el
+puntaje; el cliente no decide ni puede sobrescribir el resultado. La respuesta final
+incluye nivel de riesgo, origen de la retroalimentación y recomendaciones. Una
+consulta posterior debe devolver el mismo informe persistido.
+
+También se ejecutan dos casos negativos. Una operación de escritura sin el
+encabezado CSRF debe responder 403, y las métricas fuera de rango deben responder
+400. La distinción demuestra que el sistema separa falta de autorización de datos
+inválidos. Esta práctica sigue el uso semántico de HTTP y reduce respuestas ambiguas
+en una API REST \cite{fielding2000architectural}.
+
+\begin{table}[htbp]
+\centering
+\caption{Secuencia mínima de aceptación funcional}
+\begin{tabularx}{\textwidth}{p{1.1cm}p{4.2cm}X p{1.6cm}}
+\toprule
+\textbf{Paso} & \textbf{Operación} & \textbf{Validación} & \textbf{HTTP} \\
+\midrule
+1 & Inicio de sesión & Token y sesión válidos & 200 \\
+2 & Listar escenarios & Cookie XSRF y contenido paginado & 200 \\
+3 & Iniciar simulación & Usuario tomado del JWT & 200 \\
+4 & Finalizar conducción & Puntaje calculado y datos persistidos & 200 \\
+5 & Leer retroalimentación & Coincide con el informe generado & 200 \\
+6 & Escritura sin CSRF & Operación rechazada & 403 \\
+7 & Métricas inválidas & Detalle de validación & 400 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Modelo de Amenazas y Controles de Seguridad}
+\label{anexo:modelo-amenazas}
+
+El análisis de seguridad se organiza alrededor de activos, fronteras de confianza,
+amenazas y controles verificables. Los activos principales son las credenciales, los
+tokens, los datos personales de cuenta, el historial de prácticas, los puntajes y la
+configuración del proveedor de IA. Las fronteras aparecen entre navegador y Nginx,
+Nginx y API, API y PostgreSQL, API y Redis, y API y el proveedor externo opcional.
+OWASP Top 10 se utiliza como catálogo de riesgos, no como afirmación de seguridad
+absoluta \cite{owasp2021}.
+
+\section{Identidad, sesión y autorización}
+
+El token de acceso transporta una identidad firmada, emisor, audiencia, emisión y
+caducidad, conforme al modelo JWT \cite{rfc7519}. El token de renovación se conserva
+en una cookie HttpOnly para reducir su exposición a código ejecutado en el navegador.
+Las operaciones administrativas se validan nuevamente en Spring Security; ocultar un
+botón en Angular mejora la experiencia, pero no constituye un control de acceso. La
+API obtiene el usuario desde el principal autenticado y evita aceptar un identificador
+de usuario elegido por el cliente al iniciar o finalizar una práctica.
+
+La defensa CSRF utiliza una cookie legible por el frontend y exige el mismo valor en
+un encabezado para operaciones que cambian estado. Las peticiones sin coincidencia se
+rechazan antes de llegar al controlador. El límite de intentos de inicio de sesión
+reduce ataques repetitivos y debe complementarse con monitoreo, mensajes que no
+revelen la existencia de cuentas y tiempos de bloqueo documentados.
+
+\section{Persistencia, caché y proveedor de IA}
+
+Las consultas de dominio se construyen con repositorios y parámetros enlazados. Los
+procedimientos almacenados se revisan para evitar concatenación de SQL suministrado
+por usuarios. PostgreSQL aplica restricciones para impedir valores imposibles incluso
+si una validación de aplicación se omite. Redis almacena resultados reconstruibles y
+no reemplaza a PostgreSQL como fuente de verdad; una pérdida completa de caché debe
+afectar rendimiento, pero no integridad.
+
+La integración externa de IA es opcional. La clave se obtiene de variables del
+backend y no forma parte del paquete Angular. Cuando el proveedor no está configurado
+o no responde, el motor local produce una explicación determinista basada en las
+métricas persistidas. En ambos casos el puntaje se calcula antes en el servidor, por
+lo que una respuesta externa no puede modificar la evaluación numérica.
+
+\begin{table}[htbp]
+\centering
+\caption{Amenazas principales y controles comprobables}
+\begin{tabularx}{\textwidth}{p{3.2cm}X X}
+\toprule
+\textbf{Amenaza} & \textbf{Control} & \textbf{Evidencia} \\
+\midrule
+Suplantación & Firma, expiración, emisor y audiencia JWT & Pruebas de autenticación \\
+Acceso administrativo & Reglas por autoridad en la API & Respuestas 401 y 403 \\
+CSRF & Cookie y encabezado coincidentes & Escritura sin token rechazada \\
+Inyección SQL & Parámetros y análisis estático & SpotBugs/FindSecBugs y auditoría \\
+Robo de renovación & Cookie HttpOnly y SameSite & Cabeceras Set-Cookie \\
+Manipulación de puntaje & Cálculo en el servidor & Prueba de finalización \\
+Exposición de claves IA & Variables exclusivas del backend & Revisión de configuración \\
+Fallo de Redis & PostgreSQL como fuente de verdad & Relectura después de invalidar \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Alcance de las herramientas}
+
+SpotBugs y FindSecBugs detectan patrones estáticos, mientras ZAP observa respuestas
+HTTP durante una ejecución. Ninguna herramienta demuestra por sí sola ausencia de
+vulnerabilidades. La revisión final debe combinar análisis estático, escaneo dinámico,
+pruebas de permisos y examen manual de secretos y configuración. El reporte debe
+conservar la salida original de la herramienta, su versión, la URL evaluada y el hash
+del código. Una página redactada manualmente puede explicar resultados, pero no
+sustituye el archivo producido por el escáner.
+
+\chapter{Operación, Recuperación y Evidencia Reproducible}
+\label{anexo:operacion}
+
+\section{Arranque y observabilidad}
+
+Docker Compose define PostgreSQL, Redis, backend y frontend. Cada servicio incorpora
+una comprobación de salud y las dependencias expresan el orden mínimo de inicio. Un
+arranque aceptado termina con cuatro contenedores saludables; además se consulta la
+interfaz web, la documentación OpenAPI y el endpoint de salud. Los registros deben
+usar fecha y nivel, evitar contraseñas y tokens, y permitir correlacionar errores de
+autenticación, persistencia y servicios externos.
+
+La operación cotidiana separa disponibilidad de corrección funcional. Un contenedor
+puede aparecer saludable aunque una ruta protegida falle por un catálogo ausente. Por
+eso el chequeo técnico se completa con el flujo funcional del
+Anexo~\ref{anexo:verificacion-final}. La documentación de arquitectura describe las
+decisiones estructurales, mientras el runbook ofrece acciones ante incidentes; esta
+separación facilita que otra persona opere el sistema sin reconstruir decisiones a
+partir del código \cite{bass2021software,richards2020fundamentals}.
+
+\section{Respaldo y restauración}
+
+El respaldo de PostgreSQL debe incluir estructura y datos, registrar fecha UTC y
+protegerse fuera del volumen activo. Una restauración solo se considera comprobada
+cuando se crea una base distinta, se importa el archivo, se inicia una API contra esa
+copia y se ejecuta una lectura autenticada. Redis no requiere respaldo para la
+correctitud del dominio porque sus entradas pueden reconstruirse. Antes de una
+migración se conserva un respaldo y se ensaya el procedimiento sobre una copia.
+
+Los datos de participantes requieren mayor cuidado que los catálogos. Los artefactos
+públicos usan códigos anónimos; los consentimientos y cualquier correspondencia entre
+código e identidad se custodian por un canal privado. La licencia del dataset describe
+los datos efectivamente publicables y no concede permiso para divulgar firmas o datos
+personales. Este límite forma parte de la reproducibilidad responsable, no es una
+omisión documental.
+
+\section{Trazabilidad de resultados}
+
+Cada tabla o figura empírica debe apuntar a un archivo crudo, un procedimiento de
+transformación y un commit válido. Los archivos de k6 conservan puntos de medición y
+resúmenes; JaCoCo conserva XML y CSV; Lighthouse conserva el JSON completo; ZAP y
+SpotBugs conservan sus salidas originales. Los cuadernos y scripts calculan valores
+derivados sin reemplazar los datos. Los principios FAIR guían la identificación,
+acceso, interoperabilidad y reutilización del paquete \cite{wilkinson2016fair}.
+
+Cuando se cierre el código, todas las mediciones deben regenerarse desde el mismo
+commit. Esta regla evita combinar cobertura de una versión, rendimiento de otra y
+capturas de una tercera. El hash se registra en procedencia, los nombres de archivo
+indican condición y repetición, y el informe cita únicamente resultados que puedan
+recalcularse. El DOI del software y el DOI del dataset se solicitan como depósitos
+separados porque representan objetos con licencias, contenido y ciclos de actualización
+distintos \cite{smith2016software}.
+
+\begin{table}[htbp]
+\centering
+\caption{Paquete mínimo de evidencia para la entrega}
+\begin{tabularx}{\textwidth}{p{3.0cm}X X}
+\toprule
+\textbf{Área} & \textbf{Archivos crudos} & \textbf{Resultado derivado} \\
+\midrule
+Cobertura & JaCoCo XML y CSV & Líneas y ramas globales y por paquete \\
+Rendimiento & Cinco pares frío/caliente & Percentiles, prueba y efecto \\
+Calidad web & Seis JSON Lighthouse & Promedios móvil y escritorio \\
+Seguridad & ZAP, SpotBugs y auditoría & Hallazgos y acciones \\
+Usabilidad & Respuestas SUS anónimas & Media, mediana, DT e IC 95\% \\
+Trazabilidad & Matriz de requisitos & Cobertura requisito--evidencia \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Lista de cierre académico}
+
+El cierre combina elementos técnicos y administrativos. El código debe compilar desde
+un clon limpio, las migraciones deben crear una base operativa, las pruebas deben
+superar los umbrales y los servicios deben responder desde una URL HTTPS. El informe
+debe corresponder al commit medido y contener referencias que resuelvan. El software
+y los datos reciben identificadores permanentes separados. Finalmente, la aprobación
+ética, los consentimientos y el registro de sesiones se presentan al docente por una
+vía privada, y cada integrante debe poder explicar sus contribuciones durante la
+defensa. Ningún commit puede sustituir estos documentos ni la participación personal.
+
 \end{document}
