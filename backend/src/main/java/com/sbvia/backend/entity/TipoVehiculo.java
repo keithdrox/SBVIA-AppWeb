@@ -22,7 +22,6 @@ public class TipoVehiculo {
     @Column(name = "descripcion", length = 255)
     private String descripcion;
 
-    @Column(name = "requiere_licencia", nullable = false)
-    @Builder.Default
-    private boolean requiereLicencia = true;
+    @Column(name = "requiere_licencia", length = 10)
+    private String licenciaRequerida;
 }
