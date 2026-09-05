@@ -13,8 +13,8 @@ export let options = {
     duration: '30s',
     thresholds: {
         // RNF-01 (ISO 25010): p95 < 200 ms bajo 50 usuarios concurrentes
-        http_req_duration: ['p(95)<200'],
-        http_req_failed: ['rate<0.01'],   // tasa de errores < 1%
+        'http_req_duration{operacion:escenarios}': ['p(95)<200'],
+        'http_req_failed{operacion:escenarios}': ['rate<0.01'],
     },
 };
 
@@ -25,7 +25,7 @@ export let options = {
  */
 export function setup() {
     const loginRes = http.post(`${API_URL}/api/auth/login`,
-        JSON.stringify({ email: EMAIL, password: PASSWORD }),
+        JSON.stringify({ correo: EMAIL, password: PASSWORD }),
         { headers: { 'Content-Type': 'application/json' } });
     if (loginRes.status !== 200) {
         throw new Error(`Fallo el login en setup(): HTTP ${loginRes.status}`);
@@ -37,6 +37,7 @@ export default function (data) {
     const token = data.token;
     const listRes = http.get(`${API_URL}/api/escenarios`, {
         headers: { Authorization: `Bearer ${token}` },
+        tags: { operacion: 'escenarios' },
     });
     check(listRes, {
         'listar status is 200': (r) => r.status === 200,
