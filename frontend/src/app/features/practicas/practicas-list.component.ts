@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SimulacionService } from './simulacion.service';
+import { InformeIA, SimulacionService } from './simulacion.service';
 import { Simulacion } from './simulacion.model';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +20,11 @@ export class PracticasListComponent implements OnInit {
   escenarios: Escenario[] = [];
   idEscenarioSeleccionado: number | null = null;
   cargandoEscenarios = true;
+  filtro: 'todas' | 'finalizadas' | 'pendientes' = 'todas';
+  practicaSeleccionada: Simulacion | null = null;
+  informeSeleccionado: InformeIA | null = null;
+  cargandoInforme = false;
+  errorInforme = '';
 
   constructor(private simulacionService: SimulacionService, private escenarioService: EscenarioService) {}
 
@@ -65,5 +70,44 @@ export class PracticasListComponent implements OnInit {
 
   get escenarioSeleccionado(): Escenario | undefined {
     return this.escenarios.find(escenario => escenario.id === this.idEscenarioSeleccionado);
+  }
+
+  get practicasFiltradas(): Simulacion[] {
+    if (this.filtro === 'finalizadas') return this.finalizadas;
+    if (this.filtro === 'pendientes') return this.practicas.filter(practica => !practica.completada && !practica.fechaFin);
+    return this.practicas;
+  }
+
+  get pendientes(): number {
+    return this.practicas.length - this.finalizadas.length;
+  }
+
+  verInforme(practica: Simulacion): void {
+    if (!practica.completada && !practica.fechaFin) return;
+    if (this.practicaSeleccionada?.idSimulacion === practica.idSimulacion) {
+      this.cerrarInforme();
+      return;
+    }
+    this.practicaSeleccionada = practica;
+    this.informeSeleccionado = null;
+    this.errorInforme = '';
+    this.cargandoInforme = true;
+    this.simulacionService.getRetroalimentacion(practica.idSimulacion).subscribe({
+      next: informe => {
+        this.informeSeleccionado = informe;
+        this.cargandoInforme = false;
+      },
+      error: () => {
+        this.errorInforme = 'No se pudo recuperar el informe de esta práctica.';
+        this.cargandoInforme = false;
+      }
+    });
+  }
+
+  cerrarInforme(): void {
+    this.practicaSeleccionada = null;
+    this.informeSeleccionado = null;
+    this.errorInforme = '';
+    this.cargandoInforme = false;
   }
 }

@@ -1,6 +1,6 @@
 <div class="practicas-container">
   <header class="practicas-header">
-    <div><span class="eyebrow">Entrenamiento vial</span><h2>Centro de prácticas</h2><p>Selecciona un escenario, realiza el recorrido y guarda tu evaluación.</p></div>
+    <div><span class="eyebrow">Entrenamiento vial</span><h2>Mis prácticas</h2><p>Inicia un recorrido, consulta tus resultados y usa el informe para mejorar.</p></div>
     <a routerLink="/dashboard" class="btn-secondary">Volver al Dashboard</a>
   </header>
 
@@ -21,37 +21,71 @@
   <div *ngIf="loading" class="loading">Cargando...</div>
   <div *ngIf="error" class="error-msg">{{ error }}</div>
 
-  <h3 class="historial-title">Historial y progreso</h3>
+  <section class="como-funciona" aria-label="Cómo usar el módulo de prácticas">
+    <strong>¿Qué puedes hacer aquí?</strong>
+    <p>Cada recorrido queda guardado como una práctica. Al finalizar, el servidor calcula tu puntaje y genera recomendaciones según tus infracciones.</p>
+  </section>
+
+  <div class="historial-encabezado">
+    <div><span class="eyebrow">Seguimiento personal</span><h3 class="historial-title">Historial y progreso</h3></div>
+    <div class="filtros" role="group" aria-label="Filtrar prácticas">
+      <button type="button" [class.activo]="filtro === 'todas'" (click)="filtro = 'todas'">Todas</button>
+      <button type="button" [class.activo]="filtro === 'finalizadas'" (click)="filtro = 'finalizadas'">Finalizadas</button>
+      <button type="button" [class.activo]="filtro === 'pendientes'" (click)="filtro = 'pendientes'">Sin finalizar</button>
+    </div>
+  </div>
   <section *ngIf="!loading && !error && practicas.length" class="resumen" aria-label="Resumen de rendimiento">
     <article><strong>{{ practicas.length }}</strong><span>Prácticas</span></article>
     <article><strong>{{ promedio }}</strong><span>Promedio</span></article>
     <article><strong>{{ aprobadas }}</strong><span>Aprobadas</span></article>
+    <article><strong>{{ pendientes }}</strong><span>Sin finalizar</span></article>
   </section>
 
   <div *ngIf="!loading && !error" class="table-responsive">
-    <table class="practicas-table" *ngIf="practicas.length > 0; else noPracticas">
+    <table class="practicas-table" *ngIf="practicasFiltradas.length > 0; else noPracticas">
       <thead>
         <tr>
           <th>Fecha de Inicio</th>
           <th>Escenario</th>
           <th>Estado</th>
           <th>Puntaje</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let practica of practicas">
+        <tr *ngFor="let practica of practicasFiltradas">
           <td>{{ practica.fechaInicio | date:'dd/MM/yyyy' }}</td>
           <td>{{ practica.nombreEscenario }}</td>
           <td><span class="estado" [class.aprobada]="(practica.completada || practica.fechaFin) && practica.puntajeFinal >= 70" [class.reprobada]="(practica.completada || practica.fechaFin) && practica.puntajeFinal < 70">{{ (practica.completada || practica.fechaFin) ? (practica.puntajeFinal >= 70 ? 'Aprobada' : 'Reprobada') : 'En progreso' }}</span></td>
-          <td><strong>{{ practica.puntajeFinal }}/100</strong></td>
+          <td><strong>{{ (practica.completada || practica.fechaFin) ? (practica.puntajeFinal + '/100') : '—' }}</strong></td>
+          <td class="acciones">
+            <button type="button" class="btn-informe" *ngIf="practica.completada || practica.fechaFin" (click)="verInforme(practica)">{{ practicaSeleccionada?.idSimulacion === practica.idSimulacion ? 'Cerrar informe' : 'Ver informe IA' }}</button>
+            <a *ngIf="practica.idEscenario" [routerLink]="['/simulacion', practica.idEscenario]">Repetir escenario</a>
+          </td>
         </tr>
       </tbody>
     </table>
     
     <ng-template #noPracticas>
       <div class="no-data">
-        <p>No tienes prácticas registradas todavía.</p>
+        <p>{{ practicas.length ? 'No hay prácticas que coincidan con este filtro.' : 'Todavía no tienes prácticas. Selecciona un escenario arriba para comenzar.' }}</p>
       </div>
     </ng-template>
   </div>
+
+  <section class="informe-panel" *ngIf="practicaSeleccionada">
+    <header><div><span class="eyebrow">Resultado guardado</span><h3>Informe IA · {{ practicaSeleccionada.nombreEscenario }}</h3></div><button type="button" (click)="cerrarInforme()" aria-label="Cerrar informe">×</button></header>
+    <p *ngIf="cargandoInforme" class="loading-informe">Cargando informe...</p>
+    <p *ngIf="errorInforme" class="error-msg">{{ errorInforme }}</p>
+    <ng-container *ngIf="informeSeleccionado as informe">
+      <div class="informe-resumen"><strong>{{ informe.puntaje }}/100</strong><span>Riesgo {{ informe.nivelRiesgo }}</span><small>{{ informe.origen === 'IA_LOCAL' ? 'IA local' : informe.origen }}</small></div>
+      <p>{{ informe.resumen }}</p>
+      <div class="informe-columnas">
+        <div><h4>Aciertos</h4><ul><li *ngFor="let acierto of informe.aciertos">{{ acierto }}</li></ul></div>
+        <div><h4>Aspectos por mejorar</h4><ul><li *ngFor="let error of informe.errores">{{ error }}</li><li *ngIf="!informe.errores.length">Sin errores registrados.</li></ul></div>
+        <div><h4>Próximos pasos</h4><ol><li *ngFor="let recomendacion of informe.recomendaciones">{{ recomendacion }}</li></ol></div>
+      </div>
+      <p class="mensaje">{{ informe.mensajeMotivador }}</p>
+    </ng-container>
+  </section>
 </div>
