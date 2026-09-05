@@ -35,7 +35,7 @@ jobs:
 
       - name: Ejecutar tres auditorías
         env:
-          LHCI_PRESET: ${{ matrix.preset }}
+          SBVIA_LIGHTHOUSE_PRESET: ${{ matrix.preset }}
           LHCI_OUTPUT_DIR: .lighthouseci/${{ matrix.preset }}
         run: lhci autorun
 

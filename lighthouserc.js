@@ -1,5 +1,5 @@
 const baseUrl = (process.env.LHCI_BASE_URL || 'http://localhost:4200').replace(/\/$/, '');
-const preset = process.env.LHCI_PRESET || 'mobile';
+const preset = process.env.SBVIA_LIGHTHOUSE_PRESET || 'mobile';
 
 module.exports = {
   ci: {
