@@ -16,7 +16,11 @@ spring:
         format_sql: true
         default_schema: public
   flyway:
-    enabled: false
+    enabled: true
+    locations: classpath:db/current-migration
+    baseline-on-migrate: true
+    baseline-version: 2
+    validate-on-migrate: true
   data:
     redis:
       host: ${REDIS_HOST:localhost}

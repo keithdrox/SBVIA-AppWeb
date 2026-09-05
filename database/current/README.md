@@ -9,10 +9,11 @@ Se obtuvo el 4 de septiembre de 2026 mediante `pg_dump --schema-only
 base temporal vacía. La restauración terminó sin errores.
 
 Esta instantánea incluye la restricción de origen de retroalimentación que
-permite IA_LOCAL y OPENAI. Las migraciones de `db/migration` del backend todavía
-corresponden al modelo anterior con tablas como `"Usuario"`. No se deben ejecutar
-sobre una instalación actual sin una transición probada.
+permite IA_LOCAL y OPENAI. Flyway utiliza esta estructura desde
+`backend/src/main/resources/db/current-migration/` y carga sus catálogos mínimos
+en una segunda migración. Las migraciones antiguas se conservan únicamente como
+historial del modelo anterior con tablas como `"Usuario"`.
 
-Pendiente para una instalación completa: catálogos iniciales, transición
-versionada en Flyway y prueba funcional desde una base vacía. Restaurar solo
-este archivo no habilita por sí mismo el registro ni las simulaciones.
+La línea actual se verificó de dos maneras: desde una base completamente vacía
+y sobre una copia de la base existente. En el primer caso aplicó V1 y V2; en el
+segundo creó una línea base en V2 sin alterar las tablas ni los datos actuales.
