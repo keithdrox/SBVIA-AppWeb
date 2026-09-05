@@ -1,0 +1,52 @@
+name: Lighthouse
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: ${{ matrix.preset }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [mobile, desktop]
+    env:
+      DB_USER: sbvia_ci
+      DB_PASSWORD: sbvia_ci_password
+      JWT_SECRET: ci_only_jwt_secret_with_more_than_sixty_four_characters_1234567890
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Levantar el sistema
+        run: docker compose up -d --build --wait
+
+      - name: Instalar Lighthouse CI
+        run: npm install --global @lhci/cli@0.14.0
+
+      - name: Ejecutar tres auditorías
+        env:
+          LHCI_PRESET: ${{ matrix.preset }}
+          LHCI_OUTPUT_DIR: .lighthouseci/${{ matrix.preset }}
+        run: lhci autorun
+
+      - name: Guardar los JSON completos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ matrix.preset }}
+          path: .lighthouseci/${{ matrix.preset }}
+          if-no-files-found: error
+
+      - name: Apagar el sistema
+        if: always()
+        run: docker compose down --volumes
