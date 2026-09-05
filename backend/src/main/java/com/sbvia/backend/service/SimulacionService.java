@@ -14,6 +14,7 @@ import com.sbvia.backend.entity.SesionEntrenamiento;
 import com.sbvia.backend.entity.Simulacion;
 import com.sbvia.backend.entity.TipoMetrica;
 import com.sbvia.backend.entity.Usuario;
+import com.sbvia.backend.entity.Vehiculo;
 import com.sbvia.backend.exception.ResourceNotFoundException;
 import com.sbvia.backend.repository.EscenarioRepository;
 import com.sbvia.backend.repository.EstadoSimulacionRepository;
@@ -25,6 +26,7 @@ import com.sbvia.backend.repository.SesionEntrenamientoRepository;
 import com.sbvia.backend.repository.SimulacionRepository;
 import com.sbvia.backend.repository.TipoMetricaRepository;
 import com.sbvia.backend.repository.UsuarioRepository;
+import com.sbvia.backend.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
@@ -65,6 +67,7 @@ public class SimulacionService {
     private final ReglaTransitoRepository reglaTransitoRepository;
     private final NivelGravedadRepository nivelGravedadRepository;
     private final SesionEntrenamientoRepository sesionEntrenamientoRepository;
+    private final VehiculoRepository vehiculoRepository;
     private final RetroalimentacionService retroalimentacionService;
 
     public SimulacionDTO iniciarSimulacion(String correo, Integer idEscenario) {
@@ -73,6 +76,10 @@ public class SimulacionService {
         Escenario escenario = escenarioRepository.findById(idEscenario)
                 .filter(Escenario::isActivo)
                 .orElseThrow(() -> new ResourceNotFoundException("Escenario activo no encontrado"));
+        EstadoSimulacion enProgreso = estadoSimulacionRepository.findByNombre("EN_PROGRESO")
+                .orElseThrow(() -> new IllegalStateException("Catálogo incompleto: falta el estado EN_PROGRESO"));
+        Vehiculo vehiculo = vehiculoRepository.findFirstByActivoTrueOrderByIdVehiculoAsc()
+                .orElseThrow(() -> new IllegalStateException("No existe un vehículo activo para iniciar la simulación"));
 
         // El trigger trg_validar_usuario_sesion exige una sesión válida cuyo
         // usuario coincida con el de la simulación.
@@ -87,6 +94,8 @@ public class SimulacionService {
                 .puntajeFinal(BigDecimal.ZERO)
                 .usuario(usuario)
                 .escenario(escenario)
+                .vehiculo(vehiculo)
+                .estadoSimulacion(enProgreso)
                 .sesionEntrenamiento(sesion)
                 .build();
         return mapToDTO(simulacionRepository.save(simulacion));

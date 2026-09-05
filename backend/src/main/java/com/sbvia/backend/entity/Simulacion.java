@@ -53,6 +53,10 @@ public class Simulacion {
     private Escenario escenario;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_vehiculo", nullable = false)
+    private Vehiculo vehiculo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_estado_simulacion")
     private EstadoSimulacion estadoSimulacion;
 
