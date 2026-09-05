@@ -28,8 +28,8 @@ bench:
 
 audit:
 	@echo "Ejecutando auditoria Lighthouse y OWASP..."
-	LHCI_PRESET=mobile LHCI_OUTPUT_DIR=.lighthouseci/mobile npx lhci autorun
-	LHCI_PRESET=desktop LHCI_OUTPUT_DIR=.lighthouseci/desktop npx lhci autorun
+	LHCI_PRESET=mobile LHCI_OUTPUT_DIR=.lighthouseci/mobile npx --yes @lhci/cli@0.15.1 autorun
+	LHCI_PRESET=desktop LHCI_OUTPUT_DIR=.lighthouseci/desktop npx --yes @lhci/cli@0.15.1 autorun
 
 clean:
 	docker compose down --volumes --remove-orphans
