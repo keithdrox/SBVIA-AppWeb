@@ -22,6 +22,11 @@ export class RegisterComponent {
   errorMessage = '';
   loading = false;
 
+  // Estado para mostrar confirmación de registro exitoso con el nombre de usuario generado
+  registered = false;
+  registeredUsername = '';
+  registeredEmail = '';
+
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
@@ -34,8 +39,11 @@ export class RegisterComponent {
     this.errorMessage = '';
 
     this.authService.registro(this.data).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard']);
+      next: (res: any) => {
+        this.loading = false;
+        this.registered = true;
+        this.registeredUsername = res?.usuario?.nombreUsuario || '';
+        this.registeredEmail = res?.usuario?.correo || this.data.correo;
       },
       error: (err) => {
         this.loading = false;

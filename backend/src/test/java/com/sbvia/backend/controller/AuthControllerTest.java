@@ -80,6 +80,7 @@ class AuthControllerTest {
         testUser = Usuario.builder()
                 .nombres("Test")
                 .apellidos("User")
+                .nombreUsuario("testuser")
                 .correo("test@example.com")
                 .contrasenaHash(passwordEncoder.encode("password123"))
                 .rol(rolTest)
@@ -90,7 +91,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Login exitoso retorna access token y oculta refresh token")
+    @DisplayName("Login exitoso con correo retorna access token y oculta refresh token")
     void loginExitoso() throws Exception {
         LoginRequest request = new LoginRequest();
         request.setCorreo("test@example.com");
@@ -109,6 +110,25 @@ class AuthControllerTest {
         assertThat(jwtService.extractIssuer(token)).isEqualTo("sbvia-api");
         assertThat(jwtService.extractAudience(token)).containsExactly("sbvia-web");
         assertThat(jwtService.extractNotBefore(token)).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Login exitoso con nombre_usuario retorna access token")
+    void loginExitosoConNombreUsuario() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setIdentificador("testuser");
+        request.setPassword("password123");
+
+        MvcResult result = mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").exists())
+                .andReturn();
+
+        String token = objectMapper.readTree(result.getResponse().getContentAsString())
+                .get("accessToken").asText();
+        assertThat(jwtService.extractIssuer(token)).isEqualTo("sbvia-api");
     }
 
     @Test

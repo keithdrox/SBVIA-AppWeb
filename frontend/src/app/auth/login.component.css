@@ -318,3 +318,146 @@
 .form-footer a:hover {
   text-decoration: underline;
 }
+
+/* ============================
+   REGISTER-SPECIFIC OVERRIDES
+   ============================ */
+
+/* El panel de formulario del registro es un poco más ancho para acomodar
+   la fila de dos campos (nombres + apellidos) sin que queden apretados. */
+.register-form-side {
+  flex: 0 0 480px;
+}
+
+.register-form-side .form-container {
+  max-width: 420px;
+}
+
+/* Fila de dos campos lado a lado */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 560px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .register-form-side {
+    flex: 1;
+  }
+}
+
+/* Hint debajo de un campo */
+.field-hint {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.78rem;
+  color: #a0aec0;
+}
+
+/* Etiqueta "(opcional)" inline */
+.label-optional {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: #a0aec0;
+  margin-left: 0.25rem;
+}
+
+@media (max-width: 899px) {
+  .register-form-side {
+    align-items: flex-start;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+/* ============================
+   REGISTRATION SUCCESS CONFIRMATION CARD
+   ============================ */
+.register-success-card {
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.success-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  background: rgba(0, 180, 216, 0.12);
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
+}
+
+.register-success-card h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0d1b2a;
+  margin: 0 0 0.5rem 0;
+}
+
+.success-subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0 0 1.8rem 0;
+}
+
+.username-display-box {
+  background: #f0f9ff;
+  border: 1.5px dashed #00b4d8;
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.username-label {
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.username-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0077b6;
+  letter-spacing: 0.05em;
+  font-family: monospace, "Segoe UI", sans-serif;
+}
+
+.success-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-bottom: 2rem;
+}
+
+.success-note svg {
+  flex-shrink: 0;
+  color: #00b4d8;
+}
+
+.btn-submit--link {
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  line-height: 3rem;
+  color: white !important;
+}

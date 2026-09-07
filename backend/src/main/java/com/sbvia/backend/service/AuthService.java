@@ -10,6 +10,7 @@ import com.sbvia.backend.repository.UsuarioRepository;
 import com.sbvia.backend.repository.RolRepository;
 import com.sbvia.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,8 +19,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
@@ -29,6 +34,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenBlacklistService tokenBlacklistService;
+    private final UsernameGeneratorService usernameGeneratorService;
 
     @Transactional
     public AuthResponse registro(RegisterRequest request) {
@@ -47,10 +53,16 @@ public class AuthService {
         EstadoUsuario estadoActivo = estadoUsuarioRepository.findByNombre("ACTIVO")
                 .orElseThrow(() -> new IllegalStateException("No se encontró el estado ACTIVO"));
 
+        // Generación de nombre_usuario automático estilo SGA UTEQ
+        String base = usernameGeneratorService.generarBase(request.getNombres(), request.getApellidos());
+        List<String> existentes = new ArrayList<>(usuarioRepository.findNombresUsuarioSimilares(base));
+        String nombreUsuarioGenerado = usernameGeneratorService.generarSiguienteDisponible(base, existentes);
+
         Usuario usuario = Usuario.builder()
-                .nombres(request.getNombres())
-                .apellidos(request.getApellidos())
-                .correo(request.getCorreo())
+                .nombres(request.getNombres().trim())
+                .apellidos(request.getApellidos().trim())
+                .nombreUsuario(nombreUsuarioGenerado)
+                .correo(request.getCorreo().trim())
                 .telefono(request.getTelefono())
                 .contrasenaHash(passwordEncoder.encode(request.getPassword()))
                 .rol(rolPorDefecto)
@@ -74,16 +86,17 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        String identificador = request.getIdentificador();
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getCorreo(),
+                        identificador,
                         request.getPassword()
                 )
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo())
-                .orElseThrow();
+        Usuario usuario = usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(identificador, identificador)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con identificador: " + identificador));
 
         String rolNombre = usuario.getRol().getNombre();
         String accessToken = jwtService.generateAccessToken(userDetails, usuario.getIdUsuario().longValue(), rolNombre);
@@ -134,8 +147,8 @@ public class AuthService {
                 .build();
     }
 
-    public UsuarioDTO getUsuarioActual(String correo) {
-        Usuario usuario = usuarioRepository.findByCorreo(correo)
+    public UsuarioDTO getUsuarioActual(String identificador) {
+        Usuario usuario = usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(identificador, identificador)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         return mapToDTO(usuario);
     }

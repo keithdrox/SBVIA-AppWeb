@@ -26,9 +26,10 @@ class UserDetailsServiceImplTest {
     private UserDetailsServiceImpl userDetailsService;
 
     @Test
-    void cargaUsuarioActivoConSuRol() {
+    void cargaUsuarioActivoPorCorreo() {
         Usuario usuario = usuario(false);
-        when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(usuario.getCorreo(), usuario.getCorreo()))
+                .thenReturn(Optional.of(usuario));
 
         var resultado = userDetailsService.loadUserByUsername(usuario.getCorreo());
 
@@ -39,9 +40,24 @@ class UserDetailsServiceImplTest {
     }
 
     @Test
+    void cargaUsuarioActivoPorNombreUsuario() {
+        Usuario usuario = usuario(false);
+        when(usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(usuario.getNombreUsuario(), usuario.getNombreUsuario()))
+                .thenReturn(Optional.of(usuario));
+
+        var resultado = userDetailsService.loadUserByUsername(usuario.getNombreUsuario());
+
+        assertThat(resultado.getUsername()).isEqualTo(usuario.getCorreo());
+        assertThat(resultado.getAuthorities())
+                .extracting(Object::toString)
+                .containsExactly("ROLE_USER");
+    }
+
+    @Test
     void rechazaUsuarioInactivo() {
         Usuario usuario = usuario(true);
-        when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(usuario.getCorreo(), usuario.getCorreo()))
+                .thenReturn(Optional.of(usuario));
 
         assertThatThrownBy(() -> userDetailsService.loadUserByUsername(usuario.getCorreo()))
                 .isInstanceOf(UsernameNotFoundException.class)
@@ -49,8 +65,9 @@ class UserDetailsServiceImplTest {
     }
 
     @Test
-    void rechazaCorreoNoRegistrado() {
-        when(usuarioRepository.findByCorreo("ausente@sbvia.test")).thenReturn(Optional.empty());
+    void rechazaIdentificadorNoRegistrado() {
+        when(usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase("ausente@sbvia.test", "ausente@sbvia.test"))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userDetailsService.loadUserByUsername("ausente@sbvia.test"))
                 .isInstanceOf(UsernameNotFoundException.class)
@@ -59,6 +76,9 @@ class UserDetailsServiceImplTest {
 
     private Usuario usuario(boolean cuentaBloqueada) {
         return Usuario.builder()
+                .nombres("Conductor")
+                .apellidos("Demo")
+                .nombreUsuario("cdemop")
                 .correo("conductor@sbvia.test")
                 .contrasenaHash("hash-seguro")
                 .cuentaBloqueada(cuentaBloqueada)

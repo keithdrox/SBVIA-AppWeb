@@ -19,10 +19,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByCorreo(correo)
+    public UserDetails loadUserByUsername(String identificador) throws UsernameNotFoundException {
+        if (identificador == null || identificador.isBlank()) {
+            throw new UsernameNotFoundException("Identificador de usuario no proporcionado");
+        }
+
+        Usuario usuario = usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(identificador.trim(), identificador.trim())
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        "Usuario no encontrado con correo: " + correo));
+                        "Usuario no encontrado con identificador: " + identificador));
 
         if (usuario.isCuentaBloqueada()) {
             throw new UsernameNotFoundException("La cuenta del usuario está bloqueada");

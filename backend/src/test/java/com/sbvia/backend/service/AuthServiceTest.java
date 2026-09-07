@@ -1,6 +1,7 @@
 package com.sbvia.backend.service;
 
 import com.sbvia.backend.dto.RegisterRequest;
+import com.sbvia.backend.entity.EstadoUsuario;
 import com.sbvia.backend.entity.Rol;
 import com.sbvia.backend.entity.Usuario;
 import com.sbvia.backend.exception.DuplicateEmailException;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +37,7 @@ class AuthServiceTest {
     @Mock JwtService jwtService;
     @Mock AuthenticationManager authenticationManager;
     @Mock TokenBlacklistService tokenBlacklistService;
+    @Mock UsernameGeneratorService usernameGeneratorService;
     @InjectMocks AuthService authService;
 
     private Rol rol;
@@ -47,6 +50,7 @@ class AuthServiceTest {
                 .idUsuario(9)
                 .nombres("Ana")
                 .apellidos("Pérez")
+                .nombreUsuario("aperez")
                 .correo("ana@sbvia.test")
                 .contrasenaHash("hash")
                 .rol(rol)
@@ -74,6 +78,28 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.registro(request))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("PARTICIPANTE");
+    }
+
+    @Test
+    void registraUsuarioConNombreUsuarioGeneradoExitosamente() {
+        RegisterRequest request = registro();
+        when(usuarioRepository.existsByCorreo(request.getCorreo())).thenReturn(false);
+        when(rolRepository.findByNombre("PARTICIPANTE")).thenReturn(Optional.of(rol));
+        when(estadoUsuarioRepository.findByNombre("ACTIVO")).thenReturn(Optional.of(new EstadoUsuario()));
+        when(usernameGeneratorService.generarBase(request.getNombres(), request.getApellidos())).thenReturn("aperez");
+        when(usuarioRepository.findNombresUsuarioSimilares("aperez")).thenReturn(List.of());
+        when(usernameGeneratorService.generarSiguienteDisponible("aperez", List.of())).thenReturn("aperez");
+        when(passwordEncoder.encode(request.getPassword())).thenReturn("hashed-pwd");
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+        when(jwtService.generateAccessToken(any(), any(), any())).thenReturn("access-token");
+        when(jwtService.generateRefreshToken(any(), any())).thenReturn("refresh-token");
+        when(jwtService.getAccessExpirationMs()).thenReturn(3600000L);
+
+        var response = authService.registro(request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getAccessToken()).isEqualTo("access-token");
+        assertThat(response.getUsuario().getNombreUsuario()).isEqualTo("aperez");
     }
 
     @Test
@@ -117,8 +143,9 @@ class AuthServiceTest {
     }
 
     @Test
-    void obtieneElUsuarioActual() {
-        when(usuarioRepository.findByCorreo(usuario.getCorreo())).thenReturn(Optional.of(usuario));
+    void obtieneElUsuarioActualPorIdentificador() {
+        when(usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(usuario.getCorreo(), usuario.getCorreo()))
+                .thenReturn(Optional.of(usuario));
 
         assertThat(authService.getUsuarioActual(usuario.getCorreo()).getRol()).isEqualTo("ROLE_USER");
     }

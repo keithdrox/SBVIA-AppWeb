@@ -54,7 +54,20 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "Datos inválidos o email ya registrado")
     })
     public ResponseEntity<AuthResponse> registro(@Valid @RequestBody RegisterRequest request) {
-        AuthResponse response = authService.registro(request);
+        AuthResponse response = null;
+        int maxIntentos = 3;
+        for (int intento = 1; intento <= maxIntentos; intento++) {
+            try {
+                response = authService.registro(request);
+                break;
+            } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+                log.warn("Colisión de unicidad al generar nombre_usuario (intento {}/{}). Reintentando...",
+                        intento, maxIntentos);
+                if (intento == maxIntentos) {
+                    throw ex;
+                }
+            }
+        }
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
                 response.getExpiresIn(), "/");
         ResponseCookie refreshCookie = tokenCookie(REFRESH_COOKIE, response.getRefreshToken(),
@@ -91,13 +104,13 @@ public class AuthController {
             response = authService.login(request);
         } catch (org.springframework.security.core.AuthenticationException ex) {
             loginRateLimiter.recordFailure(ip);
-            log.warn("EVENTO_SEGURIDAD: login-fallido email={} ip={} motivo=credenciales_invalidas",
-                    request.getCorreo(), ip);
+            log.warn("EVENTO_SEGURIDAD: login-fallido identificador={} ip={} motivo=credenciales_invalidas",
+                    request.getIdentificador(), ip);
             throw ex;
         }
 
         loginRateLimiter.reset(ip);
-        log.info("EVENTO_SEGURIDAD: login-exitoso email={} ip={}", request.getCorreo(), ip);
+        log.info("EVENTO_SEGURIDAD: login-exitoso identificador={} ip={}", request.getIdentificador(), ip);
 
         ResponseCookie accessCookie = tokenCookie(ACCESS_COOKIE, response.getAccessToken(),
                 response.getExpiresIn(), "/");
