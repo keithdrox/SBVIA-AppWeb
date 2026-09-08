@@ -191,6 +191,19 @@ public class AuthService {
     }
 
     @Transactional
+    public UsuarioDTO actualizarPerfilActual(String identificador, ActualizarPerfilRequest request) {
+        Usuario usuario = usuarioRepository.findByCorreoIgnoreCaseOrNombreUsuarioIgnoreCase(identificador, identificador)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        usuario.setNombres(request.getNombres());
+        usuario.setApellidos(request.getApellidos());
+        usuario.setTelefono(request.getTelefono());
+
+        usuario = usuarioRepository.save(usuario);
+        return mapToDTO(usuario);
+    }
+
+    @Transactional
     public void eliminarUsuario(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));

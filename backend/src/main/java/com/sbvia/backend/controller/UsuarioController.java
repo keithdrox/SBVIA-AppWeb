@@ -47,6 +47,23 @@ public class UsuarioController {
     }
 
     /**
+     * PUT /api/usuarios/me — Actualiza el perfil del usuario autenticado.
+     */
+    @PutMapping("/me")
+    @Operation(summary = "Actualizar perfil", description = "Actualiza los datos del usuario autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Perfil actualizado exitosamente"),
+        @ApiResponse(responseCode = "401", description = "No autorizado o token expirado")
+    })
+    public ResponseEntity<UsuarioDTO> actualizarPerfilActual(
+            Authentication authentication,
+            @Valid @RequestBody com.sbvia.backend.dto.ActualizarPerfilRequest request) {
+        String email = authentication.getName();
+        UsuarioDTO actualizado = authService.actualizarPerfilActual(email, request);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    /**
      * GET /api/usuarios — Lista todos los usuarios con paginación (Solo Admin).
      */
     @GetMapping

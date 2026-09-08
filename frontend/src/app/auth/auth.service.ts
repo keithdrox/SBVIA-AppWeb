@@ -38,6 +38,15 @@ export class AuthService {
     );
   }
 
+  actualizarPerfil(data: any): Observable<any> {
+    return this.http.put(`/api/usuarios/me`, data, { withCredentials: true }).pipe(
+      tap((response: any) => {
+        // Actualizar la señal del usuario actual
+        this.currentUser.set(response);
+      })
+    );
+  }
+
   registro(data: any): Observable<any> {
     return this.http.post(`${this.API_URL}/registro`, data, { withCredentials: true }).pipe(
       tap((response: any) => {
