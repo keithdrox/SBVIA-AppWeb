@@ -1,0 +1,123 @@
+<div class="auditoria-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Administración Técnica</span>
+      <h1>Auditoría del Sistema</h1>
+      <p>Supervisa las operaciones a nivel de base de datos en las tablas maestras y de configuración.</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" (click)="descargarReporte()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+          <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+        </svg>
+        Descargar PDF
+      </button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="filters">
+      <label>
+        <span>Usuario App</span>
+        <input [(ngModel)]="filtros.usuario" (change)="cargarAuditoria()" placeholder="Correo del usuario">
+      </label>
+      <label>
+        <span>Tabla</span>
+        <select [(ngModel)]="filtros.tabla" (change)="cargarAuditoria()">
+          <option value="">Todas</option>
+          <option value="usuario">usuario</option>
+          <option value="regla_transito">regla_transito</option>
+          <option value="escenario">escenario</option>
+          <option value="vehiculo">vehiculo</option>
+          <option value="modelo_ia">modelo_ia</option>
+        </select>
+      </label>
+      <label>
+        <span>Operación</span>
+        <select [(ngModel)]="filtros.operacion" (change)="cargarAuditoria()">
+          <option value="">Todas</option>
+          <option value="INSERT">INSERT</option>
+          <option value="UPDATE">UPDATE</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+      </label>
+      <label>
+        <span>Desde</span>
+        <input type="date" [(ngModel)]="filtros.fechaInicio" (change)="cargarAuditoria()">
+      </label>
+      <label>
+        <span>Hasta</span>
+        <input type="date" [(ngModel)]="filtros.fechaFin" (change)="cargarAuditoria()">
+      </label>
+      <button class="btn btn-secondary" (click)="filtros={tabla:'', operacion:'', usuario:'', fechaInicio:'', fechaFin:''}; cargarAuditoria()">Limpiar</button>
+    </div>
+
+    <div *ngIf="cargando" class="message">Cargando registros de auditoría...</div>
+    <div *ngIf="error" class="message error">{{ error }}</div>
+
+    <div class="table-wrap" *ngIf="!cargando && !error">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Tabla</th>
+            <th>Operación</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reg of registros">
+            <td>{{ reg.fechaHora | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+            <td>
+              <strong>{{ reg.usuarioApp || 'N/A' }}</strong>
+              <small>DB: {{ reg.usuarioDb }}</small>
+            </td>
+            <td><span class="code-badge">{{ reg.nombreTabla }}</span></td>
+            <td>
+              <span class="op-badge" [ngClass]="reg.operacion.toLowerCase()">{{ reg.operacion }}</span>
+            </td>
+            <td class="actions">
+              <button class="btn btn-sm" (click)="verDetalle(reg)">Ver Detalles</button>
+            </td>
+          </tr>
+          <tr *ngIf="registros.length === 0">
+            <td colspan="5" class="empty">No se encontraron registros de auditoría.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- Modal Detalles -->
+<div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <header>
+      <h2>Detalle de Operación</h2>
+      <button class="close-btn" (click)="cerrarModal()">×</button>
+    </header>
+    <div class="modal-body">
+      <div class="info-grid">
+        <div><strong>ID Auditoría:</strong> {{ registroSeleccionado?.idAuditoria }}</div>
+        <div><strong>Fecha:</strong> {{ registroSeleccionado?.fechaHora | date:'dd/MM/yyyy HH:mm:ss' }}</div>
+        <div><strong>Tabla:</strong> <span class="code-badge">{{ registroSeleccionado?.nombreTabla }}</span></div>
+        <div><strong>Operación:</strong> <span class="op-badge" [ngClass]="registroSeleccionado?.operacion?.toLowerCase() || ''">{{ registroSeleccionado?.operacion }}</span></div>
+        <div><strong>Usuario App:</strong> {{ registroSeleccionado?.usuarioApp || 'N/A' }}</div>
+        <div><strong>Usuario DB:</strong> {{ registroSeleccionado?.usuarioDb }}</div>
+      </div>
+      
+      <div class="diff-view">
+        <div class="diff-panel before" *ngIf="registroSeleccionado?.operacion !== 'INSERT'">
+          <h3>Datos Anteriores</h3>
+          <pre>{{ datosAntiguosObj | json }}</pre>
+        </div>
+        <div class="diff-panel after" *ngIf="registroSeleccionado?.operacion !== 'DELETE'">
+          <h3>Datos Nuevos</h3>
+          <pre>{{ datosNuevosObj | json }}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
