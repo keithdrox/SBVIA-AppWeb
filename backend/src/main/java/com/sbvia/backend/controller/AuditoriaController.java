@@ -22,7 +22,7 @@ public class AuditoriaController {
     private final AuditoriaService auditoriaService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<List<BitacoraAuditoria>> obtenerAuditoria(
             @RequestParam(required = false) String tabla,
             @RequestParam(required = false) String operacion,
@@ -35,7 +35,7 @@ public class AuditoriaController {
     }
 
     @GetMapping("/reporte/pdf")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<byte[]> descargarReportePdf(
             @RequestParam(required = false) String tabla,
             @RequestParam(required = false) String operacion,
