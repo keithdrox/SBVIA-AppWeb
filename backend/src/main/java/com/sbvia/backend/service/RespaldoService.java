@@ -1,20 +1,29 @@
 package com.sbvia.backend.service;
 
+import com.sbvia.backend.entity.BitacoraAuditoria;
 import com.sbvia.backend.model.Respaldo;
+import com.sbvia.backend.dto.RespaldoRequestDTO;
+import com.sbvia.backend.repository.BitacoraAuditoriaRepository;
 import com.sbvia.backend.repository.RespaldoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 @Service
 public class RespaldoService {
@@ -22,6 +31,8 @@ public class RespaldoService {
     private static final Logger logger = LoggerFactory.getLogger(RespaldoService.class);
 
     private final RespaldoRepository respaldoRepository;
+    private final BitacoraAuditoriaRepository auditoriaRepository;
+    private final TaskScheduler taskScheduler;
 
     @Value("${spring.datasource.username}")
     private String dbUser;
@@ -29,15 +40,18 @@ public class RespaldoService {
     @Value("${spring.datasource.password}")
     private String dbPassword;
 
-    // Confiamos en que Spring Boot resuelve el nombre del host (postgres) gracias al docker-compose
     @Value("${DB_URL:jdbc:postgresql://postgres:5432/sbvia_db}")
     private String dbUrl;
 
     private final String backupDir = "/app/backups";
 
-    public RespaldoService(RespaldoRepository respaldoRepository) {
+    public RespaldoService(RespaldoRepository respaldoRepository, 
+                           BitacoraAuditoriaRepository auditoriaRepository,
+                           TaskScheduler taskScheduler) {
         this.respaldoRepository = respaldoRepository;
-        // Crear directorio si no existe
+        this.auditoriaRepository = auditoriaRepository;
+        this.taskScheduler = taskScheduler;
+        
         File dir = new File(backupDir);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -48,30 +62,62 @@ public class RespaldoService {
         return respaldoRepository.findAllByOrderByFechaInicioDesc();
     }
 
-    public Respaldo generarRespaldo(String tipo) {
+    public Respaldo generarRespaldo(RespaldoRequestDTO request, String tipo) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         String filename = "sbvia_backup_" + timestamp + ".backup";
 
         Respaldo respaldo = new Respaldo();
         respaldo.setNombreArchivo(filename);
         respaldo.setTipo(tipo);
-        respaldo.setEstado("EN_PROGRESO");
+        respaldo.setModalidad(request != null && request.getModalidad() != null ? request.getModalidad() : "COMPLETO");
+        respaldo.setComentario(request != null ? request.getComentario() : "");
         respaldo.setFechaInicio(LocalDateTime.now());
+        
+        if (request != null && request.getFechaProgramada() != null && request.getFechaProgramada().isAfter(LocalDateTime.now())) {
+            respaldo.setEstado("PROGRAMADO");
+            respaldo.setFechaProgramada(request.getFechaProgramada());
+            respaldo = respaldoRepository.save(respaldo);
+            
+            final Respaldo resFinal = respaldo;
+            taskScheduler.schedule(() -> {
+                resFinal.setEstado("EN_PROGRESO");
+                respaldoRepository.save(resFinal);
+                ejecutarPgDump(resFinal);
+            }, Date.from(request.getFechaProgramada().atZone(ZoneId.systemDefault()).toInstant()));
+        } else {
+            respaldo.setEstado("EN_PROGRESO");
+            respaldo = respaldoRepository.save(respaldo);
+            ejecutarPgDump(respaldo);
+        }
 
-        respaldo = respaldoRepository.save(respaldo);
-
-        // Ejecutar pg_dump asíncronamente
-        ejecutarPgDump(respaldo);
+        // Registrar en Auditoría
+        registrarAuditoria(respaldo);
 
         return respaldo;
+    }
+
+    private void registrarAuditoria(Respaldo respaldo) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUser = auth != null ? auth.getName() : "SISTEMA";
+
+            BitacoraAuditoria auditoria = new BitacoraAuditoria();
+            auditoria.setNombreTabla("respaldo");
+            auditoria.setOperacion("BACKUP");
+            auditoria.setUsuarioDb(dbUser);
+            auditoria.setUsuarioApp(currentUser);
+            auditoria.setDatosNuevos("{\"archivo\": \"" + respaldo.getNombreArchivo() + "\", \"modalidad\": \"" + respaldo.getModalidad() + "\", \"tipo\": \"" + respaldo.getTipo() + "\"}");
+            
+            auditoriaRepository.save(auditoria);
+        } catch (Exception e) {
+            logger.error("Error al registrar auditoría de respaldo", e);
+        }
     }
 
     @Async
     protected void ejecutarPgDump(Respaldo respaldo) {
         String outputPath = backupDir + "/" + respaldo.getNombreArchivo();
         
-        // Parsear URL de DB. Ejemplo: jdbc:postgresql://postgres:5432/sbvia_db
-        // Extraemos host y base de datos (simplificado para este entorno)
         String host = "postgres"; 
         String dbName = "sbvia_db";
         
@@ -84,16 +130,23 @@ public class RespaldoService {
             }
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "pg_dump",
-                "-h", host,
-                "-U", dbUser,
-                "-d", dbName,
-                "-F", "c", // Custom format
-                "-f", outputPath
-        );
+        List<String> command = new ArrayList<>(List.of(
+            "pg_dump",
+            "-h", host,
+            "-U", dbUser,
+            "-d", dbName,
+            "-F", "c",
+            "-f", outputPath
+        ));
 
-        // Inyectar contraseña segura
+        if ("SOLO_ESTRUCTURA".equals(respaldo.getModalidad())) {
+            command.add("-s");
+        } else if ("SOLO_DATOS".equals(respaldo.getModalidad())) {
+            command.add("-a");
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+
         Map<String, String> env = processBuilder.environment();
         env.put("PGPASSWORD", dbPassword);
 
@@ -118,7 +171,6 @@ public class RespaldoService {
             } else {
                 respaldo.setEstado("FALLIDO");
                 respaldo.setDetalles("pg_dump devolvió código de error: " + exitCode);
-                logger.error("Error al ejecutar pg_dump. Código de salida: {}", exitCode);
             }
 
         } catch (IOException | InterruptedException e) {
@@ -148,10 +200,12 @@ public class RespaldoService {
         respaldoRepository.delete(respaldo);
     }
 
-    // Respaldo automático todos los días a las 2 AM
     @Scheduled(cron = "0 0 2 * * ?")
     public void respaldoProgramado() {
         logger.info("Ejecutando respaldo automático programado...");
-        generarRespaldo("PROGRAMADO");
+        RespaldoRequestDTO dto = new RespaldoRequestDTO();
+        dto.setModalidad("COMPLETO");
+        dto.setComentario("Respaldo diario automático");
+        generarRespaldo(dto, "PROGRAMADO");
     }
 }

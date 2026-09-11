@@ -33,6 +33,15 @@ public class Respaldo {
     @Column(name = "detalles")
     private String detalles;
 
+    @Column(name = "modalidad", nullable = false)
+    private String modalidad;
+
+    @Column(name = "fecha_programada")
+    private LocalDateTime fechaProgramada;
+
+    @Column(name = "comentario")
+    private String comentario;
+
     // Getters y Setters
     public Long getIdRespaldo() {
         return idRespaldo;
@@ -96,5 +105,29 @@ public class Respaldo {
 
     public void setDetalles(String detalles) {
         this.detalles = detalles;
+    }
+
+    public String getModalidad() {
+        return modalidad;
+    }
+
+    public void setModalidad(String modalidad) {
+        this.modalidad = modalidad;
+    }
+
+    public LocalDateTime getFechaProgramada() {
+        return fechaProgramada;
+    }
+
+    public void setFechaProgramada(LocalDateTime fechaProgramada) {
+        this.fechaProgramada = fechaProgramada;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
 }

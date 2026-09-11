@@ -15,8 +15,8 @@ export class RespaldoService {
     return this.http.get<Respaldo[]>(this.apiUrl);
   }
 
-  generar(): Observable<Respaldo> {
-    return this.http.post<Respaldo>(`${this.apiUrl}/generar`, {});
+  generar(payload: any): Observable<Respaldo> {
+    return this.http.post<Respaldo>(`${this.apiUrl}/generar`, payload);
   }
 
   eliminar(id: number): Observable<void> {

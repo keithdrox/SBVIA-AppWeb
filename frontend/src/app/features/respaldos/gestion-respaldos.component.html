@@ -4,9 +4,9 @@
       <h1>Gestión de Respaldos</h1>
       <p class="subtitle">Administre las copias de seguridad de la base de datos SBVIA.</p>
     </div>
-    <button class="btn-primary" (click)="generarRespaldo()" [disabled]="generando">
+    <button class="btn-primary" (click)="abrirModal()" [disabled]="generando">
       <span class="icon">💾</span> 
-      {{ generando ? 'Generando...' : 'Generar Nuevo Respaldo' }}
+      {{ generando ? 'Procesando...' : 'Nuevo Respaldo' }}
     </button>
   </div>
 
@@ -27,10 +27,11 @@
         <tr>
           <th>Archivo</th>
           <th>Tipo</th>
+          <th>Modo</th>
           <th>Estado</th>
           <th>Inicio</th>
-          <th>Fin</th>
           <th>Tamaño</th>
+          <th>Descripción</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -43,19 +44,23 @@
             </span>
           </td>
           <td>
+            <span class="badge badge-gray">{{ res.modalidad }}</span>
+          </td>
+          <td>
             <span class="badge" 
                   [ngClass]="{
-                    'badge-yellow': res.estado === 'EN_PROGRESO',
+                    'badge-yellow': res.estado === 'EN_PROGRESO' || res.estado === 'PROGRAMADO',
                     'badge-green': res.estado === 'COMPLETADO',
                     'badge-red': res.estado === 'FALLIDO'
                   }">
-              {{ res.estado === 'EN_PROGRESO' ? '⏳ En Progreso' : 
+              {{ res.estado === 'EN_PROGRESO' ? '⏳ Progreso' : 
+                 res.estado === 'PROGRAMADO' ? '📅 Programado' :
                  res.estado === 'COMPLETADO' ? '✅ Completado' : '❌ Fallido' }}
             </span>
           </td>
-          <td>{{ res.fechaInicio | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-          <td>{{ res.fechaFin ? (res.fechaFin | date:'dd/MM/yyyy HH:mm:ss') : '-' }}</td>
+          <td>{{ res.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
           <td>{{ res.estado === 'COMPLETADO' ? formatearBytes(res.tamanioBytes) : '-' }}</td>
+          <td class="text-sm">{{ res.comentario || '-' }}</td>
           <td class="actions">
             <button class="btn-icon btn-download" 
                     [disabled]="res.estado !== 'COMPLETADO'" 
@@ -72,5 +77,46 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Modal para Configurar Respaldo -->
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Opciones de Respaldo</h2>
+      <button class="close-btn" (click)="cerrarModal()">×</button>
+    </div>
+    <form [formGroup]="respaldoForm" (ngSubmit)="generarRespaldo()">
+      <div class="modal-body">
+        
+        <div class="form-group">
+          <label for="modalidad">Tipo de Respaldo</label>
+          <select id="modalidad" formControlName="modalidad" class="form-control">
+            <option value="COMPLETO">Completo (Estructura y Datos)</option>
+            <option value="SOLO_ESTRUCTURA">Solo Estructura (Sin Datos)</option>
+            <option value="SOLO_DATOS">Solo Datos (Sin Estructura)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="fechaProgramada">Programar (Opcional)</label>
+          <input id="fechaProgramada" type="datetime-local" formControlName="fechaProgramada" class="form-control" />
+          <small class="help-text">Déjalo vacío para ejecutarlo inmediatamente.</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="comentario">Comentario / Motivo</label>
+          <textarea id="comentario" formControlName="comentario" class="form-control" rows="2" placeholder="Ej: Antes de la actualización v2.0"></textarea>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="cerrarModal()" [disabled]="generando">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="respaldoForm.invalid || generando">
+          {{ generando ? 'Procesando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </form>
   </div>
 </div>

@@ -7,4 +7,7 @@ export interface Respaldo {
   fechaFin?: string;
   tamanioBytes?: number;
   detalles?: string;
+  modalidad?: string;
+  fechaProgramada?: string;
+  comentario?: string;
 }

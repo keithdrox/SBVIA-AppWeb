@@ -31,8 +31,8 @@ public class RespaldoController {
     }
 
     @PostMapping("/generar")
-    public Respaldo generar() {
-        return respaldoService.generarRespaldo("MANUAL");
+    public Respaldo generar(@RequestBody com.sbvia.backend.dto.RespaldoRequestDTO request) {
+        return respaldoService.generarRespaldo(request, "MANUAL");
     }
 
     @GetMapping("/descargar/{id}")

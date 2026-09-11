@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RespaldoService } from './respaldo.service';
 import { Respaldo } from './respaldo.model';
 
 @Component({
   selector: 'app-gestion-respaldos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './gestion-respaldos.component.html',
   styleUrls: ['./gestion-respaldos.component.css']
 })
@@ -14,13 +15,23 @@ export class GestionRespaldosComponent implements OnInit, OnDestroy {
   respaldos: Respaldo[] = [];
   cargando = true;
   generando = false;
+  
+  // Modal state
+  modalAbierto = false;
+  respaldoForm: FormGroup;
+  
   private autoRefreshInterval: any;
 
-  constructor(private respaldoService: RespaldoService) {}
+  constructor(private respaldoService: RespaldoService, private fb: FormBuilder) {
+    this.respaldoForm = this.fb.group({
+      modalidad: ['COMPLETO', Validators.required],
+      fechaProgramada: [''],
+      comentario: ['']
+    });
+  }
 
   ngOnInit(): void {
     this.cargarRespaldos();
-    // Refrescar cada 5 segundos para ver si un respaldo en progreso ya se completó
     this.autoRefreshInterval = setInterval(() => {
       this.cargarRespaldosSilencioso();
     }, 5000);
@@ -44,20 +55,37 @@ export class GestionRespaldosComponent implements OnInit, OnDestroy {
   }
 
   cargarRespaldosSilencioso(): void {
-    const hayEnProgreso = this.respaldos.some(r => r.estado === 'EN_PROGRESO');
+    const hayEnProgreso = this.respaldos.some(r => r.estado === 'EN_PROGRESO' || r.estado === 'PROGRAMADO');
     if (hayEnProgreso) {
       this.respaldoService.listar().subscribe(data => this.respaldos = data);
     }
   }
 
+  abrirModal(): void {
+    this.respaldoForm.reset({ modalidad: 'COMPLETO' });
+    this.modalAbierto = true;
+  }
+
+  cerrarModal(): void {
+    this.modalAbierto = false;
+  }
+
   generarRespaldo(): void {
+    if (this.respaldoForm.invalid) return;
+    
     this.generando = true;
-    this.respaldoService.generar().subscribe({
+    const payload = this.respaldoForm.value;
+    
+    this.respaldoService.generar(payload).subscribe({
       next: (nuevoRespaldo) => {
         this.respaldos.unshift(nuevoRespaldo);
         this.generando = false;
+        this.cerrarModal();
       },
-      error: () => this.generando = false
+      error: () => {
+        this.generando = false;
+        this.cerrarModal();
+      }
     });
   }
 

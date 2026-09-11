@@ -6,6 +6,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: sbvia_db
+      TZ: America/Lima
     ports:
       - "5434:5432"
     volumes:
@@ -38,6 +39,7 @@ services:
       - ./backups:/app/backups
     environment:
       - DB_URL=jdbc:postgresql://postgres:5432/sbvia_db
+      - TZ=America/Lima
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_HOST=redis
