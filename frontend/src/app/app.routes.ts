@@ -24,6 +24,7 @@ export const routes: Routes = [
       { path: 'simulacion/:idEscenario', loadComponent: () => import('./features/practicas/simulacion.component').then(m => m.SimulacionComponent) },
       { path: 'instructor', loadComponent: () => import('./features/supervision/supervision.component').then(m => m.SupervisionComponent), canActivate: [roleGuard], data: { roles: ['INSTRUCTOR', 'ADMINISTRADOR'] } },
       { path: 'auditoria', loadComponent: () => import('./features/auditoria/auditoria.component').then(m => m.AuditoriaComponent), canActivate: [roleGuard], data: { roles: ['ADMINISTRADOR'] } },
+      { path: 'respaldos', loadComponent: () => import('./features/respaldos/gestion-respaldos.component').then(m => m.GestionRespaldosComponent), canActivate: [roleGuard], data: { roles: ['ADMINISTRADOR'] } },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
     ]
   },

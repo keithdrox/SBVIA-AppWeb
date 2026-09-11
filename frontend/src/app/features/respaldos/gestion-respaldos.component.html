@@ -1,0 +1,76 @@
+<div class="respaldos-container">
+  <div class="header-section">
+    <div>
+      <h1>Gestión de Respaldos</h1>
+      <p class="subtitle">Administre las copias de seguridad de la base de datos SBVIA.</p>
+    </div>
+    <button class="btn-primary" (click)="generarRespaldo()" [disabled]="generando">
+      <span class="icon">💾</span> 
+      {{ generando ? 'Generando...' : 'Generar Nuevo Respaldo' }}
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando historial de respaldos...</p>
+  </div>
+
+  <div *ngIf="!cargando && respaldos.length === 0" class="empty-state">
+    <span class="icon-large">🗄️</span>
+    <h3>No hay respaldos disponibles</h3>
+    <p>Genere un nuevo respaldo manual o espere a que se ejecute la programación automática.</p>
+  </div>
+
+  <div *ngIf="!cargando && respaldos.length > 0" class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Archivo</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Tamaño</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let res of respaldos">
+          <td class="font-mono">{{ res.nombreArchivo }}</td>
+          <td>
+            <span class="badge" [ngClass]="res.tipo === 'MANUAL' ? 'badge-blue' : 'badge-purple'">
+              {{ res.tipo === 'MANUAL' ? '🧑‍💻 Manual' : '⏱️ Programado' }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" 
+                  [ngClass]="{
+                    'badge-yellow': res.estado === 'EN_PROGRESO',
+                    'badge-green': res.estado === 'COMPLETADO',
+                    'badge-red': res.estado === 'FALLIDO'
+                  }">
+              {{ res.estado === 'EN_PROGRESO' ? '⏳ En Progreso' : 
+                 res.estado === 'COMPLETADO' ? '✅ Completado' : '❌ Fallido' }}
+            </span>
+          </td>
+          <td>{{ res.fechaInicio | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td>{{ res.fechaFin ? (res.fechaFin | date:'dd/MM/yyyy HH:mm:ss') : '-' }}</td>
+          <td>{{ res.estado === 'COMPLETADO' ? formatearBytes(res.tamanioBytes) : '-' }}</td>
+          <td class="actions">
+            <button class="btn-icon btn-download" 
+                    [disabled]="res.estado !== 'COMPLETADO'" 
+                    (click)="descargar(res.idRespaldo)" 
+                    title="Descargar">
+              ⬇️
+            </button>
+            <button class="btn-icon btn-delete" 
+                    (click)="eliminar(res.idRespaldo)" 
+                    title="Eliminar">
+              🗑️
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/respaldos")
-@PreAuthorize("hasRole('ADMINISTRADOR')")
+@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 public class RespaldoController {
 
     private final RespaldoService respaldoService;
