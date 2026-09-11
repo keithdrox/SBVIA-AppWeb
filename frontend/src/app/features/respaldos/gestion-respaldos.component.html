@@ -30,14 +30,17 @@
           <th>Modo</th>
           <th>Estado</th>
           <th>Inicio</th>
+          <th>Programado Para</th>
           <th>Tamaño</th>
-          <th>Descripción</th>
+          <th>Comentario</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let res of respaldos">
-          <td class="font-mono">{{ res.nombreArchivo }}</td>
+          <td class="font-mono">
+            <div class="truncate-text" [title]="res.nombreArchivo">{{ res.nombreArchivo }}</div>
+          </td>
           <td>
             <span class="badge" [ngClass]="res.tipo === 'MANUAL' ? 'badge-blue' : 'badge-purple'">
               {{ res.tipo === 'MANUAL' ? '🧑‍💻 Manual' : '⏱️ Programado' }}
@@ -58,9 +61,12 @@
                  res.estado === 'COMPLETADO' ? '✅ Completado' : '❌ Fallido' }}
             </span>
           </td>
-          <td>{{ res.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td>{{ res.estado === 'COMPLETADO' ? formatearBytes(res.tamanioBytes) : '-' }}</td>
-          <td class="text-sm">{{ res.comentario || '-' }}</td>
+          <td class="whitespace-nowrap">{{ res.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td class="whitespace-nowrap">{{ res.fechaProgramada ? (res.fechaProgramada | date:'dd/MM/yyyy HH:mm') : '-' }}</td>
+          <td class="whitespace-nowrap">{{ res.estado === 'COMPLETADO' ? formatearBytes(res.tamanioBytes) : '-' }}</td>
+          <td class="text-sm">
+            <div class="truncate-text" [title]="res.comentario || '-'">{{ res.comentario || '-' }}</div>
+          </td>
           <td class="actions">
             <button class="btn-icon btn-download" 
                     [disabled]="res.estado !== 'COMPLETADO'" 
