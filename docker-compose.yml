@@ -34,6 +34,8 @@ services:
     container_name: sbvia-backend
     ports:
       - "8080:8080"
+    volumes:
+      - ./backups:/app/backups
     environment:
       - DB_URL=jdbc:postgresql://postgres:5432/sbvia_db
       - DB_USER=${DB_USER}

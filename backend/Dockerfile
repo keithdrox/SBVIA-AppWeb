@@ -8,6 +8,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 # Etapa 2: Ejecución
 FROM eclipse-temurin:21-jre-alpine
+RUN apk add --no-cache postgresql-client
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
