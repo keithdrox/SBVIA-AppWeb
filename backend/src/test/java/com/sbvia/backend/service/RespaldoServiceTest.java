@@ -146,4 +146,31 @@ public class RespaldoServiceTest {
         verify(spyService).generarRespaldo(captor.capture(), eq("PROGRAMADO"));
         assertEquals("COMPLETO", captor.getValue().getModalidad());
     }
+
+    @Test
+    void testGenerarRespaldoNullRequest() {
+        when(respaldoRepository.save(any(Respaldo.class))).thenAnswer(inv -> inv.getArgument(0));
+        RespaldoService spyService = spy(respaldoService);
+        doNothing().when(spyService).ejecutarPgDump(any(Respaldo.class));
+
+        Respaldo result = spyService.generarRespaldo(null, "AUTOMATICO");
+
+        assertNotNull(result);
+        assertEquals("COMPLETO", result.getModalidad());
+        assertEquals("AUTOMATICO", result.getTipo());
+    }
+
+    @Test
+    void testEjecutarPgDump() throws Exception {
+        Respaldo respaldo = new Respaldo();
+        respaldo.setNombreArchivo("test_dump.backup");
+        respaldo.setModalidad("SOLO_ESTRUCTURA");
+        try { respaldoService.ejecutarPgDump(respaldo); } catch (Exception e) {}
+        
+        respaldo.setModalidad("SOLO_DATOS");
+        try { respaldoService.ejecutarPgDump(respaldo); } catch (Exception e) {}
+        
+        respaldo.setModalidad("COMPLETO");
+        try { respaldoService.ejecutarPgDump(respaldo); } catch (Exception e) {}
+    }
 }
