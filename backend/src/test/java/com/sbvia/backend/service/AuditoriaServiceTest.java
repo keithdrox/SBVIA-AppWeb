@@ -70,10 +70,10 @@ public class AuditoriaServiceTest {
     void testObtenerAuditoriaConFiltrosVarios() {
         when(repository.findAll(any(Specification.class), any(Sort.class))).thenReturn(List.of(log1));
         
-        // Faltan ramas por probar en los if (!isEmpty)
         auditoriaService.obtenerAuditoria("", "", "", null, null);
-        auditoriaService.obtenerAuditoria(null, "UPDATE", null, LocalDateTime.now(), null);
-        auditoriaService.obtenerAuditoria("respaldo", null, "admin", null, LocalDateTime.now());
+        auditoriaService.obtenerAuditoria("tabla1", "UPDATE", "user", LocalDateTime.now(), LocalDateTime.now());
+        auditoriaService.obtenerAuditoria(null, null, null, LocalDateTime.now(), LocalDateTime.now());
+        auditoriaService.obtenerAuditoria("x", "x", "x", null, null);
     }
 
     @Test
