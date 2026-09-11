@@ -33,7 +33,13 @@ BEGIN
     SELECT id_escenario INTO v_id_escenario FROM escenario LIMIT 1;
     SELECT id_vehiculo INTO v_id_vehiculo FROM vehiculo LIMIT 1;
     SELECT id_estado_simulacion INTO v_id_estado_sim_completada FROM estado_simulacion WHERE nombre = 'COMPLETADA' LIMIT 1;
+    
+    -- Fix: Asegurar que exista un tipo de evento, ya que V2 no lo incluye
+    IF NOT EXISTS (SELECT 1 FROM tipo_evento) THEN
+        INSERT INTO tipo_evento (nombre, descripcion, categoria) VALUES ('EVENTO_PRUEBA', 'Tipo de evento generado automaticamente', 'OTRO');
+    END IF;
     SELECT id_tipo_evento INTO v_id_tipo_evento FROM tipo_evento LIMIT 1;
+    
     SELECT id_regla_transito INTO v_id_regla_transito FROM regla_transito LIMIT 1;
     SELECT id_nivel_gravedad INTO v_id_nivel_gravedad FROM nivel_gravedad LIMIT 1;
     SELECT id_tipo_metrica INTO v_id_tipo_metrica FROM tipo_metrica LIMIT 1;
@@ -264,7 +270,7 @@ BEGIN
     SELECT 
         u.id_usuario,
         u.fecha_registro + (h.i || ' days')::INTERVAL,
-        '192.168.1.' || (h.i % 255),
+        ('192.168.1.' || (h.i % 255))::inet,
         'Desktop Masivo',
         'Chrome 115',
         true,

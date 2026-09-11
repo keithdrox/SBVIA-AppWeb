@@ -86,4 +86,11 @@ public class SimulacionController {
         List<SimulacionDTO> practicas = simulacionService.obtenerTodas();
         return ResponseEntity.ok(practicas);
     }
+
+    @GetMapping("/estadisticas")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR')")
+    @Operation(summary = "Obtener estadísticas globales", description = "Calcula el total de prácticas y promedios globales de forma eficiente")
+    public ResponseEntity<com.sbvia.backend.dto.EstadisticasDTO> obtenerEstadisticasGlobales() {
+        return ResponseEntity.ok(simulacionService.obtenerEstadisticasGlobales());
+    }
 }

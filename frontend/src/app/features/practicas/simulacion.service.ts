@@ -44,6 +44,10 @@ export class SimulacionService {
     return this.http.get<Simulacion[]>(`${this.apiUrl}/mis-practicas`);
   }
 
+  getEstadisticasGlobales(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/estadisticas`);
+  }
+
   getTodas(): Observable<Simulacion[]> {
     return this.http.get<Simulacion[]>(this.apiUrl);
   }

@@ -12,4 +12,7 @@ public interface SimulacionRepository extends JpaRepository<Simulacion, Integer>
     List<Simulacion> findByUsuario_IdUsuarioOrderByIdSimulacionDesc(Integer idUsuario);
 
     List<Simulacion> findAllByOrderByIdSimulacionDesc();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(s), AVG(s.puntajeFinal), SUM(CASE WHEN s.puntajeFinal >= 70 THEN 1 ELSE 0 END) FROM Simulacion s WHERE s.completada = true")
+    Object[] getGlobalStats();
 }

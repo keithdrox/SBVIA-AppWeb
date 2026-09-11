@@ -220,6 +220,25 @@ public class SimulacionService {
                 .collect(Collectors.toList());
     }
 
+    public com.sbvia.backend.dto.EstadisticasDTO obtenerEstadisticasGlobales() {
+        Object[] result = simulacionRepository.getGlobalStats();
+        if (result == null || result[0] == null || result.length == 0 || ((Object[]) result[0])[0] == null) {
+            return new com.sbvia.backend.dto.EstadisticasDTO(0, 0, 0);
+        }
+        Object[] row = (Object[]) result[0];
+        long total = row[0] != null ? ((Number) row[0]).longValue() : 0;
+        int promedio = row[1] != null ? (int) Math.round(((Number) row[1]).doubleValue()) : 0;
+        long aprobadas = row[2] != null ? ((Number) row[2]).longValue() : 0;
+        
+        int tasaAprobacion = total > 0 ? (int) Math.round((double) aprobadas * 100 / total) : 0;
+
+        return com.sbvia.backend.dto.EstadisticasDTO.builder()
+                .totalPracticas(total)
+                .promedioGlobal(promedio)
+                .tasaAprobacionGlobal(tasaAprobacion)
+                .build();
+    }
+
     private void guardarMetrica(Simulacion simulacion, String tipo, BigDecimal valor, String observacion) {
         TipoMetrica tipoMetrica = tipoMetricaRepository.findByNombre(tipo)
                 .orElseThrow(() -> new IllegalStateException("Catálogo incompleto: falta el tipo " + tipo));
